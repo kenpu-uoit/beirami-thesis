@@ -5,7 +5,7 @@ def timeit(f, *args):
     start = time()
     f(*args)
     duration = time() - start
-    print(">> %.2f ms" % (duration * 1000))
+    return duration
 
 def delete_snapshot(db):
     c = db.cursor()
@@ -28,6 +28,23 @@ def create_snapshot(db, end_op_id):
     c.close()
 
 import sys
+from matplotlib import pyplot as pl
+
 db = pg.connect(dbname="")
-delete_snapshot(db)
-timeit(create_snapshot, db, int(sys.argv[1]))
+c = db.cursor()
+c.execute('select max(op_id) from tl')
+max_op_id = c.fetchone()[0]
+n = 100
+runtime = []
+for i in range(n):
+    delete_snapshot(db)
+    end_op_id = max_op_id // n * i
+    x = timeit(create_snapshot, db, end_op_id)
+    runtime.append(x)
+    print(i, x)
+
+pl.figure()
+pl.plot(runtime)
+pl.savefig('runtime.png')
+
+
