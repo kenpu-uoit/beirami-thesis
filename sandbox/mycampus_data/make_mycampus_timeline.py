@@ -10,27 +10,22 @@ def init_db(flush=False):
     db = pg.connect(dbname=os.environ.get('USER'))
     if flush:
         c = db.cursor()
-        c.execute("drop table if exists timeline")
-        c.execute("drop sequence if exists id")
-        db.commit()
-
-        c.execute("create sequence id")
         c.execute("""
-            create table timeline as
-            select nextval('id') as id,
-                   schedule.*,
+            create table am_thesis.schedule__timeline as
+            select nextval('am_thesis.id') as __key__,
+                   S.*,
                    current_timestamp as __t__,
                    0 as __flag__
-                   from schedule
+                   from am_thesis.schedule__base S
                    limit 0
             """)
-        c.execute("alter table timeline add primary key (id)")
+        c.execute("alter table am_thesis.schedule__timeline add primary key (__key__)")
         db.commit()
     return db
 
 def get_schedule_attributes(db):
     c = db.cursor()
-    c.execute('select * from schedule limit 1')
+    c.execute('select * from am_thesis.schedule__base limit 1')
     result = [col.name for col in c.description]
     c.close()
     return result
@@ -39,7 +34,7 @@ def get_offers(db):
     c = db.cursor()
     c.execute("""
         select distinct semester, code
-        from schedule
+        from am_thesis.schedule__base
     """)
     offers = c.fetchall()
     c.close()
@@ -49,7 +44,7 @@ def get_offer_tuples(db, offer):
     c = db.cursor()
     (semester, code) = offer
     c.execute("""
-        select * from schedule
+        select * from am_thesis.schedule__base
         where semester=%s and code=%s
     """, (semester, code))
     result = c.fetchall()
@@ -70,8 +65,8 @@ def insert_timeline(db, tuples, t, flag):
     attr = get_schedule_attributes(db)
 
     insert_query = """
-        insert into timeline
-        values (nextval('id'), %s)
+        insert into am_thesis.schedule__timeline
+        values (nextval('am_thesis.id'), %s)
     """ % ",".join("%s" for i in range(len(attr) + 2))
 
     for row in tuples:

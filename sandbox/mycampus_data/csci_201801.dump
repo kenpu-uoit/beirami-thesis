@@ -37,7 +37,8 @@ SET default_with_oids = false;
 -- Name: schedule; Type: TABLE; Schema: public; Owner: kenpu
 --
 
-CREATE TABLE schedule (
+CREATE SCHEMA am_thesis;
+CREATE TABLE am_thesis.schedule (
     semester character varying(10),
     title character varying(100),
     crn character varying(30),
@@ -63,13 +64,13 @@ CREATE TABLE schedule (
 );
 
 
-ALTER TABLE schedule OWNER TO kenpu;
+ALTER TABLE am_thesis.schedule OWNER TO kenpu;
 
 --
--- Data for Name: schedule; Type: TABLE DATA; Schema: public; Owner: kenpu
+-- Data for Name: am_thesis.schedule; Type: TABLE DATA; Schema: public; Owner: kenpu
 --
 
-COPY schedule (semester, title, crn, code, levels, credits, campus, section, capacity, actual, starthour, startmin, endhour, endmin, weekday, room, datestart, dateend, schtype, instructor, prereq, coreq) FROM stdin;
+COPY am_thesis.schedule (semester, title, crn, code, levels, credits, campus, section, capacity, actual, starthour, startmin, endhour, endmin, weekday, room, datestart, dateend, schtype, instructor, prereq, coreq) FROM stdin;
 201801	Intro to Programming for Scien	72650	CSCI 1040U	Undergraduate	3	North Oshawa	1	50	20	15	40	17	0	W	Science Building (UA) UA2230	Jan 08, 2018	Apr 06, 2018	Lecture	Randy Joseph  Fortier	\N	\N
 201801	Intro to Programming for Scien	72650	CSCI 1040U	Undergraduate	3	North Oshawa	1	50	20	15	40	17	0	F	Science Building (UA) UA2230	Jan 08, 2018	Apr 06, 2018	Lecture	Randy Joseph  Fortier	\N	\N
 201801	Intro to Programming for Scien	72650	CSCI 1040U	Undergraduate	3	North Oshawa	1	50	20	15	40	17	0	M	Science Building (UA) UA2230	Apr 09, 2018	Apr 09, 2018	Lecture	Randy Joseph  Fortier	\N	\N
