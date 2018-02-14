@@ -43,16 +43,16 @@ by PostgreSQL).
 {\small
 \begin{tabular}{|l|} \hline
     $\mathrm{snapshot}(r, t)$ = \\
-    \verb| | \textsc{With} $T$ \textsc{as} ( \\
-    \verb|   | \textsc{select} id, $\{\mathrm{last\_value}(x) \mathrm{\ as\ } x:
+    \verb|| \textsc{With} $T$ \textsc{as} ( \\
+    \verb|  | \textsc{select} id, $\{\mathrm{last\_value}(x) \mathrm{\ as\ } x:
     x\in\attr(r)\}$ \textsc{over} $W$ \\
-    \verb|   | \textsc{from} $r^T$ \\
-    \verb|   | \textsc{where} updates < $t$ \\
-    \verb|   | \textsc{window} $W$ \textsc{as} 
+    \verb|  | \textsc{from} $r^T$ \\
+    \verb|  | \textsc{where} updates $\leq t$ \\
+    \verb|  | \textsc{window} $W$ \textsc{as} 
               \textsc{partition by} id \textsc{order by} updates\\
-    \verb| | ) \\
-    \verb| | \textsc{select} id, $\{x: x\in\attr(r)\}$ \textsc{from} $T$ \\
-    \verb| | \textsc{where not} $T.$deleted \\ \hline
+    \verb|| ) \\
+    \verb|| \textsc{select} id, $\{x: x\in\attr(r)\}$ \textsc{from} $T$ \\
+    \verb|| \textsc{where not} $T.$deleted \\ \hline
 \end{tabular}
 }
 
