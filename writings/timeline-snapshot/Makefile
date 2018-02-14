@@ -3,5 +3,5 @@ all:
 	pdflatex main
 
 clean:
-	rm -f main.pdf main.log main.aux main.bbl main.blg
+	rm -f main.pdf main.log *.aux main.bbl main.blg
 
