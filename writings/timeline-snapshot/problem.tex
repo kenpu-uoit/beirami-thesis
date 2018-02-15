@@ -44,12 +44,12 @@ by PostgreSQL).
 \begin{tabular}{|l|} \hline
     $\mathrm{snapshot}(r, t)$ = \\
     \verb|| \textsc{With} $T$ \textsc{as} ( \\
-    \verb|  | \textsc{select} id, $\{\mathrm{last\_value}(x) \mathrm{\ as\ } x:
+    \verb| | \textsc{select} id, $\{\mathrm{last\_value}(x) \mathrm{\ as\ } x:
     x\in\attr(r)\}$ \textsc{over} $W$ \\
-    \verb|  | \textsc{from} $r^T$ \\
-    \verb|  | \textsc{where} updates $\leq t$ \\
-    \verb|  | \textsc{window} $W$ \textsc{as} 
-              \textsc{partition by} id \textsc{order by} updates\\
+    \verb| | \textsc{from} $r^T$ \\
+    \verb| | \textsc{where} updates $\leq t$ \\
+    \verb| | \textsc{window} $W$ \textsc{as} 
+             \textsc{partition by} id \textsc{order by} updates\\
     \verb|| ) \\
     \verb|| \textsc{select} id, $\{x: x\in\attr(r)\}$ \textsc{from} $T$ \\
     \verb|| \textsc{where not} $T.$deleted \\ \hline
@@ -62,12 +62,12 @@ The query $\mathrm{snapshot}(r, t)$ computes the snapshot of $r$ at timestamp
 $t$ by applying the latest update of each tuple up to timestamp $t$, while
 removing tuples that have been deleted.
 
-\begin{theorem}
+\begin{prop}
     Assume that the tables are updated at a constant rate over time,
     then the complexity of $\mathrm{snapshot}(r, t)$ is 
     $$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \leq t\}|)
     \simeq \mathcal{O}(t)$$
-\end{theorem}
+\end{prop}
 
 \subsection{Query answering using snapshots}
 
@@ -76,13 +76,13 @@ snapshots $\mathrm{snapshot}(r, t)$ and then evaluate $Q$.  If some snapshots
 are precomputed and materialized, then we can save on the computational cost in
 answering the query $Q(t)$.
 
-\begin{theorem}
+\begin{prop}
     Suppose we have materialized $\mathrm{snapshot}(r, s)$.  Then
     $\mathrm{snapshot}(r, t)$ can be computed with complexity:
 
     $$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \in [s,
     t]\}|) \simeq \mathcal{O}(|s-t|)$$
-\end{theorem}
+\end{prop}
 
 \subsection{Optimal materialization of snapshots}
 
