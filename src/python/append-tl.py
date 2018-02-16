@@ -17,5 +17,5 @@ def append_tl(db, total_ops=1*M):
             print("%d" % i)
     db.commit()
 
-db = pg.connect(dbname="")
+db = pg.connect(dbname="", port=5433)
 append_tl(db)

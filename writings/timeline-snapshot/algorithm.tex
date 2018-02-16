@@ -1,3 +1,13 @@
+\begin{figure}[tb]
+    \label{fig:query-time-no-snap}
+    \centering
+    \includegraphics[width=2.8in]{figs/runtime.pdf}
+    \caption{Query answering for 100 queries without snapshots.}
+\end{figure}
+
+
+
+
 \section{Algorithm}
 
 We first solve the simpler single snapshot placement problem.
@@ -10,7 +20,7 @@ We first solve the simpler single snapshot placement problem.
     which can be computed in $\mathcal{O}(|T_q|)$.
 \end{prop}
 
-\textcolor{red}{Proof [Outline]}
+%\textcolor{red}{Proof [Outline]}
 
 So by Proposition~\ref{thm:single}, it's straightforward to compute the optimal
 placement of a single snapshot with respect to a given query workload.  However,
@@ -42,6 +52,7 @@ Proposition~\ref{thm:seg} allows us to construct a dynamic programming algorithm
 that computes the {\em exact} optimal snapshot placements.
 
 \subsection{Recursive formulation}
+\label{sec:recursive}
 
 Let $\mathrm{opt}(Q, m)$ be the optimal $m$-snapshot placements for the query
 workload $Q$.
@@ -64,11 +75,11 @@ The recursive definition of $\mathrm{opt}(Q, m)$ is given as:
 \begin{itemize}
     \item Base case $ \mathrm{opt}(Q, 1) = \{\mathrm{median}(Q)\}$.
     \item Induction on $m$:
-\begin{eqnarray*}
-    i^* &=& \mathrm{argmin}\{\mathrm{cost}(\mathrm{opt}(Q[1,i], m-1)): i\in[1,
-    n]\} \\
-    \mathrm{opt}(Q, m) &=& \mathrm{opt}(Q[1, i^*]) \cup \{\mathrm{median}(Q[i^*+1, n])
-\end{eqnarray*}
+    $$i^* = \mathrm{argmin}\{\mathrm{cost}(\mathrm{opt}(Q[1,i], m-1)): i\in[1,
+    n]\}$$
+    $$
+    \mathrm{opt}(Q, m) = \mathrm{opt}(Q[1, i^*]) \cup \{\mathrm{median}(Q[i^*+1, n])
+    $$
 \end{itemize}
 
 \begin{prop}
@@ -80,11 +91,12 @@ Fortunately, we are able implement $\mathrm{opt}(Q, m)$ in polynomial time as a
 dynamic programming problem.
 
 \subsection{Dynamic programming formulation}
+\label{sec:dynamic}
 
 We can build a table $\mathbf{OPT}$ as a two dimensional array
 indexed by $(i, k)$ where $i\in [1, n]$ and $k\in [1, m]$.  Each entry
 in the table $\mathbf{OPT}[i,k] = \mathrm{opt}(Q[1,i], k)$.
-We can compute $\mathbf{OPT}[i,k]$ in a bottom up fashion.
+We can compute $\mathbf{OPT}[i,k]$ in a bottom up fashion \cite{kossmann2000iterative}.
 
 \vspace{1em}
 {\small

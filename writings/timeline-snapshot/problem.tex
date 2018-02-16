@@ -35,7 +35,7 @@ specific time.
 \end{definition}
 
 We can construct the snapshots using simple windowing functions (as in supported
-by PostgreSQL).
+by PostgreSQL \cite{momjian2001postgresql}).
 
 
 \vspace{1em}
@@ -63,6 +63,7 @@ $t$ by applying the latest update of each tuple up to timestamp $t$, while
 removing tuples that have been deleted.
 
 \begin{prop}
+    \label{prop:linear-time}
     Assume that the tables are updated at a constant rate over time,
     then the complexity of $\mathrm{snapshot}(r, t)$ is 
     $$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \leq t\}|)
@@ -71,7 +72,8 @@ removing tuples that have been deleted.
 
 \subsection{Query answering using snapshots}
 
-In order to answer a query $Q(t)$ on $D(t)$, we propose to first precompute
+Using precomputed materialized view has been shown to be highly effective \cite{sohrabi2016materialized,du2017deepsea}.
+Thus, in order to answer a query $Q(t)$ on $D(t)$, we propose to first precompute
 snapshots $\mathrm{snapshot}(r, t)$ and then evaluate $Q$.  If some snapshots
 are precomputed and materialized, then we can save on the computational cost in
 answering the query $Q(t)$.

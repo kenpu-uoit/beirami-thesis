@@ -30,7 +30,7 @@ def create_snapshot(db, end_op_id):
 import sys
 from matplotlib import pyplot as pl
 
-db = pg.connect(dbname="")
+db = pg.connect(dbname="", port=5433)
 c = db.cursor()
 c.execute('select max(op_id) from tl')
 max_op_id = c.fetchone()[0]

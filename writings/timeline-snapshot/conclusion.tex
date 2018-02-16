@@ -1,1 +1,19 @@
-\section{Conclusion}
+\section{Conclusion and Future Work}
+
+In this paper, we have presented some results obtained toward optimally
+supporting temporal relational queries of databases that store the timelines of
+its relational tables.  In order to avoid recomputation of the database states
+while making use of the storage space efficiently, our solution is to
+materialize $m$ snapshots at well-chosen timestamps.
+
+We have constructed a model to describe the query answering cost, and this cost
+model allows us to formulate the $m$-snapshot placement problem as an
+optimization problem.  We showed that dynamic programming can be used to solve
+the problem {\em exactly}.  Our experimental evaluation demonstrates that our
+cost model agrees with relational database systems, and that our snapshot
+placements improve query processing significantly.
+
+This is on-going research. As future work, we will be investigating
+approximation methods to further speed up the snapshot placement calculuation.
+We also wish to investigate maintaining snapshot placement dynamically to cope
+with a dynamic query workload.
