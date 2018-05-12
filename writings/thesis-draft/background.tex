@@ -1,0 +1,118 @@
+\chapter{Background}
+\label{chap:background}
+
+This chapter introduces the tools and concepts that the proposed system is based on. In the first section we define the concepts and tools that were used from the Relational Database Management System (RDBMS). Second section covers the basics of cryptography and hashing techniques and finally in the third section we introduce the basics of Blockchain technology.
+
+%--------------------------------------------------------------------
+
+\section{Relational Database}
+
+
+\textbf {Definition 1. (Temporal Database)}:
+Let $ r_i = r_1, r_2, ... , r_n$, be n number of tables in the relational database D. Denote the attributes of each table as $attr(r_i)$ where $r_i \in D$. A temporal table denoted $r_i^T$ is a table with attributes $atr(r_i^T) = \{ (updated, deleted) \in \mathcal{T} \}\cup attr(r_i)$ where $\mathcal{T} = t_0,t_1,...,t_n$ is the time domain in which transactions on $r_i$ happened. A temporal database denoted $D^T$ is the result of augmenting $D$ by $r_i^T$:\\
+\begin{center}
+	{$D^T = D \cup \{{r_i^T}: r_i \in D \}$}
+\end{center}
+The temporal database $D^T$ contains the entire history of the records ever existed in $D$.\\
+
+\textbf{Example 1.} Given the normal relational table $r_1$ (Table 2.1) and temporal table $r_1^T$ (Table 2.2), the $attr(r_1) = (id, item, value)$ and $attr(r_1^T) = (id, item, value, updated, deleted)$. The result of query $q_1 = \sigma_{id = 22}(r_1)$ is $\{(22,Pencil,7.50\$)\}$ and the result of same query on the temporal table $q_2 = \sigma_{id = 22}(r_1^T)$ is $\{(22,pencil,8.0\$,2018-03-21,NULL),(22,pencil,7.50\$,2018-03-30,NULL)\}$. Also the query $q_3 = \sigma_{id = 21}(r_1)$ results in $NULL$ however, the same query on the temporal table $q_4 = \sigma_{id = 21}(r_1^T)$ has the history of record with id = 21: $\{(21,ruler,3.25,2018-02-10,NULL),(21,ruler,3.25,NULL,2018-02-20)\}$.
+\begin{center}
+
+\begin{table}[t]
+	\centering
+	\caption{Normal Relational Table $r_1$}
+	\begin{tabular}{p{4cm}p{4cm}p{4cm}}
+		\hline
+		id & item      & value  \\ \hline
+		22 & Pencil    & 7.50\$ \\
+		23 & Notebook & 12.0\$   \\ \hline
+	\end{tabular}
+\end{table}
+
+\begin{table}[t]
+	\centering
+	\caption{Temporal Table $r_1^T$}
+	\begin{tabular}{p{1cm}p{2cm}p{3cm}p{3cm}p{2cm}}
+		\hline
+		id & item      & value  & updated  & deleted\\ \hline
+		21 & Ruler    & 3.25\$  & 2018-02-10  &  - \\  
+		21 & Ruler    & 3.25\$  & -  &  2018-02-20 \\
+		22 & Pencil    & 8.0\$  & 2018-03-21  &  - \\
+		22 & Pencil    & 7.50\$  & 2018-03-30  &  -\\
+		23 & Notebook & 12.0\$  & 2018-04-01 & - \\ \hline
+	\end{tabular}
+\end{table} 
+\end{center}
+%--------------------------------------------------------------------
+
+
+\textbf{Definition2. (Time domain)}: 
+The time domain $\mathcal{T}$ consists of discrete timestamps $t_0,t_1,...,t_n$ in which transactions on tables $r_i \in D$ happened. the range of time domain is: $\mathcal{T} = [t_0, \infty)$ where $t_0$ is the time in which the first transaction added to the table $r_i$.
+The time domain of a temporal table $r_i^T \in D^T $ is calculated by:\\
+\begin{center}
+	$\mathcal{T} = r_i^T[updated] \cup r_i^T[deleted]$
+\end{center}
+For example in the temporal table $r_1^T$ (Table 2.2), the time domain is:
+$\mathcal{T} = [2018-02-10,2018-04-01]$.\\
+%--------------------------------------------------------------------
+%--------------------------------------------------------------------
+
+\textbf{Definition 3. (Timestamps)}: A timestamp $t_i \in \mathcal{T}$ is a particular position in the time domain, in which particular transaction(s) happened. For example in the temporal table $r_1^T$ (Table 2.2), ``2018-03-30'' is a timestamp in which the record with ``id = 22'' updated. \\
+%--------------------------------------------------------------------
+
+\textbf{Definition 4. (Timeline)}: Let $u_i(t_j)$ be the total transactions on the tables $r_i \in D$ at timestamps $t_j \in \mathcal{T}$, where $i,j=\{0,1,...,n\}$. The $u_i(t_j)$ could be represented as an ordered set points on a vector. This vector is called a timeline for the transactions happened on $r_i \in D$. Figure x illustrates the concept of timeline.\\
+\begin{figure}[H]
+	\label{fig:timeline}
+	\centering
+	\includegraphics[width=\textwidth]{figs/timeline.pdf}
+	\caption{Timeline.}
+\end{figure}
+%--------------------------------------------------------------------
+
+\textbf{Defionition 5. (Snapshot and snapshot-queries)}: Given a temporal table $r^T \in D^T$ and a timestamp $t \in \mathcal{T}$, we denote $s(t)$ to be the table instance that obtained by calculating the $max(r^T[updated])$ for $r^T[updated]\leq t$. Note that $s(t) \in D^T$ but not necessarily $s(t) \in D$. A snapshot is a materialized version of $D(t) = \{s_1(t),s_2(t),...,s_n(t)\}$. A snapshot-query is an arbitrary relational query on $D(t)$.\\
+
+We can construct the snapshots using simple windowing functions (as in supported
+by PostgreSQL \cite{momjian2001postgresql}).
+
+    \vspace{1em}
+\begin{center}
+
+{\small
+	\begin{tabular}{|l|} \hline
+		$\mathrm{snapshot}(r, t)$ = \\
+		\verb|| \textsc{With} $T$ \textsc{as} ( \\
+		\verb| | \textsc{select} id, $\{\mathrm{last\_value}(x) \mathrm{\ as\ } x:
+		x\in attr(r)\}$ \textsc{over} $W$ \\
+		\verb| | \textsc{from} $r^T$ \\
+		\verb| | \textsc{where} updates $\leq t$ \\
+		\verb| | \textsc{window} $W$ \textsc{as} 
+		\textsc{partition by} id \textsc{order by} updates\\
+		\verb|| ) \\
+		\verb|| \textsc{select} id, $\{x: x\in attr(r)\}$ \textsc{from} $T$ \\
+		\verb|| \textsc{where not} $T.$deleted \\ \hline
+	\end{tabular}
+}
+\end{center}
+
+The query $\mathrm{snapshot}(r, t)$ computes the snapshot of $r$ at timestamp
+$t$ by applying the latest update of each tuple up to timestamp $t$, while
+removing tuples that have been deleted.\\
+%--------------------------------------------------------------------
+\textbf{Proposition 1. Linear Time}: Assume that the tables are updated at a constant rate over time,
+then the complexity of $\mathrm{snapshot}(r, t)$ is 
+$$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \leq t\}|)
+\simeq \mathcal{O}(t)$$
+%--------------------------------------------------------------------
+\textbf{Proposition 2. Regular Query Answering }: Let $t_0$ be the timestamp in which the first record was inserted on the database $D$. We would like to query what the record with a particular id looked like in time $t_d$. To do so, 
+\\
+\textbf{Proposition 2. Query Answering Using Snapshot}: 
+%--------------------------------------------------------------------
+\\
+\section{Cryptography}
+\textbf{Definition.(Cryptography Keys)}\\
+\textbf{Definition.(Assymetric Encryption)}\\
+\textbf{Definition. (Hashing)}\\
+\textbf{Definition. (Digital Signature)}\\
+\section{Blockchain}
+\textbf{hash pointers}\\
+\textbf{Components of a Block}\\

@@ -1,0 +1,36 @@
+\chapter{Introduction}
+\label{chap:introduction}
+
+\section{Motivation}
+Today, data is seen as the lifeblood of organizations that is helping them to make strategic decisions more efficient and perform the operations faster. Organizations store their highly confidential data, such as financial documents, customer information, medical records and more in the form of data records in a database and later use them for their sensitive operations. These databases however, could be accessible on the public networks where adversaries utilize hacking techniques to manipulate the data that are stored in them. Offline databases also are not safe as the attacks might be carried out within the organization by privileged users of the system. The fake data that are the result of such malicious activities, if not identified on the database, may result in irreversible consequences.
+
+Traditionally, malicious activities on a system including fake data manipulation to the database is prevented by restricting the activities of the users on the system. Also cryptography techniques such as data encryption or electronically signing the data has proven effective in identifying fake data manipulation. This is primarily done by assigning a pair of cryptography keys to the users, by which they can securely encrypt or decrypt the data and submit it to the database. Fabricating cryptography keys is computationally infeasible, hence it is extremely difficult for an outsiders to manipulate data inside the databases without notice. The downside of these techniques is that it requires to fully trust the activities of authenticated users which in turn, brings up a lot of security concerns. A study conducted by IBM showed that \% of the malicious activities on a database system carried out by the authenticated users of the system. Also with ever-increasing complexity of cyber-criminal techniques, each day a new approach to penetrate the database systems is identified. Therefore, it is naive to assume that access restriction or cryptography techniques alone could solve the issue. 
+
+Therefore a system is needed to confirm the trustworthiness of data based on verifiable evidences and not by relying on trust. This requires that the transactions on the database system to be transparent, meaning that for a record in a database, all transactions applied to it along with the information and cryptography signature of the user who submitted the transaction need to be available. The history of transactions also should be kept in a temper-proof table to restrict the adversaries to fabricate and submit a fake historical record to the database.
+
+In this thesis we have developed a system which ensures transparency of activities in a relational database system. Our developed system identifies and reports any fake data manipulation by outsiders and provides the history of transactions for any records in a relational database. There were four main challenges that we had to address when developing the system: Auditing the transactions on the database system, handling large query workloads on the audit tables, verifying the validness of query results and making the audit tables to be temper-proof. 
+\section{Related Work}
+\section{Problem Definition}
+%--------------------------------------------------------------------
+Given a relational database $D$, let $r$ to be the relational table in $D$. Denote attributes of $r$ as $attr(r)$. Assume $attr(r)= [id,m,u, sig(m|u)]$ where $id$ is the id of records in the database, $m = [col_1,...,col_n]$ is $n$ number of columns in $r$, $u$ is the information of the user who submitted the record and $sig(m|u)$ is the digital signature of the record submitted by $u$. Also let $D^T$ be the temporal database in which the history of the records in $D$ is stored. we denote $r^T$ as the tables in $D^T$. Assume that the attributes of $r^T$ are $attr(r^T) = [id,m,u,sig(m|u),t,d]$ where t is the timestamp in which a transaction occurred on the record and d is a boolean variable showing if the record is deleted.\\
+A submitted transaction is said to violate transparency, hence untrustworthy in any of the following scenarios:\\
+\textbf{Scenario 1.} Let q be the result of the query $q=\sigma_{(id : id \in attr(r))}(r)$, which is the record submitted by the user $u$. The result of query is untrustworthy if $\{q[sig(m|u)]: sig(m|u) \in r\} \neq sig(\{q[m]: m \in r \} |u)$. That is, by digitally signing the record $m$ with the $u$'s cryptography keys, we get a different result than the submitted signature to the table. The reason that this scenario may happen is that: 
+\begin{itemize}
+	\item  The record was altered accidentally or maliciously.
+	\item  A user maliciously claims to be one of the privileged users of the system with fake credentials.
+\end{itemize} 
+\textbf{Scenario 2.} Let q be the result of query $q=\sigma_{(id : id \in attr(r))}(r)$. The result of query is untrustworthy if $q[u \vee sig(m|u)] = \emptyset$. In other words, the resulted record was submitted by an anonymous user to the database.\\
+\textbf{Scenario 3.} Given a particular timestamp $t_0$, the result of query on the temporal database  $q^T=\sigma_{(id,t=t_0 : id,t \in attr(r^T))}(r^T)$ is untrustworthy if $\{q^T[sig(m|u)]|r^T\} \neq sig(q^T[m]|u)$ and if $q^T[u \vee sig(m|u)] = \emptyset$. This means that a former transaction on the record was submitted illegally. \\
+\textbf{Scenario 4.} Let $q^T = \sigma _{(id,max(m): id,m \in r^T)}(r^T)$ to be the latest version of a record in $D^T$ and $q=\sigma_{id}(r)$ to be the same record in $D$. A record is said to be untrustworthy if $q^T \neq q$ meaning that the latest version of a record in the temporal table should always match the record in a normal table.
+
+
+All in all, we argue that the transactions on a database is said to be transparent if:
+\begin{itemize}
+	\item The content of a record match the user's digital signature.
+	\item No anonymous transaction was submitted to the system.
+	\item For each record, the history of applied transactions is provided. 
+	\item Make sure that the items A and B are valid for all former transactions on a record.
+\end{itemize}
+%--------------------------------------------------------------------
+\section{Contributions}
+\section{Outline of the Thesis}
