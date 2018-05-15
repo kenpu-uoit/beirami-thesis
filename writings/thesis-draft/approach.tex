@@ -1,0 +1,132 @@
+\chapter{Approach}
+\label{chap:approach}
+
+\section{Overview}
+\section{Creating Temporal database}
+\subsection{Auditing}
+\subsection{Large query handling On the Audit Tables}
+In proposition 1, we showed that reconstructing a snapshot table and computing the latest version of a particular record at a timestamp of interest by using a temporal audit table is a linear time process with time complexity of approximately $\mathcal{O}(t)$. Therefore, in the presence of multiple and concurrent queries on the temporal database, such transactions are computationally expensive and inefficient.
+
+In this section we demonstrate a practical solution to handle large query workloads on the append-only temporal audit tables by materializing $n$ number of precomputed snapshots at optimal timestamps. Using precomputed materialized view is proven to be effective in [cite][cite] We also show that with varying query load, we can dynamically adjust snapshots in order to always have the optimal position on the timeline for the precomputed snapshots.
+
+\textbf{Definition. (Query Answering Using Snapshots)}: Let $Q^T(T)$ be the query on a temporal database $D^T$. We argue that precomputing $snapshot(r,t)$ using the method described in Definition 5, and use it as the materialized view to answer $Q(t)$, can decrease the computational cost.
+
+\textbf{proposition}: Suppose there is a materialized precomputed $snapshot(r,s)$ available on the timeline, then queries and subsequent $snapshot(r,t)$ could be calculated with complexity:
+$$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \in [s,
+t]\}|) \simeq \mathcal{O}(|s-t|)$$
+
+\subsection{Optimal Materialization of Snapshots}
+Let $T_q = \{q_1, q_2, \dots, q_n\}$ be the timestamps of $n$ queries, each 
+querying the database at $D^T(q_i)$. Our goal is to compute $m$ number of snapshots in optimal timestamps on the timeline to answer to $T_q$ at lowest possible cost. The cost function is defined as the total query answering cost given $m$ number of precomputed snapshots.
+
+\textbf{Cost of Query Answering}: In the presence of a single materialized precomputed snapshot at time $s$, the cost of answering the query $T_q$ is calculated as:
+$$\mathrm{cost}(T_q | s) = \sum_{q\in T_q} |q - s|$$
+Now if multiple snapshots at times $S=\{s_1, s_2, \dots, s_m\}$ were precomputed and materialized, then 
+$$\mathrm{cost}(T_q|S) = \sum_{q\in T_q} \min\{|q-s| : s\in S\}$$
+
+\textbf{Definition. (Optimal Snapshot placement)}: The goal is to precompute $m$ number of snapshots at optimal timestamps $S^*=\{s_1, s_2, \dots, s_m\}$ for materialization, such that 
+$$cost(T_q|S^*)= Arg min(\sum_{q\in T_q}\{|q - s|:s \in S^*\})$$
+
+We first solve the problem of optimal placement of a single snapshot for materialization.
+
+\textbf{Proposition}: The optimal position for a single snapshot on the timeline for materialization is $s^*(T_q)=median(T_q)$ which can be computed in $\mathcal{O}(|T_q|)$.
+
+
+\textbf{Proof}:
+At first, the placement of a single snapshot for two queries are discussed and then the argument is generalized for multiple queries:\\
+Assume that there are two queries $T_q=\{q_1,q_2\}$ on the timeline, such that, $q_1<q_2$. for the placement of a single snapshot $s_1 \in S^*$ on the timeline, there are several cases which needs to be considered:\\
+\textbf{Case 1}:
+$s_1 \in [q_1,q_2]$, hence $q_1\leq s_1\leq q_2$.
+in this case, the cost is:\\
+$$cost(T_q|s_1)=\sum_{i=1}^2|q_i-s_1| = (s_1-q_1+q_2-s_1)=(q_2-q_1)$$\\
+from above, it is concluded that the cost of running two queries $q_1$ and $q_2$ when snapshot is placed between them, is equal to the deviation between the two queries.\\
+\textbf{case 2}:
+$s_1 \notin [q_1,q_2]$ and $s_1 < q_1 < q_2$. for this case the cost could be calculated as follows:
+$$cost_T(T_q|s_1)=\sum_{i=1}^2|q_i-s_1| = (q_1-s_1+q_2-s_1)=(q_1+q_2-2s_1) $$$$>(q_1+q_2-2q_1)=(q_2-q_1)$$\\
+Therefore we conclude that if the snapshot $s_1$ is placed before queries $T_q$, the cost to perform both queries is greater than when the snapshot is placed between the two queries.\\
+\textbf{Case 3}:
+$s_1 \notin [q_1,q_2]$ and $q_1 < q_2 < s_1$.
+$$cost(T_q|s_1)=\sum_{i=1}^2|q_i-s_1| = (s_1-q_1+s_1-q_2)=(2s_1-q_1-q_2) $$$$>(2q_2-q_1-q_2)=(q_2-q_1)$$\\
+hence, if the snapshot $s_1$ is placed after the queries $T_q$, then the cost of performing those queries are greater than when the snapshot is placed between them.\\
+From case1, case2 and case3, we can conclude that the optimal place where we can place the single snapshot $s_1 \in S^*$ to perform two queries $T_q = \{q_1,q_2\}$, where $q_1<q_2$ is when $s_1 \in [q_1,q_2]$, meaning that $q_1 \leq s_1 \leq q_2$, where the cost is equal to $q_2-q_1$.\\
+
+Now, we generalize our conclusion from the cases that we evaluated, for the placement of a single snapshot in the presence of $n$ number of queries on the timeline: 
+
+Suppose that there is a set of queries $T_q=\{q_1,q_2,...,q_n\}$ performed on the timeline. To evaluate the most optimal position to place the single snapshot $s_1 \in S^*$ for materialization, we breakdown the set of queries into the set of nested intervals $[q_1,q_n],[q_2,q_{n-1}],...,[q_i,q_{n+1-i}]$ where $n$ is the number of queries on timeline and $i=0,1,2,...,c$ where $c=\frac{n+1}{2}$ when there are odd number of queries and $c=\frac{n}{2}$ when there are even number of queries present on the timeline.\\ 
+Based on the conclusion that we obtained from examining case 1, case 2 and case 3 earlier, for each interval, the cost of queries inside them is minimized if we choose our snapshot $s_1$ in a middle of the interval. Therefore if the snapshot is placed in a position which $s_1\in \{ [q_1,q_n] \wedge [q_2,q_{n-1}] \wedge ... \wedge [q_i,q_{n+1-i}] \}$ the overall cost for all queries is minimized. In other words, if the snapshot is placed in a position that is in the middle of all nested intervals, then the total sum of absolute deviation of the snapshot from all queries is minimized. The placement of snapshot $s_1$ in the median position of $T_q$, guarantees that the snapshot is placed in the middle of all nested query intervals, where the cost of queries is calculated as follows:
+$$cost(T_q|s_1)=\sum_{i=1}^n |q_i-s_1| = $$
+$$[(|q_1-s_1|+|q_n-s_1|)+(|q_2-s_1|+|q_{n-1}-s_1|)+...+|q_c-s_1|+|q_{n+1-c}-s_1|)]=$$
+$$[(s_1-q_1+q_n-s_1)+(s_1-q_2+q_{n-1}-s_1)+...+(s_1-q_c+q_{n+1-c}-s_1)]=$$
+$$[(q_n-q_1)+(q_{n-1}-q_2)+...+(q_{n+1-c}-q_c)]$$\\
+where parenthesis indicate the deviation from endpoints for one of nested intervals. In the case when there are odd number of queries present on the timeline, the innermost interval is $[q_{\frac{n+1}{2}},q_{\frac{n+1}{2}}]$ and the position of $q_{\frac{n+1}{2}}$ is the optimal position to place snapshot $s_1$. also when there are even number of queries the innermost interval is $[q_{\frac{n}{2}},q_{\frac{n}{2}+1}]$, therefore if we choose snapshot $s_1$'s position to be at $q_{\frac{n}{2}}\leq s_1\leq q_{\frac{n}{2}+1}$,it guarantees that the snapshot exists inside each of nested intervals, and hence the sum of absolute deviation is minimized. \\
+
+Based on the proposition x, the optimally placement of a single snapshot for multiple queries is a straight forward process, however in practice, the goal is to place an arbitrary $m$ number of snapshots in order to lower the overall cost queries. The constraint to choose $m$ is determined based on the available resources.
+
+\textbf{Recursive Algorithm} Suppose that there are $n$ number of queries $Q = \{q_1,q_2,...,q_n\}$ on the timeline. The objective is to optimally place snapshots $S=\{s_1,s_2,...,s_m\}$ for materialization on the timeline in a position that $cost(Q|S)$ is minimized. We denote $Q[i,j] = \{q_i,q_{i+1},...,q_{j-1},q_j\}$.
+
+\textbf{Proposition (Segmentation of queries)}: Given an ordered set of snapshot timestamps $S=\{s_1,s_2,...,s_m\}$, such that $s_i \leq s_{i+1}$, and $n$ number of queries $Q = \{q_1,q_2,...,q_n\}$, snapshots create $m$ number of non-overlapping segments on the queries $Q[1,i_1],Q[i_1+1,i_2],...,Q[i_{m-1},i_m]$ such that queries in the segment $Q[i_j,i_{j+1}]$ use $s_j$ to answer the queries in the optimal query answering strategy.   
+
+\textbf{Recursive formulation}: 
+Let $\mathrm{opt}(Q, m)$ be the optimal $m$-snapshot placements for the query
+workload $Q$.
+
+\textbf{Proposition. (Optimality of sub-problems)}
+Let $S^* = \mathrm{opt}(Q, m)$.  Let $\mathcal{Q}$ be the partition of segments created by $S^*$.  Then, the prefix of $S^*$ is also an optimal $m-1$ snapshot placement of the prefix of $\mathcal{Q}$. Formally, $$\mathrm{prefix}(S^*) = \mathrm{opt}(\cup\mathrm{prefix}(\mathcal{Q}), m-1)$$
+We can formulate a recursive definition of $\mathrm{opt}(Q, m)$ using
+Proposition~\ref{thm:subopt}.  The intuition is that we try out all possible
+{\em last} segment of $Q$, and pick the one with the lowest cost.
+
+The recursive definition of $\mathrm{opt}(Q, m)$ is given as:
+
+\begin{itemize}
+	\item Base case $ \mathrm{opt}(Q, 1) = \{\mathrm{median}(Q)\}$.
+	\item Induction on $m$:
+	$$i^* = \mathrm{argmin}\{\mathrm{cost}(\mathrm{opt}(Q[1,i], m-1)): i\in[1,
+	n]\}$$
+	$$
+	\mathrm{opt}(Q, m) = \mathrm{opt}(Q[1, i^*]) \cup \{\mathrm{median}(Q[i^*+1, n])
+	$$
+\end{itemize}
+
+\textbf{Proposition}
+The recursive formulation of $\mathrm{opt}(Q, m)$ requires $\mathcal{O}(2^{m})$.
+
+Fortunately, we are able implement $\mathrm{opt}(Q, m)$ in polynomial time as a
+dynamic programming problem.
+
+\subsection{Dynamic programming formulation}
+\label{sec:dynamic}
+
+We can build a table $\mathbf{OPT}$ as a two dimensional array
+indexed by $(i, k)$ where $i\in [1, n]$ and $k\in [1, m]$.  Each entry
+in the table $\mathbf{OPT}[i,k] = \mathrm{opt}(Q[1,i], k)$.
+We can compute $\mathbf{OPT}[i,k]$ in a bottom up fashion \cite{}.
+
+\vspace{1em}
+{\small
+	\begin{tabular}{|l|} \hline
+		computeOPT($Q$, $m$) = \\
+		\verb|| $n = |Q|$ \\
+		\verb|| $\mathbf{OPT}[i, 0] = \infty$ \\
+		\verb|| for $k = 1 \to m$ \\
+		\verb| | for $i = 1 \to n$ \\
+		\verb|  | $j^* = \underset{j\in[1,i]}{\mathrm{argmin}}
+		(\mathrm{cost}(\mathbf{OPT}[j,k-1]) + \mathrm{cost}(Q[j+1, n]))$ \\
+		\verb|  | $\mathbf{OPT}[i,k] = \mathbf{OPT}[j^*, k-1] \cup \{\mathrm{median}(Q[j+1], n)\}$ \\
+		\verb| | end for \\
+		\verb|| end for \\ \hline
+	\end{tabular}
+}
+\vspace{1em}
+
+\textbf{proposition} The complexity of computing all the entries of $\mathbf{OPT}$ is $\mathcal{O}(mn^2)$.
+
+
+\section{Applying cryptography}
+\subsection{Signing}
+\subsection{Signature validation}
+\section{Blockchain}
+\subsection{Creating Blocks}
+\subsection{Block Validation}
+\subsection{report fake data}
+
