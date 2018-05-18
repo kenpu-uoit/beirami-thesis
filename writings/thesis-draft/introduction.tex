@@ -1,4 +1,4 @@
-\chapter{Introduction}
+\chapter{Motivation and Problem Definition}
 \label{chap:introduction}
 
 \section{Motivation}
@@ -9,7 +9,6 @@ Traditionally, malicious activities on a system including fake data manipulation
 Therefore a system is needed to confirm the reliability of data based on verifiable evidences and not by relying on trust. This requires that the transactions on the database system to be transparent, meaning that for a record in a database throughout its life-cycle, it should be evident that its data has always been generated and modified by official sources. To achieve this, the system not only should be able to identify and report the data generated from unrecognized sources but also it should be able to show the proof of work done by privileged users. By providing proof of work, all users who interfered with data manipulation in a database system are identified and their activity information is reported. 
 
 In this thesis we have developed a system which ensures transparency of activities in a relational database system. Our developed system identifies and reports any malicious data manipulation by outsiders and provides proof of work by referring to the history of transactions for any records stored in the database. History of records are temper-proof and is protected by cryptographic techniques. We also developed a mechanism to handle large query workloads on the historical records. There were four main challenges that needed to be addressed while developing the system: Auditing the transactions on the database system, handling large query workloads on the audit tables, verifying the validness of query results and making the audit tables to be temper-proof. 
-\section{Related Work}
 \section{Problem Definition}
 %--------------------------------------------------------------------
 Given a relational database $D$, let $r$ to be the relational table in $D$. Denote attributes of $r$ as $attr(r)$. Assume $attr(r)= [id,m,u, sig(m|u)]$ where $id$ is the id of records in the database, $m = [col_1,...,col_n]$ is $n$ number of data columns in $r$, $u$ is the information of the user who submitted the record and $sig(m|u)$ is the digital signature of the record submitted by $u$. Also let $D^T$ be the temporal database in which the history of the records in $D$ is stored. we denote $r^T$ as the tables in $D^T$. Assume that the attributes of $r^T$ are $attr(r^T) = [id,m,u,sig(m|u),t,d]$ where t and d are the timestamps in which the record was created/updated or deleted respectively.\\
@@ -40,5 +39,5 @@ All in all, we argue that the data in a database is said to be transparent if:
 	\item The latest version of the records in the temporal audit table match the records in the normal table.
 \end{enumerate}
 %--------------------------------------------------------------------
-\section{Contributions}
+\section{Contributions of the Thesis}
 \section{Outline of the Thesis}
