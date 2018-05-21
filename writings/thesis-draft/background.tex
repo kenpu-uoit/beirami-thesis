@@ -1,7 +1,7 @@
 \chapter{Background Knowledge}
 \label{chap:background}
 
-This chapter introduces the tools and concepts that the proposed system is based on. In the first section the concepts and tools that were utilized from the Relational Database. Second section covers the basics of cryptography and hashing techniques and finally in the third section we introduce the basics of Blockchain technology.
+This chapter introduces the tools and concepts that the proposed system is based on. In the first section the concepts and tools that were utilized from relational database are defined. Second section introduces the basics of cryptography and hashing techniques and finally in the third section the basics of Blockchain technology is covered.
 
 %--------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ Let $ r_i = r_1, r_2, ... , r_n$, be n number of tables in the relational databa
 \end{center}
 The temporal database $D^T$ contains the entire history of the records ever existed in $D$.\\
 
-\textbf{Example 1.} Given the normal relational table $r_1$ (Table 2.1) and temporal table $r_1^T$ (Table 2.2), the $attr(r_1) = (id, item, value)$ and $attr(r_1^T) = (id, item, value, updated, deleted)$. The result of query $q_1 = \sigma_{id = 22}(r_1)$ is $\{(22,Pencil,7.50\$)\}$ and the result of same query on the temporal table $q_2 = \sigma_{id = 22}(r_1^T)$ is $\{(22,pencil,8.0\$,2018-03-21,NULL),(22,pencil,7.50\$,2018-03-30,NULL)\}$. Also the query $q_3 = \sigma_{id = 21}(r_1)$ results in $NULL$ however, the same query on the temporal table $q_4 = \sigma_{id = 21}(r_1^T)$ has the history of record with id = 21: $\{(21,ruler,3.25,2018-02-10,NULL),(21,ruler,3.25,NULL,2018-02-20)\}$.
+\textbf{Example 1.} Given the normal relational table $r_1$ (Table 2.1) and temporal table $r_1^T$ (Table 2.2), the $attr(r_1) = (id, item, value)$ and $attr(r_1^T)= (id, item, value, updated, deleted)$. The result of query $q_1 = \sigma_{id = 22}(r_1)$ is $\{(22,Pencil,7.50\$)\}$ and the result of same query on the temporal table $q_2 = \sigma_{id = 22}(r_1^T)$ is $\{(22,pencil,8.0\$,2018-03-21,NULL),(22,pencil,7.50\$,2018-03-30,NULL)\}$. Also the query $q_3 = \sigma_{id = 21}(r_1)$ results in $NULL$ however, the same query on the temporal table $q_4 = \sigma_{id = 21}(r_1^T)$ has the history of record with id = 21: $\{(21,ruler,3.25,2018-02-10,NULL),(21,ruler,3.25,NULL,2018-02-20)\}$.
 \begin{center}
 
 \begin{table}[t]
@@ -46,7 +46,7 @@ The temporal database $D^T$ contains the entire history of the records ever exis
 %--------------------------------------------------------------------
 
 \textbf{Definition. (Auditing Activities)}:
-
+\begin{info} \color{red} To be written... \end{info}
 
 %--------------------------------------------------------------------
 \textbf{Definition2. (Time domain)}: 
@@ -137,12 +137,12 @@ Note that, if $K_{pub}$ is known, and $E(K_{pub},m)$ is also known, in asymmetri
 
 Figure x shows the basic steps to send and receive messages between two parties in a secure way by utilizing asymmetric encryption technique. [Figure and description to be added]
 
-\textbf{Definition. (Hash function)}: Assume $m \in D$ to be the message with an arbitrary size chosen from domain $D$. $hash(m)\rightarrow sketch$ 
-is a hash function that maps the $m$ of any size to a fixed size string (normally 256 bits).
+\textbf{Definition. (Hash function)}: Assume $m \in \mathcal{A}$ to be the message with an arbitrary size chosen from domain $\mathcal{A}$. $hash(m)\rightarrow sketch$ 
+is a function that maps the $m$ of any size from domain $\mathcal{A}$ to a fixed size string (normally 256 bits) in a smaller domain $\mathcal{B}$.
 
 
 \textbf{Definition. (Digital Signature)}: Digital signature is used to ensure that the digitally transfered data has not altered while transferring. Also it verifies whether or not the transfered data was submitted by a recognized source. \\
-Let $m$ be the document which needs to be digitally signed and transfered. In order to digitally signing a document and verify a signature, following steps should be taken:
+Let $m$ be the document which needs to be digitally signed and transfered. Denote $h$ as hash function, $E$ as encryption algorithm and $D$ as decryption algorithm. In order to digitally signing a document and verify a signature, following steps should be taken:
 \begin{itemize}
 	\item \textbf{Step 1.} $S_r = h(m)$
 	\item \textbf{Step 2.} $c = E(S,K_{priv})$
@@ -164,5 +164,5 @@ Figure x depicts the steps that needs to be taken for digitally sign a document 
 \end{figure}
 
 \section{Blockchain}
-\textbf{hash pointers}\\
-\textbf{Components of a Block}\\
+\subsection{hash pointers}
+\subsection{Components of a Block}
