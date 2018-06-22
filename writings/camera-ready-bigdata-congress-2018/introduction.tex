@@ -1,0 +1,65 @@
+\section{Introduction}
+
+Recently, as part of the Big Data movement,
+information systems have been designed to archive every bit of 
+data over time \cite{tian2015prototype}. In contrast to traditional data
+warehouse databases, modern
+databases are aimed to store {\em every} update, insert and deletion as a timeline.
+This is known as {\em multi-version databases} \cite{sadoghi2014reducing}.
+
+\begin{example}
+    Consider the following table {\tt Products} which stores the product
+    information.
+
+    \vspace{1em}
+
+    \begin{center}
+        \small
+        \begin{tabular}{|c|c|c|c|} \hline
+            id & part-name & Manufacture & Price \\ \hline
+            0010 & Game Console &  Nintendo & \$399 \\ \hline
+            0011 & Keyboard &  Microsoft & \$89 \\ \hline
+            $\vdots$ & \vdots & \vdots & \vdots \\ \hline
+        \end{tabular}
+    \end{center}
+
+    \vspace{1em}
+
+    Suppose that there will be frequent updates to the products such as
+    addition of new products, renaming of existing products, and price
+    adjustments. The {\tt product} table can only store the eventual state of
+    the database {\em after} each updates, but not the updates themselves.  The
+    update transactions are quite valuable themselves.
+
+    We would like to augment the database schema to make {\tt product} into a
+    {\em temporal} table which we will call $\mathtt{product}^T$. The temporal
+    table is to store {\em all} modifications to the {\tt product} table.
+    Hence, it has the following schema:
+
+    \vspace{1em}
+    \begin{center}
+        \small
+        \begin{tabular}{|c|c|c|c|c|c|} \hline
+            :updates: & :deleted: & id & part-name & Manufacture & Price \\ \hline
+            00000001 & false & 0010 & Game Console & Nintendo & \$359 \\ \hline
+            00000002 & false & 0020 & Monitor & Samsung & \$159 \\ \hline
+            00000003 & false & 0010 & Game Console & Nintendo & \$399 \\ \hline
+            00000004 & true & 0011 & - & - & - \\ \hline
+            $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ &  $\vdots$ \\ \hline
+        \end{tabular}
+    \end{center}
+    \vspace{1em}
+
+    It shows four specific updates done to the {\tt product} table:
+
+    \begin{itemize}
+        \item The {\em game console} is discounted to a new price \$359.
+        \item A new product {\em Monitor} is added to the table.
+        \item The {\em game console} is no longer on sale, so its price is back
+            to \$399.
+        \item The keyboard (product ID 0011) is discontinued, so it's deleted
+            from the table.
+    \end{itemize}
+
+\end{example}
+
