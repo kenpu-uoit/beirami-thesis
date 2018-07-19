@@ -1,23 +1,20 @@
 \chapter{Motivation and Problem Definition}
 
-Motivation
+\section{Motivation}
 
+In data science and engineering, historical data is widely analysed for a lot of purposes such as making data-driven decisions \cite{rose2016datascience}. Historical data could be financial reports, project data, emails, audit logs or any similar documents which contain past occurrences in an organization. Although keeping some historical data could seem burdensome and impractical due to the size they may get into \cite{crosby2009tamper-evident}, but current big data technologies such as cloud storages has made it possible to store these information in an easier and more affordable way than before \cite{talia2015dataanalysis}. A few possible examples of using the historical data could be to evaluate the performance of an enterprise and make relative decisions to improve the performance \cite{ghasemaghaei2015impactsOB}, to analyze user experiences with a product in order to explore the ways to improve the service \cite{klein2013analysis} and to be used for forensic purposes \cite{wagner2018detect}. Regardless of the use of historical data, what matters the most is the trustworthiness of such data \cite{jain2013trustworthy} as they may be used for very sensitive purposes.\\
+With the ever-increasing complexity in cyber security attacks, guaranteeing the trustworthiness of data is a very difficult task to do. Many organizations store their highly confidential data in relational databases but Relational Database Management Systems’ (RDBMSes) preventive or detection mechanisms is proven to be not always capable of securing data from being compromised \cite{wanger2017carving}. For a better understanding of the complexity of identifying attacks, consider a scenario in which a database super-user who acts as a root can perform a lot of administrative tasks on a relational database. For the sake of more profit, the super-user decides to alter and increase the number of hours he worked in the past month in the database. Since the super-users can bypass all the security requirements, he could alter the records without any red-flags showing this action as a malicious attempt on the database. Such attacks results in the maliciously altered data that are extremely hard to identify because there are no evidences to contradict their legitimacy.\\
+Since preventive methods are not always effective in preventing malicious activities in a relational database \cite{Ammann2002recovery}, a lot of cyber-security professionals [cite] as well as international and domestic computer-security standards [cite] recommended to audit the system and keep the transactions in a log file for forensic purposes. A simple example of audit logs is in a financial institution where every withdrawal or deposit of funds by users are recorded in a log file which later on if a user’s balance didn’t match with the spent or credited funds, log files could be checked to look for the possible mismatches. In a relational database, an audit log file could be seen as a historical data document which contains the executive transactions performed, the timestamp of the transaction and the identity of the user who performed the transaction on the relational tables. In practice, not only these log files are useful assets that could be analyzed to detect maliciously manipulated data by outsider adversaries, but they can also give a valuable insight into the activities of the privileged users on a relational database system [cite].\\
+Securing the audit log files themselves from being tampered is also difficult [cite] as they are also not immune from being altered. For example in the super-user’s attack example, it is possible that the user has the privilege to alter the audit log records in order to remove his footprint from the log table. Needless to say that the result of log file analysis is reliable until it is assured that the log records were submitted legitimately and were not tampered by any users, privileged or unprivileged, intentionally or unintentionally [cite]. Therefore there is a need of a system which assumes that such attacks are unpreventable but guarantees that any attempt to tamper normal relational table as well as the log tables is evident and investigatable.\\
+In this project, our objective was to design an auditing mechanism that is implemented on top of a relational database system that stores historical records in a transparent way. By doing that the system could detect malicious data manipulation and testify the trustworthiness of the stored historical data as well as authenticity of the records stored in the normal relational tables by analyzing the evidences provided. To achieve these objectives as well as creating a fully functional system, there were the following functional requirements that needed to be addressed.
 \begin{itemize}
-    \item Motivate temporal relational databases
-        \begin{itemize}
-            \item Value of the history of data
-            \item Audits
-            \item Logs
-        \end{itemize}
-    \item Functional requirements
-        \begin{itemize}
-            \item Fast append
-            \item Fast query along the entire timeline
-            \item Immutable
-            \item Identifying malicious attacks
-        \end{itemize}
-\end{itemize}
+  \item \textbf{\textit{Immutability:}} To do so, all the transactions in a database system needs to be transparent so that any attempt to maliciously modify records in a normal relational table as well as tampering the historical records are evident.
+  \item \textbf{\textit{Fast querying:}} The relational database logs require a linear storage and time to store and fetch historical data of the records [cite]. That means that as relational tables grow in size, querying for the historical records in those tables become more expensive. In order to be functional, the proposed system needs to query for the historical records in an optimal and less expensive manner.\
+  \item \textbf{\textit{Fast appending:}} The system needs to audit and append all executive transactions to the log file in a transparent way. In a system with thousands of transactions in a time constant, the system needs to attach the proof of work to the audited transactions, and append it to the log files computationally cheap.
+  \item \textbf{\textit{Identifying malicious activities:}} Given a historical data table, the system should be able to analyze the provided evidences and identifying any data manipulation both on a normal table and the historical data table.
+\end{itemize} 
+We believe that our proposed system is powerful in the sense that it removes the user-based trust and testifies the credibility or invalidity of the records by analyzing verifiable evidences, ensures that privilege misuses such as altering the auditing mechanism is evident and finally it eliminates the data privacy concerns raised by utilizing third-party auditing tools. Our system utilizes many native to RDBMS tools such as audit loggings and cryptographic techniques, therefore it could be supported by all RDBMSes available today with least additional requirements.
 
-Problem Definition
+\section{Problem Definition}
 
 {\it This needs to be mathematically written using formal logic.}
