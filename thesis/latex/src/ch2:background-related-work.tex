@@ -134,14 +134,21 @@ and
 \end{center}
 Note that, if $K_{pub}$ is known, and $E(K_{pub},m)$ is also known, in asymmetric encryption method, it is impossible to get $m$ without $K_{priv}$.
 
-Figure \ref{fig:DigitalSignature} shows the basic steps to send and receive messages between two parties in a secure way by utilizing asymmetric encryption technique. [Figure and description to be added]
+Figure \ref{fig:AssymmetricEncryption} shows the basic steps to send and receive messages between two parties in a secure way by utilizing asymmetric encryption technique. In this scenario, the sender has access to the recipient's public key only. The sender encrypts the document which is to be transferred by using the recipients public key. In asymmetric technique, the only way to decrypt the document is to use the recipient's private key which the is only known to the recipient. This is a powerful technique to ensure that the adversaries cannot read the document in the middle of the connection.
+
+\begin{figure}
+	\label{fig:AssymmetricEncryption}
+	\centering
+	\includegraphics[width=\textwidth]{figs/asymmetricEncryption.pdf}
+	\caption{Asymmetric Encryption Technique.}
+\end{figure}
 
 \textbf{Definition. (Hash function)}: Assume $m \in \mathcal{A}$ to be the message with an arbitrary size chosen from domain $\mathcal{A}$. $hash(m)\rightarrow sketch$ 
 is a function that maps the $m$ of any size from domain $\mathcal{A}$ to a fixed size string (normally 256 bits) in a smaller domain $\mathcal{B}$.
 
 
 \textbf{Definition. (Digital Signature)}: Digital signature is used to ensure that the digitally transfered data has not altered while transferring. Also it verifies whether or not the transfered data was submitted by a recognized source. \\
-Let $m$ be the document which needs to be digitally signed and transfered. Denote $h$ as hash function, $E$ as encryption algorithm and $D$ as decryption algorithm. In order to digitally signing a document and verify a signature, following steps should be taken:
+Let $m$ be the document which needs to be digitally signed and transfered. Denote $h$ as hash function, $E$ as encryption algorithm and $D$ as decryption algorithm. In order to digitally sign a document and verify a signature, following steps should be taken:
 \begin{itemize}
 	\item \textbf{Step 1.} $S_r = h(m)$
 	\item \textbf{Step 2.} $c = E(S,K_{priv})$
@@ -154,7 +161,7 @@ In order to verify:
 	\item \textbf{Step 3.} $S_r = D(c,K_{priv})$ is obtained
 	\item \textbf{Step 4.} $m$ is valid if $S_t = S_r$ and invalid if $S_t \neq S_r$
 \end{itemize}
-Figure x depicts the steps that needs to be taken for digitally sign a document and verifying a digital signature.
+Figure \ref{fig:DigitalSignature} depicts the steps that needs to be taken for digitally sign a document and verifying a digital signature.
 \begin{figure}
 	\label{fig:DigitalSignature}
 	\centering
