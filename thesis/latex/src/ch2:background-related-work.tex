@@ -5,7 +5,7 @@
 In this chapter, the concepts and definitions which are needed to implement the proposed system are identified. In the first section, the tools and concepts used from relational database management system and in the second section, the concepts in Blockchain technology are introduced. third section is also dedicated to discuss about the related work and the researches which have been done in this field and compare it with our proposed system.
 
 \section{Temporal Databases}
-Temporal database is any type of database that requires some aspect of time \cite {elmasri2010fundamentalsofdatabase} which in the proposed system, it is a way to store and manage historical records of the transactions.
+Temporal database is any type of database that requires some aspect of time \cite {elmasri2010fundamentalsofdatabase}. Since historical records have a timestamp which indicates the time of a transaction occurrence, in the proposed system, temporal database is a way to store and manage historical records of the transactions.
 
 %----------------------------------definition Temporal Database-----------------------------------------
 
@@ -18,7 +18,7 @@ Let $ r_i = \{r_1, r_2, ... , r_n \}$, be $n$ number of tables in the relational
 
 The temporal database $D^T$ contains the entire history of the records ever existed in $D$.
 
-\textbf{Example 1.} Given the normal relational table $r_1$ (Table 2.1) and temporal table $r_1^T$ (Table 2.2), the $attr(r_1) = (id, item, value)$ and $attr(r_1^T)= (id, item, value, updated, deleted)$. The result of query $q_1 = \sigma_{id = 22}(r_1)$ is $\{(22,Pencil,7.50\$)\}$ and the result of same query on the temporal table $q_2 = \sigma_{id = 22}(r_1^T)$ is $\{(22,pencil,8.0\$,2018-03-21,NULL),(22,pencil,7.50\$,2018-03-30,NULL)\}$. Also the query $q_3 = \sigma_{id = 21}(r_1)$ results in $NULL$ however, the same query on the temporal table $q_4 = \sigma_{id = 21}(r_1^T)$ has the history of record with id = 21: $\{(21,ruler,3.25,2018-02-10,NULL),(21,ruler,3.25,NULL,2018-02-20)\}$.
+\textbf{Example 1.} Given a normal relational table $r_1$ (Table 2.1) and a temporal table $r_1^T$ (Table 2.2), the $attr(r_1) = (id, item, value)$ and $attr(r_1^T)= (id, item, value, updated, deleted)$. The result of query $q_1 = \sigma_{id = 22}(r_1)$ is $\{(22,Pencil,7.50\$)\}$ and the result of same query on the temporal table $q_2 = \sigma_{id = 22}(r_1^T)$ is $\{(22,pencil,8.0\$,2018-03-21,NULL),(22,pencil,7.50\$,2018-03-30,NULL)\}$. Also the query $q_3 = \sigma_{id = 21}(r_1)$ results in $NULL$ however, the same query on the temporal table $q_4 = \sigma_{id = 21}(r_1^T)$ has the history of record with id = 21: $\{(21,ruler,3.25,2018-02-10,NULL),(21,ruler,3.25,NULL,2018-02-20)\}$.
 \begin{center}
 
 \begin{table}[t]
@@ -108,14 +108,18 @@ removing tuples that have been deleted.
 
 
 \section{Blockchain}
+In a big picture, Blockchain technology is a distributed trusted public ledger that is tamper-proof and it is open to anyone to inspect \cite{OECD2016Science}. Although today there are a wide range of applications that are using Blockchain \cite{dhillon2017blockchain}, but ‌Blockchain is widely known for its application in cryptocurrencies such as Bitcoin \cite{nakamoto2008bitcoin}. As a matter of fact, Blockchain is the secret why cryptocurrencies are secure, work in a decentralized network, do not need any central verification system and the users in the system are anonymous \cite{halaburda2016beyond}.
+While there are many functionalities within a Blockchain system, such as user anonymity, being public and no need for a central verification system, in this project, for the sake of confidentiality and transparency, not all functionalities within the Blockchain is employed. To understand how Blockchain has been utilized in the proposed system, there are some definitions which needs to be discussed about.\\
+%---------------------------------- Begin of Definition cryptography --------------------------
 \textbf{Definition.(Cryptography)}:
 Cryptography is a way of secure communication between parties in a network while adversaries might also be present. Using Cryptography, messages sent or received are encrypted so that the adversaries cannot read the normal form of the message. This communication is established through various steps such as cryptographic key assignment, encryption and decryption of messages or digitally signing a message and verifying the digital signatures.
-
+%---------------------------------- End of Definition cryptography ----------------------------
+%----------------------------- Begin of Definition cryptographic keys -------------------------
 
 \textbf{Definition.(Cryptographic Keys)}: Let $u$ be the authenticated user who is using database $D$. By the creation of the profile of $u$ in the system, a set of strings $<K_{priv},K_{pub}> \in \mathbf{N}^+$ is generated and assigned to the user where $K_{pub}$ is the public key that is accessible to everyone on the system, and $K_{priv}$ is the private key that is known only to $u$. These keys are used to encrypt/decrypt messages which is transmitted between the users.
-
-
-\textbf{Definition.(Assymetric Encryption)}: Let $E$ be the encryption algorithm, $D$ be the decryption algorithm, m be the message which needs to be encrypted and c be the encrypted message. Given the cryptographic keys $<K_{pub}, K_{priv}>$, An encryption technique is said to be asymmetric if:
+%----------------------------- End of Definition cryptographic keys -------------------------
+%----------------------------- Begin of Definition Assymetric Encryption --------------------
+\textbf{Definition.(Assymetric Encryption)}: Let $E$ be the encryption algorithm, $D$ be the decryption algorithm, $m$ be the message which needs to be encrypted and $c$ be the encrypted message. Given the cryptographic keys $<K_{pub}, K_{priv}>$, An encryption technique is said to be asymmetric if:
 
 \begin{center}
 	$c = E(K_{pub},m)$ and  $m = D(K_{priv},c)$
@@ -142,10 +146,12 @@ Figure \ref{fig:AssymmetricEncryption} shows the basic steps to send and receive
 	\includegraphics[width=\textwidth]{figs/asymmetricEncryption.pdf}
 	\caption{Asymmetric Encryption Technique.}
 \end{figure}
-
+%----------------------------- End of Definition Assymetric Encryption --------------------
+%----------------------------- Begin of Definition Hash function --------------------------
 \textbf{Definition. (Hash function)}: Assume $m \in \mathcal{A}$ to be the message with an arbitrary size chosen from domain $\mathcal{A}$. $hash(m)\rightarrow sketch$ 
 is a function that maps the $m$ of any size from domain $\mathcal{A}$ to a fixed size string (normally 256 bits) in a smaller domain $\mathcal{B}$.
-
+%----------------------------- End of Definition Hash function ----------------------------
+%----------------------------- Begin of Definition Digital Signature ----------------------
 
 \textbf{Definition. (Digital Signature)}: Digital signature is used to ensure that the digitally transfered data has not altered while transferring. Also it verifies whether or not the transfered data was submitted by a recognized source. \\
 Let $m$ be the document which needs to be digitally signed and transfered. Denote $h$ as hash function, $E$ as encryption algorithm and $D$ as decryption algorithm. In order to digitally sign a document and verify a signature, following steps should be taken:
@@ -161,11 +167,35 @@ In order to verify:
 	\item \textbf{Step 3.} $S_r = D(c,K_{priv})$ is obtained
 	\item \textbf{Step 4.} $m$ is valid if $S_t = S_r$ and invalid if $S_t \neq S_r$
 \end{itemize}
-Figure \ref{fig:DigitalSignature} depicts the steps that needs to be taken for digitally sign a document and verifying a digital signature.
+Figure \ref{fig:DigitalSignature} depicts the steps that needs to be taken for digitally sign a document and verifying a digital signature.\\
 \begin{figure}
 	\label{fig:DigitalSignature}
 	\centering
 	\includegraphics[width=\textwidth]{figs/digital_signature.pdf}
 	\caption{Digital Signature Creation and Verification.}
 \end{figure}
-%---------------------------------- Defintion  ----------------------------------
+%----------------------------- End of Definition Digital Signature ----------------------------
+%------------------------------------- Defintion Blockchain -----------------------------------
+\textbf{Definition. (Blockchain for This Project)}: Let $rec_i$ be the records stored in $r_i^T$. We denot $Sign$ as $S_r(attr(r_i^T$ for $rec_i))$ which is digital signature of attributes of $rec_i$. We can create a blockchain of historical records by storing the signature of previous record as an attribute of current record. The idea of the Blockchain has been depicted in figure \ref{fig:Blockchain}.
+
+\begin{figure}
+	\label{fig:Blockchain}
+	\centering
+	\includegraphics[width=\textwidth]{figs/blockchain.pdf}
+	\caption{Idea of the Blockchain for the proposed system.}
+\end{figure}
+
+\section {Related Work}
+There has been a wide range of studies on ensuring the trustworthiness of records in a database from different perspectives. These studies ranges from establishing trust between nodes in a real-time distributed systems \cite{khayat2017trust} to secret sharing schemes in cloud databases \cite{dutta2013privacy} and utilizing logfiles for forensic purposes \cite{sinha2014continuous}. In this project, the assumption is that the preventive models are not able to stop the advarsaries from manipulating the data of a relational database system, therefore a tamper-evident log table has been offered to evaluate whether or not the data has been altered. 
+
+Database audit logs contain valuable information such as any insertion, deletion and modification of the records performed in a database along with the timestamp of the performed tasks. The United States department of defense in its “Trusted Computer System Evaluation Criteria” document and under requirement 4 pointed out the importance of auditing the transactions in a computer system in a secure and efficient manner \cite{USDoD1985}. In this document also protecting the audit logs from modification or destruction has been stressed out. ”ISO/IEC 27001” standard published by International Organization for Standardization and International Electrotechnical Commission \cite{ISOIEC27001}, “Guide to Computer Security Log Management” standard published by United States National Institute of Standard and Technology \cite{NIST2006}, eHealth Ontario HER standard \cite{ehealth3542}, European Commission Information System Security Policy C(2006) 3602 \cite{EC2006} and the University of British Columbia's information Security Standard {\#}17 \cite{UBC2014} are a few of many other international or domestic regulations that have suggested guidelines to secure computer systems by using historical records such as audit logs.
+
+Analyzing audit logs for forensic purposes has been the topic of research by many scientists however, since the trustworthiness of the results from log table analysis has a direct relationship with the authenticity of the records of the log file, a lot of studies have been carried out to make log tables tamper-proof. Haber {\it et al.}\cite{haber1991how} proposed a basic methodology by utilizing timestamping, hashing and digitally signing techniques in order to make unmodifiable historical records for digital documents. Peha in \cite{peha1999electronic}, offered a mthod to detect log tampering by one way hashing and employing multiple trusted notaries to keep track of all transactions. The author argued that if any notary decided to falsify the transaction, the attempt is discovered by other notaries. Snodgrass {\it et al.} \cite{snodgrass2004Tamper} also offered one way hashing mechanism and employed trusted notaries, however in order to enhance the security of the method offered by Peha, they offered to hash the records with a timestamp of previous transaction modification. Schneier {\it et al.}\cite{schneier1998cryptoraphic} offered a cryptographic-based mechanism to make the log files nearly impossible for the attacker to alter. The authors claimed that by utilizing their approach, it is guaranteed that the outsiders cannot modify the log files.
+
+Although the afformentioned researches might have promising results to protect the historical records from being compromised by an outsider, but they have one thing in common which is the role of an insider to carry out malicious attacks is forgotten. Also hiring third-party software/hardware may bring up a lot of privacy concerns. Therefore, unlike Peha \cite{peha1999electronic} and Snodgrass {\it et al.} \cite{snodgrass2004Tamper}, our proposed system doesnot require a third-party notary to attest the authenticity of the transactions and unlike Schneier {\it et al.} \cite{schneier1998cryptoraphic}, our proposed system doesnot put trust on any user on the system.
+
+The role of privileged users in acting maliciousely in a database has been discussed by many researchers \cite{crosby2009tamper-evident} \cite{wagner2018detect}. Liu {\it et al.} offered a network-based auditing mechansim which also keep track of privileged users' activity and performs audit analysis through event correlation. Wagner {\it et al.} \cite{wanger2017carving} proposed a mechanism to detect database file tampering by looking for inconsistencies in the database's storage. The authors argued that the databases follow patterns in storage which even the privilaged users have no access to. Therefore, if a record is deleted maliciousely in the log file, the inconsistency in the storage is evident for a period of time. Unlike mentioned propsed methods, our system uses inherent to RDBMS tools and doesnot require a network-level-auditing mechansim or having access to the server's storages, therefore it could be easily implemented on remote servers and relational databases on cloud storages. Also, our proposed system not only discovers maliciousely deletion of the records but also identifies any malicious modification without any time constraints.
+
+For the sake of gathering verifiable evidences, in our proposed system, any changes to the database regardless of the users' access privilages needs to be tracked. This action needs to be done by utilizing inherent to DBMS tools. Fabbri {\it et al.} \cite{fabbri2013select} discussed about SELECT triggers, required database spicifications, efficient implementation techniques and their role for data auditing. Hauger {\it et al.}\cite{hauger2014information} also discussed about using the triggers in the database for forensic purposes. Triggers are supported by RDBMS and they are good candiates to be used in the proposed system but it is naive to assume that a simple trigger is secure enough to be used for forensic purposes.
+
+To make the audit logs secure enough and tamper-evident, the proposed system utilizes Blockchain Technology for this purpose. Blockchain is widely known as the backbone of cryptocurrencies such as Bitcoin. \cite{nakamoto2008bitcoin}
