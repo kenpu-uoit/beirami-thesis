@@ -60,6 +60,8 @@ Since $r^T$ could be seen as a timeline, the records which needs to be checked c
 		24 & Console & 230.0  & 2018-04-05 & - \\ \hline
 	\end{tabular}
 \end{table}
+\end{center}
+\begin{center}
 \begin{table}
 	\centering
 	\caption{Normal Relational Table $r_1$ at t = 2018-04-01}
@@ -88,11 +90,9 @@ Using precomputed materialized view has been proven to be effective \cite{sohrab
 \textbf{Proposition} suppose we have a materialized snapshot $snapshot(r,s)$. Then $snapshot(r,t)$ can be computed with complexity:
 $$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \in [s,t]\}|) \simeq \mathcal{O}(|s-t|)$$
 
-\textbf{Example.} Given a temporal relational table $r_1^T$ (Table \ref{table:temporal_table_3}) and a precomputed snapshot table $s_1$, we are interested to create the snapshot of table $r_1$ at a timestamp of $t = 2018-03-15$. snapshot $s_1$ is the instance of $r_1$ at $t= 2018-03-11$Table \ref{table:snapshot} shows the records which needs to be evaluated without snapshot materialization and Table \ref{} shows the records which are needed to be evaluated with snapshot materialization.
-
+\textbf{Example.} Given a temporal relational table $r_1^T$ (Table \ref{table:temporal_table_3}) and a precomputed snapshot table $s_1$ at timestamp $t = 2018-03-11$(Table \ref{table:snapshot_s1}), we are interested to create a snapshot $s_2$ which is the instance of table $r_1$ at the timestamp of $t = 2018-03-15$. In order to compute snapshot $s_2$, Table \ref{table:transactions_nonmaterialized} shows the transactions which needs to be evaluated without using snapshot $s_1$ and Table \ref{table:transactions_nonmaterialized} is when $s_1$ is used for materialization. This example clearly shows that when creating snapshot $s_2$ (Table \ref{table:snapshot_s2}), less transactions need to be evaluated when $s_1$ is used for materialization.
 
 \begin{center}
-
 \begin{table}
 	\centering
 	\caption{Temporal Table $r_1^T$}
@@ -113,7 +113,7 @@ $$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \in [s,t]\}|) \s
 		4 & Pencil & 3.25  & 2018-03-04  &  - \\
 		1 & Paper & 0.35  &  - &  2018-03-04 \\
 		7 & Ruler & 4.0  & 2018-03-06  &  - \\
-		2 & Scissors & 8.5  & 2018-03-07  &  - \\
+		2 & Scissors & 8.50  & 2018-03-07  &  - \\
 		7 & Ruler & 4.50  & 2018-03-08  &  -\\
 		5 & Batteries & 11.0  & 2018-03-10 & - \\
 		3 & Folder & 1.75  & - & 2018-03-11 \\
@@ -124,13 +124,12 @@ $$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \in [s,t]\}|) \s
 \end{table}
 \begin{table}
 	\centering
-	\caption{Snapshot of $r_1$ at t = 2018-04-01}
-	\label{table:snapshot}
+	\caption{Snapshot $s_1$ at $t = 2018-03-11$}
+	\label{table:snapshot_s1}
 	\begin{tabular}{p{4cm}p{4cm}p{4cm}}
 		\hline
 		id & item  & value  \\ \hline
-		1 & Paper & 0.35 \\
-		2 & Scissors & 8.25   \\ 
+		2 & Scissors & 8.5   \\ 
 		4 & Pencil & 3.25   \\ 
 		5 & Batteries & 11.0   \\ 
 		6 & Notebook & 7.0 \\ 
@@ -139,7 +138,72 @@ $$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \in [s,t]\}|) \s
 \end{table}
 \end{center}
 
+\begin{center}
+\begin{table}
+	\centering
+	\caption{the transactions to compute snapshot $s_2$ at $t = 2018-03-15$ without using snapshot $s_1$ for materialization}
+	\label{table:transactions_nonmaterialized}
+	\begin{tabular}{p{1cm}p{2cm}p{2cm}p{3cm}p{2cm}p{2cm}}
+		\hline
+		id & item & Transaction  &timestamp & value  &query on\\ \hline
+		1 & Paper & cretaed & 2018-02-10 & 0.25 & $r_1^T$ \\
+		  & Paper & updated & 2018-02-13 & 0.30 & $r_1^T$ \\
+		  & Paper & updated & 2018-02-25 & 0.35 & $r_1^T$ \\
+		  & Paper & deleted & 2018-03-04 & - & $r_1^T$ \\ \hline
+		2 & Scissors & cretaed & 2018-02-12 & 8.0 & $r_1^T$ \\
+		  & Scissors & updated & 2018-03-07 & 8.50 & $r_1^T$ \\ \hline
+		3 & Folder & cretaed & 2018-02-12 & 1.50 & $r_1^T$ \\
+		  & Folder & updated & 2018-02-21 & 1.75 & $r_1^T$ \\
+		  & Folder & deleted & 2018-03-11 & - & $r_1^T$ \\ \hline
+	  	4 & Pencil & cretaed & 2018-02-16 & 3.0 & $r_1^T$ \\
+		  & Pencil & updated & 2018-03-04 & 3.25 & $r_1^T$ \\ \hline
+  	  	5 & Batteries & cretaed & 2018-02-23 & 8.0 & $r_1^T$ \\
+		  & Batteries & updated & 2018-03-01 & 9.0 & $r_1^T$ \\
+		  & Batteries & updated & 2018-03-10 & 11.0 & $r_1^T$ \\ \hline
+		6 & Notebook & cretaed & 2018-03-01 & 7.0 & $r_1^T$ \\ 
+		  & Notebook & updated & 2018-03-15 & 7.50 & $r_1^T$ \\ \hline
+		7 & Ruler & cretaed & 2018-03-06 & 4.0 & $r_1^T$ \\
+		  & Ruler & updated & 2018-03-08 & 4.50 & $r_1^T$ \\
+		  & Ruler & deleted & 2018-03-12 & - & $r_1^T$ \\ \hline
 
+	\end{tabular}
+\end{table}
+\end{center}
+
+\begin{center}
+\begin{table}
+	\centering
+	\caption{the transactions to compute snapshot $s_2$ at $t = 2018-03-15$ using snapshot $s_1$ for materialization}
+	\label{table:transactions_materialized}
+	\begin{tabular}{p{1cm}p{2cm}p{2cm}p{3cm}p{2cm}p{2cm}}
+		\hline
+		id & item & Transaction  &timestamp & value  &query on\\ \hline
+		2 & Scissors & - & - & 8.50 & $s_1$ \\ \hline
+	  	4 & Pencil & - & - & 3.25 & $s_1$ \\ \hline
+  	  	5 & Batteries & - & - & 11.0 & $s_1$ \\ \hline
+		6 & Notebook & - & - & 7.0 & $s_1$ \\ 
+		  & Notebook & updated & 2018-03-15 & 7.50 & $r_1^T$ \\ \hline
+		7 & Ruler & - & - & 4.50 & $s_1$ \\
+		  & Ruler & deleted & 2018-03-12 & - & $r_1^T$ \\ \hline
+	\end{tabular}
+\end{table}
+\end{center}
+
+\begin{center}
+\begin{table}
+	\centering
+	\caption{Snapshot $s_2$ at $t = 2018-03-15$}
+	\label{table:snapshot_s2}
+	\begin{tabular}{p{4cm}p{4cm}p{4cm}}
+		\hline
+		id & item  & value  \\ \hline
+		2 & Scissors & 8.50   \\ 
+		4 & Pencil & 3.25   \\ 
+		5 & Batteries & 11.0   \\ 
+		6 & Notebook & 7.50 \\ \hline
+	\end{tabular}
+\end{table}
+\end{center}
 
 \section{Optimal single snapshot placement}
 
