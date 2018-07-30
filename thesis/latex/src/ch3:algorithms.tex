@@ -224,7 +224,14 @@ in the subsequent sections, we present the algorithms to address the problem of 
 \section{Optimal single snapshot placement}
 \textbf{Proposition} Let $T_q^* = {q_1,q_2, \dots , q_n}$ be $n$ number of queries performed on the temporal database. $T_q^*$ gives us a valuable insight into the query patterns on the temporal database, that could be used to find optimal position of snapshots.
 
-\textbf{Proposition}: Given the performed queries $T_q^*$, the optimal position for a single snapshot on the timeline for materialization is $s^*(T_q^*)=median(T_q^*)$ that can be computed in $\mathcal{O}(|T_q^*|)$.
+\textbf{Proposition}: Given the performed queries $T_q^*$, the optimal position for a single snapshot on the timeline for materialization is $s^*(T_q^*)=median(T_q^*)$ that can be computed in $\mathcal{O}(|T_q^*|)$. Figure \ref{fig:optimal_materialization} shows the notion of placing snapshot in the median of queries for materialization.
+
+\begin{figure}
+	\label{fig:optimal_materialization}
+	\centering
+	\includegraphics[width=\textwidth]{figs/optimal_materialization.pdf}
+	\caption{Placing a single snapshot in the median of queries guarantees the optimal cost of query answering.}
+\end{figure}
 
 \textbf{\emph{Proof of the proposition}}:
 At first, the placement of a single snapshot for two queries are discussed and then the argument is generalized for multiple queries:\\
@@ -255,9 +262,16 @@ $$[(q_n-q_1)+(q_{n-1}-q_2)+...+(q_{n+1-c}-q_c)]$$\\
 where parenthesis indicate the deviation from endpoints for one of nested intervals. In the case when there are odd number of queries performed on the timeline, the innermost interval is $[q_{\frac{n+1}{2}},q_{\frac{n+1}{2}}]$ and the position of $q_{\frac{n+1}{2}}$ is the optimal position to place snapshot $s^*$. also when there are even number of queries the innermost interval is $[q_{\frac{n}{2}},q_{\frac{n}{2}+1}]$, therefore if we choose snapshot $s^*$'s position to be at $q_{\frac{n}{2}}\leq s^*\leq q_{\frac{n}{2}+1}$,it guarantees that the snapshot exists inside each of nested intervals, and hence the sum of absolute deviation is minimized. \\
 
 \section{Optimal multiple snapshot placement}
-In the presence of thousands of queries on a temporal database with millions of records, having a single snapshot reduces the cost of query answering but it is still not enough. Therefore, to reduce the overall cost of query answring, optimal timestamps should be computed on the timeline of the temporal database to place snapshots for materialization.
+In the presence of thousands of queries on a temporal database with millions of records, having a single snapshot reduces the cost of query answering but it is still not enough. Therefore, to reduce the overall cost of query answring, optimal timestamps should be computed on the timeline of the temporal database to place snapshots for materialization. In the following section, different approaches to compute the optimal positions on the timeline are discussed.
 
-\textbf{\emph{Proposition (Segmentation of queries)}}: Given an ordered set of snapshot timestamps $S=\{s_1,s_2,...,s_m:s_i \in \mathcal{T}\}$, such that $s_i \leq s_{i+1}$, and $n$ number of queries $Q = \{q_1,q_2,...,q_n: q_i \in \mathcal{T}\}$, snapshots create $m$ number of non-overlapping segments on the queries $Q[1,i_1],Q[i_1+1,i_2],...,Q[i_{m-1},i_m]$ such that queries in the segment $Q[i_j,i_{j+1}]$ use $s_j$ to answer the queries in the optimal query answering strategy.
+\textbf{\emph{Proposition (Segmentation of queries)}}: Given an ordered set of snapshot timestamps $S=\{s_1,s_2,...,s_m:s_i \in \mathcal{T}\}$, such that $s_i \leq s_{i+1}$, and $n$ number of queries $Q = \{q_1,q_2,...,q_n: q_i \in \mathcal{T}\}$, snapshots create $m$ number of non-overlapping segments on the queries $Q[1,i_1],Q[i_1+1,i_2],...,Q[i_{m-1},i_m]$ such that queries in the segment $Q[i_j,i_{j+1}]$ use $s_j$ to answer the queries in the optimal query answering strategy. The notion of creating segmentations is depicted in Figure \ref{fig:segmentation}.
+
+\begin{figure}
+	\label{fig:segmentation}
+	\centering
+	\includegraphics[width=\textwidth]{figs/segmentations.pdf}
+	\caption{The notion of creating segmentations on the timeline and placing snapshot for each segmentation.}
+\end{figure}
 
 \subsection{A recursive algorithm for optimal snapshot placements}
 
