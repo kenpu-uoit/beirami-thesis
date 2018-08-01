@@ -296,6 +296,31 @@ The recursive definition of $\mathrm{opt}(Q, m)$ is given as:
 \end{itemize}
 The recursive formulation of $\mathrm{opt}(Q, m)$ requires $\mathcal{O}(2^{m})$.
 
+\textbf{Example.} Given the queries $Q=\{q_1=2,q_2=4,q_3=9,q_4=11,q_5=17,q_6=20\}$ (Figure \ref{fig:example_recursive_queries}) and maximum number of snapshots $m=3$, the goal is to find the most optimal segmentations using recursive algorithm to place snapshots for materialization. The steps to compute $m$ number of optimal segmentations is shown in Figure \ref{fig:example_recursive_steps}. In this example, the most optimal segmentation possible for 3 snapshots is when $segment_1 = \{q_0,q_1\}$, $segment_2 = \{q_2,q_3\}$, $segment_3= \{q_4,q_5\}$ where the total cost is 7 units. Figure \ref{fig:example_recursive_segmentation}.
+
+\begin{figure}[b]
+	\label{fig:example_recursive_queries}
+	\centering
+	\includegraphics[width=\textwidth]{figs/example_recursive_q.pdf}
+	\caption{I don't know.}
+\end{figure}
+
+\begin{figure}
+	\label{fig:example_recursive_steps}
+	\centering
+	\includegraphics[width=\textwidth]{figs/recursion_example.pdf}
+	\caption{Recursive approach to compute optimal segmentations for 3 snapshots.}
+\end{figure}
+
+
+\begin{figure}
+	\label{fig:example_recursive_segmentation}
+	\centering
+	\includegraphics[width=\textwidth]{figs/example_recursive_s.pdf}
+	\caption{Segmentation of queries on the timeline for Example \ref{}}
+\end{figure}
+
+
 \subsection{Dynamic programming approach to optimal snapshot placements}
 
 We can build a table $\mathbf{OPT}$ as a two dimensional array

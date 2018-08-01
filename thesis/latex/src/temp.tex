@@ -1,0 +1,33 @@
+\vspace{1em}
+{\small
+	\begin{tabular}{|l|} \hline
+		\verb|| $opt(q_0,q_1,q_2,q_3,q_4,q_5,m) \to opt(2,4,9,11,17,20,3)$ \\
+		\verb|     | $cost(q_0)+opt(q_1,q_2,q_3,q_4,q_5,m-1) \to cost(2) + opt(4,9,11,17,20,2) = 0 + 10 = 10$ \\
+		\verb|               | $cost(q_1)+opt(q_2,q_3,q_4,q_5,m-1) \to cost(4) + opt(9,11,17,20,1) = 0 + 17 = 17$ \\
+		\verb|                                    | $cost(q_2,q_3,q_4,q_5) \to cost(9,11,17,20) = 17$ \\
+		\verb|               | $cost(q_1,q_2)+opt(q_3,q_4,q_5,m-1) \to cost(4,9) + opt(11,17,20,1) = 5 + 9 = 14$ \\
+		\verb|                                    | $cost(q_3,q_4,q_5) \to cost(11,17,20) = 9$ \\
+		\verb|               | $cost(q_1,q_2,q_3)+opt(q_4,q_5,m-1) \to cost(4,9,11) + opt(17,20,1) = 7 + 3 = 10$ \\
+		\verb|                                    | $cost(q_4,q_5) \to cost(17,20) = 3$ \\
+		\verb|               | $cost(q_1,q_2,q_3,q_4)+opt(q_5,m-1) \to cost(4,9,11,17) + opt(20,1) = 14 + 0 = 14$ \\
+		\verb|                                    | $cost(q_5) \to cost(20) = 0$ \\
+		\verb|     | $cost(q_0,q_1)+opt(q_2,q_3,q_4,q_5,m-1) \to cost(2,4) + opt(9,11,17,20,2) = 2 + 5 = 9$ \\
+		\verb|               | $cost(q_2)+opt(q_3,q_4,q_5,m-1) \to cost(9) + opt(11,17,20,1) = 0 + 9 = 9$ \\
+		\verb|                                    | $cost(q_3,q_4,q_5) \to cost(11,17,20) = 9$ \\
+		\verb|               | $cost(q_2,q_3)+opt(q_4,q_5,m-1) \to cost(9,11) + opt(17,20,1) = 2 + 3 = 5$ \\
+		\verb|                                    | $cost(q_4,q_5) \to cost(17,20) = 3$ \\
+		\verb|               | $cost(q_2,q_3,q_4)+opt(q_5,m-1) \to cost(9,11,17) + opt(20,1) = 8 + 0 = 0$ \\
+		\verb|                                    | $cost(q_5) \to cost(20) = 0$ \\
+		\verb|     | $cost(q_0,q_1,q_2)+opt(q_3,q_4,q_5,m-1) \to cost(2,4,9) + opt(11,17,20,2) = 7 + 3 = 10$ \\
+		\verb|               | $cost(q_3)+opt(q_4,q_5,m-1) \to cost(11) + opt(17,20,1) = 0+3 =3$ \\
+		\verb|                                    | $cost(q_4,q_5) \to cost(17,20) = 3$ \\
+		\verb|               | $cost(q_3,q_4)+opt(q_5,m-1) \to cost(17) + opt(20,1) = 5 + 0 = 5$ \\
+		\verb|                                    | $cost(q_5) \to cost(20) = 0$ \\
+		\verb|     | $cost(q_0,q_1,q_2,q_3)+opt(q_4,q_5,m-1) \to cost(2,4,9,11) + opt(17,20,2) = 14 + 0 = 14$ \\
+		\verb|               | $cost(q_4)+opt(q_5,m-1) \to cost(17) + opt(20,1) = 0 + 0 = 0$ \\
+		\verb|                                    | $cost(q_5) \to cost(20) = 0$ \\
+		\verb|     | $cost(q_0,q_1,q_2,q_3,q_4)+opt(q_5,m-1) \to cost(2,4,9,11,17) + opt(20,2) = 22 + 0 = 22$ \\
+		\verb|               | $cost(q_5) \to cost(20)  = 0 $ \\ \hline                                
+	\end{tabular}
+}
+\vspace{1em}
