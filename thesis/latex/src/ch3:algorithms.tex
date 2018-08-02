@@ -350,13 +350,13 @@ We can compute $\mathbf{OPT}[i,k]$ in a bottom up fashion \cite{}.
 
 The complexity of computing all the entries of $\mathbf{OPT}$ is $\mathcal{O}(mn^2)$.
 
-\textbf{Example.} Given a set of queries $Q={q_0=2,q_1=4,q_2=9,q_3=11}$, we want to compute two segmentations from these queries, such that putting a snapshot in each segmentation, make the overall cost of answering to the queries optimal.
+\textbf{Example.} Given a set of queries $Q={q_0=2,q_1=4,q_2=9,q_3=11}$, we want to compute 3 segmentations from these queries, such that putting a snapshot in each segmentation, make the overall cost of answering to the queries optimal. The process of computing optimal snapshots has been showin Table \ref{table:dynamic_programming}. This method is more efficient than recursive algorithm as for example in the memoization table T[3][2], the recursive call uses the cost stored in T[2][1], T[2][2] and T[2][3] without the need to recalulate them. In this example, the most optimal overall cost is 2 which is achieved by either $\{segment1 =[q_0,q_1],segment2=[q_2],segment3=[q_3]\}$ or $\{segment1 =[q_0], segment2 = [q_1], segment3 = [q_2, q_3]\}$
 
 \begin{table}[]
 \scriptsize
 \renewcommand{\arraystretch}{2}
 \setlength\tabcolsep{1pt}
-\caption{Dynamic programming approach to compute 3 optimal segmentations from 4 queries.}
+\caption{Memoization table T for dynamic programming approach to compute 3 optimal segmentations from 4 queries.}
 \label{table:dynamic_programming}
 \begin{tabular}{|l|l|l|l|l|}
 \hline
@@ -395,5 +395,31 @@ $min\left\{\begin{array}{lll}  0+7 = 7 \\ 0 + 2 = 2 \\ 2+0=2 \\ 4+0 = 4 \end{arr
 
 
 \subsection{Heuristic snapshot placements}
+In the heuristic technique, the optimal solution to a problem is not guaranteed however because of the low computational cost and satisfactory results, this approach is used when non-heuristic techniques are inefficient to implement. For the purpose of finding the optimal segmentation of queries for optimal query answering, we utilized K-means clustering technique.
 
+\textbf{Proposition}: Given $T_q^* = \{q_0,q_1,...,q_n\}$ as $n$ number of queries performed on the temporal relation $r^T$, we would like to group the $q_i \in T_q^*$ into $m$ number of \textit{"clusters"}. Applying K-means clustering methodology to this problem requires to minimize the objective function defined as:
+$$J = \sum_{j=1}^{m} \sum_{i=1}^{n} ||q_i^{(j)}-\mu_j||^2$$
+where $\mu_j$ is the centroid of $j^{th}$ cluster and $||q_i^{(j)}-\mu_j||^2$ is the squared error function which indicates the distance between each query and their assigned centroids.
+Minimizing objective function is achieved by the relocation of $\mu_j$ until no changes occur in the objective function.
+
+\begin{algorithm}[H]
+\SetAlgoLined
+\caption{K-means clustering to compute $m$ number of segmentations}
+\label{alg:Kmeans}
+\DontPrintSemicolon
+ \SetKwFunction{FMain}{K-Means}
+ \SetKwProg{Fn}{Function}{:}{}
+ \Fn{\FMain{$T_q^*\{q_1,...,q_n\}$, $m$}}{
+    $\{\mu_1,...,\mu_m\} \gets SelectRandomSeeds(\{q_i\in T_q^*\},m)$ \;
+	\For{$i \gets 1$ \KwTo $n$}{
+		$J \gets argmin_{J^*}||\mu_{J^*}-q_i||^2$ \;
+	}
+	\For{$j \gets 1$ \KwTo $m$}{
+		$\mu_j \gets \frac{1}{\mathcal{L}_j} \sum_{q \in \mathcal{L}_j} q $
+	}
+	\Return\{$\mu_1,...,\mu_k$\}
+    
+
+}
+\end{algorithm}
 \section{Discussion}
