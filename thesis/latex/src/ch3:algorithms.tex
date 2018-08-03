@@ -413,13 +413,34 @@ Minimizing objective function is achieved by the relocation of $\mu_j$ until no 
     $\{\mu_1,...,\mu_m\} \gets SelectRandomSeeds(\{q_i\in T_q^*\},m)$ \;
 	\For{$i \gets 1$ \KwTo $n$}{
 		$J \gets argmin_{J^*}||\mu_{J^*}-q_i||^2$ \;
+		$\mathcal{L}_j \gets \mathcal{L}_j \cup \{q_i\}$ 
 	}
 	\For{$j \gets 1$ \KwTo $m$}{
 		$\mu_j \gets \frac{1}{\mathcal{L}_j} \sum_{q \in \mathcal{L}_j} q $
 	}
-	\Return\{$\mu_1,...,\mu_k$\}
-    
-
+	\Return\{$\mu_1,...,\mu_m$\}
 }
 \end{algorithm}
 \section{Discussion}
+In this section, the problem of linear time for query answering in append-only databases discussed. Creating snapshots and looking for the form of a table in an specific time on append-ony databases are inefficient therefore we proposed to place $m$ number of snapshots for materialization of subsequent queries. these snapshots indicate the latest version of a database until that specific time. Although it seems to be inefficient to store $m$ number of snapshots in a system, but with current cloud storages, it doesnot seem to be an overly burden task anymore. Note that $m$ is determined by checking the available resources of the host system.
+
+In the first step, we stored the timestamp of the previous queries on the database to have the patterns of the queries on the timeline. Pattern of the queries ables us to identify the hotspots on the timeline. We argue that it is highly likeley that the the subsequent queries to be performed in these hotspots, therefore we proposed to group the queries on the hotspots and allocate one snapshot for each group for materialization. However the question which needed to be answered was to find $m$ number of optimal segmentations of queries which reduce the overall cost of answering to the queries on the temporal append-only database.
+
+To find $m$ number of optimal segmentation, we first solved the problem of finding an optimal position to place a single snapshot. We proved that the optimal place for a single snapshot is the median of the queries, hence if $m$ number of segmentations were created, the optimal position to place snapshot within each segmentation is the median of the segmentation queries. To find the optimal segmentations we utilized three different methods : recursive algorithm, dynamic programming and K-Means clustering. Each method has their pros and cons which are shown in Table \ref{table:segmentation_comparison}. In the next section we support the comparison between methods with different experiments and we depict the observations followed by drawing a conclusion. 
+
+\begin{center}
+\begin{table}
+	\centering
+	\small
+	\caption{Snapshot $s_2$ at $t = 2018-03-15$}
+	\label{table:segmentation_comparison}
+	\begin{tabular}{p{4cm}p{4cm}p{4cm}}
+		\hline
+		method & Pros  & Cons  \\ \hline
+		Recursive algorithm & Exact optimal solution & computationally expensive for large number of queries and segmentations   \\ \hline
+		Dynamic programming & Exact optimal solution & computationally expensive for large number of queries and segmentations\\ 
+		  & Computationally cheaper than dynamic programming & 11.0   \\ \hline
+		K-Means clustering & Fast in computation & optimal solution not guaranteed \\ \hline
+	\end{tabular}
+\end{table}
+\end{center}
