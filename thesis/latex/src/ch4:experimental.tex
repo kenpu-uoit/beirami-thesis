@@ -197,7 +197,7 @@ Figure \ref{fig:variable_queries_2} and Table \ref{table:variable_queries_2} sho
 \subsection{Evaluating the heuristic method}
 In the previous section we showed that the heuristic method (K-Means clustering method in this case) is computationally more favorable than the recursive algorithm and dynamic programming method. However unlike recursive algorithm and dynamic programming which compute the exact optimal timestamps for the snapshots, the heuristic method approximates the optimal timestamps. Because of this, in the heuristic method, finding the most optimal timestamps for the snapshots is not guaranteed. Therefore a comparison was needed to evaluate if the heuristic method could be chosen over the other two method.
 
-We previousely showed that as the number of snapshots grow, the overall cost of answering to the queries drops. In this experiment, we compared the outcome of the dynamic programming and K-Means clustering method in varying number of snapshots and see how increasing the number of snapshots affect the overall cost of query answering in both methods. As it could be seen in Figure \ref{fig:dynamic_vs_heuristic} and Table \ref{}, the outcome of dynamic programming and heuristic method is slightly different but the result is satisfactory.
+We previousely showed that as the number of snapshots grow, the overall cost of answering to the queries drops. In this experiment, we compared the outcome of the dynamic programming and K-Means clustering method in varying number of snapshots to see how increasing the number of snapshots affect the overall cost of query answering in both methods. As it could be seen in Figure \ref{fig:dynamic_vs_heuristic} and Table \ref{table:dynamic_vs_heuristic}, the outcome of dynamic programming and heuristic method is slightly different but the all in all the result of the heuristic method is satisfactory.
 
 \begin{figure}
 	\label{fig:dynamic_vs_heuristic}
@@ -205,5 +205,57 @@ We previousely showed that as the number of snapshots grow, the overall cost of 
 	\includegraphics[width=\textwidth]{figs/dynamic_vs_clustering.jpg}
 	\caption{Comparing the outcome of dynamic programming with the heuristic method}
 \end{figure} 
+
+\begin {center}
+\begin{table}
+	\centering
+	\caption{Comparing the outcome of dynamic programming with the heuristic method}
+	\label {table:dynamic_vs_heuristic}
+	\begin{tabular}{p{2cm}p{3cm}p{3cm}p{3cm}}
+		\hline
+		Queries  & Dynamic  & Clustering \\ \hline
+		1 & 29439.26  & 29439.26  \\  
+		3 & 9141.55  & 9159.13  \\
+		5 & 4626.77  & 4630.08  \\
+		7 & 2867.74  & 2867.74  \\
+		9 & 2410.46  & 2412.62 \\
+		11 & 1972.14  & 1980.95  \\
+		13 & 1664.14  & 1673.32  \\
+		15 & 1471.58  & 1509.57  \\
+		17 & 1300.32  & 1351.44  \\
+		19 & 1162.25  & 1194.61  \\
+		21 & 1051.97  & 1079.71  \\
+		23 & 951.06  & 970.72  \\
+		25 & 867.35  & 907.30  \\
+		27 & 810.01  & 836.97  \\
+		29 & 759.69  & 787.86  \\
+		31 & 713.04  & 731.61  \\
+		33 & 670.39  & 684.13  \\
+		35 & 629.69  & 640.58  \\
+		37 & 591.08  & 608.96  \\
+		39 & 557.81  & 575.97  \\\hline
+	\end{tabular}
+\end{table}
+\end{center}
+
+The results of K-Means clustering method shown in Figure \ref{fig:dynamic_vs_heuristic} and Table \ref{table:dynamic_vs_heuristic} obtained by performing 300 number of iterations to find the appropriate centroids and clusters from the queries. Although 300 iterations improves the precision of the outcome but we were interested to see if we can lower the number of iterations for the sake of saving more time but still get satisfactory results. Therefore we lowered the number of iterations to 30 and compared the runtime with 300 iterations. Figure \ref{fig:clustering_comparison_multiQuery} shows the runtime comparison of K-Means clustering method with 300 iterations and 30 iterations for fixed number of queries but variable number of snapshots and Figure \ref{fig:clustering_comparison_multiSnap} shows the same comparison for fixed number of snapshots but varying number of queries.
+
+\begin{figure}
+	\label{fig:clustering_comparison_multiSnap}
+	\centering
+	\includegraphics[width=\textwidth]{figs/multiSnap_clustering.jpg}
+	\caption{Comparing the runtime of K-Means clustering method with 30 and 300 iterations for variable number of snapshots}
+\end{figure} 
+
+\begin{figure}
+	\label{fig:clustering_comparison_multiQuery}
+	\centering
+	\includegraphics[width=\textwidth]{figs/multiQuery_clustering.jpg}
+	\caption{Comparing the runtime of K-Means clustering method with 30 and 300 iterations for variable number of queries}
+\end{figure} 
+
+We further lowered the number of iterations to 5 and compared the overal cost of query answering in variable number of snapshots. As seen in Figure \ref{} the cost of query answering is more expensive when 5 iterations were used in K-Means clustering however this difference is not significant as the number of snapshots grow.
+
+
 
 \section{Observations and conclusion}
