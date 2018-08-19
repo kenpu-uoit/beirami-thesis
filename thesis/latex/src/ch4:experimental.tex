@@ -213,7 +213,7 @@ We previousely showed that as the number of snapshots grow, the overall cost of 
 	\label {table:dynamic_vs_heuristic}
 	\begin{tabular}{p{2cm}p{3cm}p{3cm}p{3cm}}
 		\hline
-		Queries  & Dynamic  & Clustering \\ \hline
+		Snapshots & Dynamic  & Clustering \\ \hline
 		1 & 29439.26  & 29439.26  \\  
 		3 & 9141.55  & 9159.13  \\
 		5 & 4626.77  & 4630.08  \\
@@ -254,8 +254,45 @@ The results of K-Means clustering method shown in Figure \ref{fig:dynamic_vs_heu
 	\caption{Comparing the runtime of K-Means clustering method with 30 and 300 iterations for variable number of queries}
 \end{figure} 
 
-We further lowered the number of iterations to 5 and compared the overal cost of query answering in variable number of snapshots. As seen in Figure \ref{} the cost of query answering is more expensive when 5 iterations were used in K-Means clustering however this difference is not significant as the number of snapshots grow.
+We further lowered the number of iterations to 5 and compared the overal cost of query answering in variable number of snapshots. As seen in Figure \ref{fig:compare_clusterings_iterations} and Table \ref{table:compare_clustring_iterations}, the cost of query answering is more expensive when 5 iterations were used in K-Means clustering however this difference is not significant as the number of snapshots grow.
 
+\begin{figure}
+	\label{fig:compare_clusterings_iterations}
+	\centering
+	\includegraphics[width=\textwidth]{figs/compare_clustering_iterations.png}
+	\caption{Comparing the overal cost of query answering in variable number of snapshots using K-Means clustering method with 30 and 300 iterations to find optimal timestamps for snapshots}
+\end{figure} 
 
+\begin {center}
+\begin{table}
+	\centering
+	\caption{Comparing the overal cost of query answering in variable number of snapshots using K-Means clustering method with 30 and 300 iterations to find optimal timestamps for snapshots}
+	\label {table:compare_clustring_iterations}
+	\begin{tabular}{p{2cm}p{3cm}p{3cm}p{3cm}}
+		\hline
+		Snapshots  & 300 iterations  & 5 iterations \\ \hline
+		1 & 29439.26 & 30439.26 \\  
+		3 & 9159.13  & 9841.13\\
+		5 & 4630.08  & 4921.08\\
+		7 & 2867.74  & 2945.76\\
+		9 & 2412.62  & 2732.38\\
+		11 & 1980.95  & 2023.24\\
+		13 & 1673.32  & 1789.50\\
+		15 & 1509.57  & 1521.68\\
+		17 & 1351.44  & 1430.66\\
+		19 & 1194.61  & 1284.61\\
+		21 & 1079.71  & 1182.71\\
+		23 & 970.72  & 1002.57\\
+		25 & 907.30  & 923.30\\
+		27 & 836.97  & 856.83\\
+		29 & 787.86  & 811.08\\
+		31 & 731.61  & 769.83\\
+		33 & 684.13  & 710.49\\
+		35 & 640.58  & 683.60\\
+		37 & 608.96  & 645.74\\
+		39 & 575.97  & 595.89\\\hline
+	\end{tabular}
+\end{table}
+\end{center}
 
-\section{Observations and conclusion}
+\section{Discussion}
