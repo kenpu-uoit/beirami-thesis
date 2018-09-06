@@ -9,10 +9,10 @@ Keeping the historical records of transactions on a database system is useful be
 \textbf{Example.} Definition of a timeline was introduced in \textbf{Definition 4}. The historical records obtained from auditing the database transaction could be seen as a timeline. A request to regenerate the form of a table (snapshot) or a record can be depicted in \ref{fig:snapshot_notion}
 
 \begin{figure}
-	\label{fig:snapshot_notion}
 	\centering
 	\includegraphics[width=\textwidth]{figs/snapshot_notion.pdf}
 	\caption{The notion of creating snapshot on the timeline.}
+	\label{fig:snapshot_notion}
 \end{figure}
 
 
@@ -20,10 +20,10 @@ Keeping the historical records of transactions on a database system is useful be
 Since $r^T$ could be seen as a timeline, the records which needs to be checked can be depicted in \ref{fig:checked_records}. This clearly indicates that a linear time is required to compute a snapshot at a timestamp of interest and as the size of $r^T$ grows in size, creating snapshot become computationally more expensive.
 
 \begin{figure}[b]
-	\label{fig:checked_records}
 	\centering
 	\includegraphics[width=\textwidth]{figs/tobechecked_records.pdf}
 	\caption{The records which needs to be checked when creating a snapshot.}
+	\label{fig:checked_records}
 \end{figure}
 
 \textbf{Example.} Given a normal relational table $r_1$ (Table \ref{table:normal_table_2}) and a temporal relational table $r_1^T$ (Table \ref{table:temporal_table_2}) which contains the historical data of $r_1$, the $r_1$ at $t=2018-04-01$ looked like Table $\ref{table:normal_table_2_t}$
@@ -81,10 +81,10 @@ Since $r^T$ could be seen as a timeline, the records which needs to be checked c
 Using precomputed materialized view has been proven to be effective in reducing computational time of query answering \cite{sohrabi2016materialized} \cite{du2017deepsea}. Since running queries $Q(t)$ on temporal table $r^T$ to build snapshots or generate latest version of a record at a timestamp of interest requires linear time with time complexity of approximately $\mathcal{O}(t)$, therefore in the presence of multiple and concurrent queries, such transactions are computationally expensive and inefficient. We argue that, if a snapshot is computed at the timestamp $t$ and placed on the timeline, computational time of answering to the subsequent queries on $r^T$ is reduced. The notion of having precomputed snapshots for materialization can be depicted as Figure \ref{fig:snapshot_materialization}. Note that the snapshot could exist before or after a query and in both cases the query can use the snaphsot for materialization.
 
 \begin{figure}[t]
-	\label{fig:snapshot_materialization}
 	\centering
 	\includegraphics[width=\textwidth]{figs/snapshot_materialization.pdf}
 	\caption{The records which needs to be checked when creating a snapshot with having a precomputed snapshot for materialization.}
+	\label{fig:snapshot_materialization}
 \end{figure}
 
 \textbf{Proposition} suppose we have a materialized snapshot $snapshot(r,s)$. Then $snapshot(r,t)$ can be computed with complexity:
@@ -227,10 +227,10 @@ in the subsequent sections, we present the algorithms to address the problem of 
 \textbf{Proposition}: Given the performed queries $T_q^*$, the optimal position for a single snapshot on the timeline for materialization is $s^*(T_q^*)=median(T_q^*)$ that can be computed in $\mathcal{O}(|T_q^*|)$. Figure \ref{fig:optimal_materialization} shows the notion of placing snapshot in the median of queries for materialization.
 
 \begin{figure}
-	\label{fig:optimal_materialization}
 	\centering
 	\includegraphics[width=\textwidth]{figs/optimal_materialization.pdf}
 	\caption{Placing a single snapshot in the median of queries guarantees the optimal cost of query answering.}
+	\label{fig:optimal_materialization}
 \end{figure}
 
 \textbf{\emph{Proof of the proposition}}:
@@ -267,10 +267,10 @@ In the presence of thousands of queries on a temporal database with millions of 
 \textbf{\emph{Proposition (Segmentation of queries)}}: Given an ordered set of snapshot timestamps $S=\{s_1,s_2,...,s_m:s_i \in \mathcal{T}\}$, such that $s_i \leq s_{i+1}$, and $n$ number of queries $Q = \{q_1,q_2,...,q_n: q_i \in \mathcal{T}\}$, snapshots create $m$ number of non-overlapping segments on the queries $Q[1,i_1],Q[i_1+1,i_2],...,Q[i_{m-1},i_m]$ such that queries in the segment $Q[i_j,i_{j+1}]$ use $s_j$ to answer the queries in the optimal query answering strategy. The notion of creating segmentations is depicted in Figure \ref{fig:segmentation}.
 
 \begin{figure}
-	\label{fig:segmentation}
 	\centering
 	\includegraphics[width=\textwidth]{figs/segmentations.pdf}
 	\caption{The notion of creating segmentations on the timeline and placing snapshot for each segmentation.}
+	\label{fig:segmentation}
 \end{figure}
 
 \subsection{A recursive algorithm for optimal snapshot placements}
@@ -299,25 +299,25 @@ The recursive formulation of $\mathrm{opt}(Q, m)$ requires $\mathcal{O}(2^{m})$.
 \textbf{Example.} Given the queries $Q=\{q_1=2,q_2=4,q_3=9,q_4=11,q_5=17,q_6=20\}$ (Figure \ref{fig:example_recursive_queries}) and maximum number of snapshots $m=3$, the goal is to find the most optimal segmentations using recursive algorithm to place snapshots for materialization. The steps to compute $m$ number of optimal segmentations is shown in Figure \ref{fig:example_recursive_steps}. In this example, the most optimal segmentation possible for 3 snapshots is when $segment_1 = \{q_0,q_1\}$, $segment_2 = \{q_2,q_3\}$, $segment_3= \{q_4,q_5\}$ where the total cost is 7 units. Figure \ref{fig:example_recursive_segmentation}.
 
 \begin{figure}[b]
-	\label{fig:example_recursive_queries}
 	\centering
 	\includegraphics[width=\textwidth]{figs/example_recursive_q.pdf}
 	\caption{I don't know.}
+	\label{fig:example_recursive_queries}
 \end{figure}
 
 \begin{figure}
-	\label{fig:example_recursive_steps}
 	\centering
 	\includegraphics[width=\textwidth]{figs/recursion_example.pdf}
 	\caption{Recursive approach to compute optimal segmentations for 3 snapshots.}
+	\label{fig:example_recursive_steps}
 \end{figure}
 
 
 \begin{figure}
-	\label{fig:example_recursive_segmentation}
 	\centering
 	\includegraphics[width=\textwidth]{figs/example_recursive_s.pdf}
 	\caption{Segmentation of queries on the timeline for Example \ref{}}
+	\label{fig:example_recursive_segmentation}
 \end{figure}
 
 
@@ -439,7 +439,7 @@ To find $m$ number of optimal segmentation, we first solved the problem of findi
 		method & Pros  & Cons  \\ \hline
 		Recursive algorithm & Exact optimal solution & computationally expensive for large number of queries and segmentations   \\ \hline
 		Dynamic programming & Exact optimal solution & computationally expensive for large number of queries and segmentations\\ 
-		  & Computationally cheaper than dynamic programming & 11.0   \\ \hline
+		  & Computationally cheaper than dynamic programming &    \\ \hline
 		K-Means clustering & Fast in computation & optimal solution not guaranteed \\ \hline
 	\end{tabular}
 \end{table}

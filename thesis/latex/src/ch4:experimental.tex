@@ -13,10 +13,10 @@ Discussed in section \ref{}, preforming queires to create snapshots in a timesta
 Figure \ref{fig:linear_time} clearly proves our claim that computation of snapshots on a temporal table requires linear time. The issue of linearity in computation of snapshots makes such tasks on a very large table inefficient. For example in this experiment, the computational cost of 100th query is significantly more expensive than computational cost of 20th query, due to the number of queries which were needed to be visited.
 
 \begin{figure}
-	\label{fig:linear_time}
 	\centering
 	\includegraphics[width=\textwidth]{figs/runtime.jpg}
 	\caption{Linear time in computation of snapshots without snapshot materialization}
+	\label{fig:linear_time}
 \end{figure} 
 
 \subsection{Evaluating materialization of a single snapshot}
@@ -24,10 +24,10 @@ To illusterate the the optimal position on the timeline to place a single snapsh
 
 The resulted cost line shown in Figure \ref{fig:single_snapshot} clearly shows that the position of a snapshot directly affects the overal cost of query answering on the temporal table. In proposition \ref{} we mathematically proved that the median of the queries is the optimal position for snapshot materialization. Therefore in this experiment we calculated the median of the queries which is shown with a red circle in figure \ref{fig:single_snapshot}. As it could be seen, the median of the queries is exactly located in a position where the cost line curve's global minimum is.
 \begin{figure}
-	\label{fig:single_snapshot}
 	\centering
 	\includegraphics[width=\textwidth]{figs/single_snapshot.jpg}
 	\caption{Cost of query answering using a single snapshot over different snaptshot timestamps}
+	\label{fig:single_snapshot}
 \end{figure} 
 
 \subsection{Evaluating materialization of multiple snapshot}
@@ -42,10 +42,10 @@ To illustrate that the optimal snapshot placement indeed produces the best query
 \end{itemize}
 
 \begin{figure}
-	\label{fig:approaches_cost}
 	\centering
 	\includegraphics[width=\textwidth]{figs/various_scenarios_cost.jpg}
 	\caption{Query answering cost with forty snapshots with various approaches to place snapshots for materialization}
+	\label{fig:approaches_cost}
 \end{figure} 
 
 Figure \ref{fig:approaches_cost} shows that the placements obtained by dynamic programming clearly beats the other two approaches.
@@ -53,10 +53,10 @@ Figure \ref{fig:approaches_cost} shows that the placements obtained by dynamic p
 In order to evaluate the effectiveness of $m$ number of snapshots to lower the overal cost of query answering, we recorded the overal cost of queries in various number of snapshots. Figure \ref{fig:snapshots_cost} shows that as the number of snapshots for materialization increases, the overal cost of answering to the queries drops.
 
 \begin{figure}
-	\label{fig:snapshots_cost}
 	\centering
 	\includegraphics[width=\textwidth]{figs/various_snapshot.jpg}
 	\caption{Query answering cost with increasing number of snapshots}
+	\label{fig:snapshots_cost}
 \end{figure} 
 
 \subsection{Evaluating approaches for optimal placement of $m$ snapshots}
@@ -71,10 +71,10 @@ As discussed in section \ref{}, we examine 3 approaches to find the optimal time
 In the first experiment of this category, we evaluate the performance of each approach with respect to variable number of snapshots but fixed number of queries. That is, although the goal of the experiment is to find $m$ number of optimal timestamps for snapshots for materialization, but we start $m=1$ and we increase $m$ in each iteration. For this experiment we sampled 140 number of queries and evalueted the runtime of each approach while increasing the number of requested snapshots.
 
 \begin{figure}
-	\label{fig:variable_snapshots}
 	\centering
 	\includegraphics[width=\textwidth]{figs/variable_snapshots.jpg}
 	\caption{Optimization time with respect to the number of snapshots}
+	\label{fig:variable_snapshots}
 \end{figure} 
 
 
@@ -105,10 +105,10 @@ In the first experiment of this category, we evaluate the performance of each ap
 Figure \ref{fig:variable_snapshots} and Table \ref{table:variable_snapshots} depict the observations of the experiment. The graph shows that in comparison with dynamic programming and K-means clustering, the recursive algorithm is computationally more expensive such that we couldnot utilize this technique to find more than 5 optimal timestamps for snapshots due to the large computational time. 
 
 \begin{figure}
-	\label{fig:variable_snapshots_2}
 	\centering
 	\includegraphics[width=\textwidth]{figs/multiSnapDouble.jpg}
 	\caption{Optimization time with respect to the number of snapshots}
+	\label{fig:variable_snapshots_2}
 \end{figure} 
 
 \begin{center}
@@ -139,10 +139,10 @@ Figure \ref{fig:variable_snapshots} and Table \ref{table:variable_snapshots_2}, 
 For the second experiment, we fixed the number of snapshots but made the number of queries variable. Our aim was to observe the performance of each approach as the number of queries grow. For this reason, we calculated 4 number of snapshots for queries ranging from 12 to approximately 180. 
 
 \begin{figure}
-	\label{fig:variable_queries}
 	\centering
 	\includegraphics[width=\textwidth]{figs/multi_query.jpg}
 	\caption{Optimization time with respect to the number of queries}
+	\label{fig:variable_queries}
 \end{figure} 
 
 
@@ -168,10 +168,10 @@ For the second experiment, we fixed the number of snapshots but made the number 
 Figure \ref{fig:variable_queries_2} and Table \ref{table:variable_queries_2} shows that similar to the previous experiment, recursive algorithm has proven to be expensive in computing the optimal timestamps for the snapshots. To see the difference between the dynamic programming and the clustering method, we compared the performance of both in Figure \ref{} and Table \ref{}. These results also show that utilizing the clustering method is computationally more optimal than the other two method.
 
 \begin{figure}
-	\label{fig:variable_queries_2}
 	\centering
 	\includegraphics[width=\textwidth]{figs/multi_query_2.jpg}
 	\caption{Optimization time with respect to the number of queries}
+	\label{fig:variable_queries_2}
 \end{figure} 
 
 
@@ -200,10 +200,10 @@ In the previous section we showed that the heuristic method (K-Means clustering 
 We previousely showed that as the number of snapshots grow, the overall cost of answering to the queries drops. In this experiment, we compared the outcome of the dynamic programming and K-Means clustering method in varying number of snapshots to see how increasing the number of snapshots affect the overall cost of query answering in both methods. As it could be seen in Figure \ref{fig:dynamic_vs_heuristic} and Table \ref{table:dynamic_vs_heuristic}, the outcome of dynamic programming and heuristic method is slightly different but the all in all the result of the heuristic method is satisfactory.
 
 \begin{figure}
-	\label{fig:dynamic_vs_heuristic}
 	\centering
 	\includegraphics[width=\textwidth]{figs/dynamic_vs_clustering.jpg}
 	\caption{Comparing the outcome of dynamic programming with the heuristic method}
+	\label{fig:dynamic_vs_heuristic}
 \end{figure} 
 
 \begin {center}
@@ -241,26 +241,26 @@ We previousely showed that as the number of snapshots grow, the overall cost of 
 The results of K-Means clustering method shown in Figure \ref{fig:dynamic_vs_heuristic} and Table \ref{table:dynamic_vs_heuristic} obtained by performing 300 number of iterations to find the appropriate centroids and clusters from the queries. Although 300 iterations improves the precision of the outcome but we were interested to see if we can lower the number of iterations for the sake of saving more time but still get satisfactory results. Therefore we lowered the number of iterations to 30 and compared the runtime with 300 iterations. Figure \ref{fig:clustering_comparison_multiQuery} shows the runtime comparison of K-Means clustering method with 300 iterations and 30 iterations for fixed number of queries but variable number of snapshots and Figure \ref{fig:clustering_comparison_multiSnap} shows the same comparison for fixed number of snapshots but varying number of queries.
 
 \begin{figure}
-	\label{fig:clustering_comparison_multiSnap}
 	\centering
 	\includegraphics[width=\textwidth]{figs/multiSnap_clustering.jpg}
 	\caption{Comparing the runtime of K-Means clustering method with 30 and 300 iterations for variable number of snapshots}
+	\label{fig:clustering_comparison_multiSnap}
 \end{figure} 
 
 \begin{figure}
-	\label{fig:clustering_comparison_multiQuery}
 	\centering
 	\includegraphics[width=\textwidth]{figs/multiQuery_clustering.jpg}
 	\caption{Comparing the runtime of K-Means clustering method with 30 and 300 iterations for variable number of queries}
+	\label{fig:clustering_comparison_multiQuery}
 \end{figure} 
 
 We further lowered the number of iterations to 5 and compared the overal cost of query answering in variable number of snapshots. As seen in Figure \ref{fig:compare_clusterings_iterations} and Table \ref{table:compare_clustring_iterations}, the cost of query answering is more expensive when 5 iterations were used in K-Means clustering however this difference is not significant as the number of snapshots grow.
 
 \begin{figure}
-	\label{fig:compare_clusterings_iterations}
 	\centering
 	\includegraphics[width=\textwidth]{figs/compare_clustering_iterations.png}
 	\caption{Comparing the overal cost of query answering in variable number of snapshots using K-Means clustering method with 30 and 300 iterations to find optimal timestamps for snapshots}
+	\label{fig:compare_clusterings_iterations}
 \end{figure} 
 
 \begin {center}

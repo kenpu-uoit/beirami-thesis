@@ -67,10 +67,10 @@ $\mathcal{T} = [2018-02-10,2018-04-01]$.
 
 \textbf{Definition 4. (Timeline)}: Let $u_i(t_j)$ be the total transactions on the tables $r_i \in D$ at timestamps $t_j \in \mathcal{T}$, where $i,j=\{0,1,...,n\}$. The $u_i(t_j)$ could be represented as an ordered set points on a vector. This vector is called a timeline for the transactions happened on $r_i \in D$. Figure x illustrates the concept of timeline.
 \begin{figure}
-	\label{fig:timeline}
 	\centering
 	\includegraphics[width=\textwidth]{figs/timeline.pdf}
 	\caption{Timeline.}
+	\label{fig:timeline}
 \end{figure}
 
 %---------------------------------- End of Definition Timeline --------------------------
@@ -143,10 +143,10 @@ Note that, if $K_{pub}$ is known, and $E(K_{pub},m)$ is also known, in asymmetri
 Figure \ref{fig:AssymmetricEncryption} shows the basic steps to send and receive messages between two parties in a secure way by utilizing asymmetric encryption technique. In this scenario, the sender has access to the recipient's public key only. The sender encrypts the document which is to be transferred by using the recipients public key. In asymmetric technique, the only way to decrypt the document is to use the recipient's private key which the is only known to the recipient. This is a powerful technique to ensure that the adversaries cannot read the document in the middle of the connection.
 
 \begin{figure}
-	\label{fig:AssymmetricEncryption}
 	\centering
 	\includegraphics[width=\textwidth]{figs/asymmetricEncryption.pdf}
 	\caption{Asymmetric Encryption Technique.}
+	\label{fig:AssymmetricEncryption}
 \end{figure}
 %----------------------------- End of Definition Assymetric Encryption --------------------
 %----------------------------- Begin of Definition Hash function --------------------------
@@ -171,20 +171,20 @@ In order to verify:
 \end{itemize}
 Figure \ref{fig:DigitalSignature} depicts the steps that needs to be taken for digitally sign a document and verifying a digital signature.\\
 \begin{figure}
-	\label{fig:DigitalSignature}
 	\centering
 	\includegraphics[width=\textwidth]{figs/digital_signature.pdf}
 	\caption{Digital Signature Creation and Verification.}
+	\label{fig:DigitalSignature}
 \end{figure}
 %----------------------------- End of Definition Digital Signature ----------------------------
 %------------------------------------- Defintion Blockchain -----------------------------------
 \textbf{Definition. (Blockchain for This Project)}: Let $rec_i$ be the records stored in $r_i^T$. We denot $Sign$ as $S_r(attr(r_i^T$ for $rec_i))$ which is digital signature of attributes of $rec_i$. We can create a blockchain of historical records by storing the signature of previous record as an attribute of current record. The idea of the Blockchain has been depicted in figure \ref{fig:Blockchain}.
 
 \begin{figure}
-	\label{fig:Blockchain}
 	\centering
 	\includegraphics[width=\textwidth]{figs/blockchain.pdf}
 	\caption{Idea of the Blockchain for the proposed system.}
+	\label{fig:Blockchain}
 \end{figure}
 
 \section {Related Work}
