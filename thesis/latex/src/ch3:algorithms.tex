@@ -422,7 +422,9 @@ Minimizing objective function is achieved by the relocation of $\mu_j$ until no 
 \end{algorithm}
 
 \section{Blockchain}
-\subsection{Temporal database with security information}
+In this section we extensively talk about the implementation of a Blockchain based mechanism to verify the trustworthiness of the records. In the first step we talk about temporal tables with security information and then we discuss about the procedure of creating a chain of the records in these tables. In the next steps we talk about steps and rules that needs to be applied in order to verify the trustworthiness of the records in a table, as well as utilizing this mechanism in the case of snapshot materialization.
+
+\subsection{Temporal table with security information}
 Let $r_i^T$ be the temporal relational table with attributes $attr(r_i^T)$=$\{attr(r_i), updated,deleted\}$, denote $\alpha_u$ as the security information of the user $u$, including the user's cryptographic keys $<K_{priv}^u, K_{pub}^u>$.
 
 
@@ -430,7 +432,7 @@ Let $r_i^T$ be the temporal relational table with attributes $attr(r_i^T)$=$\{at
 
 Digital signatures provide a strong mean to identify whether or not a record has been submitted by a ligitimate user. They are also used to certify if the record has not been altered as any minor change in the record results in a completely different digital signature. Also faking a digital signature is computationally infeasable, therefore digital signatures provide a strong security guarantees \cite{katz2010digital}.
 
-\textbf{Propositin. Temporal table with chained security information}.  The temporal relational table with chained security information $r_i^{T*}$ is a table with the attributes $$attr(r_i^{T*}) = attr(r_i^T) \cup \{username,currentSignature, previousSignature)\}$$ where $username$ is the username of the user $u$ who submitted the transaction, $currentSignature = signature(rec_j)$ is the digital signature of the submitted transaction $rec_j$ by $u$ and $previousSignature = signature(rec_{j-1})$ is the signature of the previous record stored in $r_i^T$. We are interested in stroring the username of the user who submitted the transaction because it enables us to fetch the public key of the user and verify their digital signature on the submitted record.
+\textbf{Propositin. Temporal table with chained security information}.  The temporal relational table with chained security information $r_i^{T*}$ is a table with the attributes $$attr(r_i^{T*}) = attr(r_i^T) \cup \{username,currentSignature, previousSignature)\}$$ where $username$ is the username of the user $u$ who submitted the transaction, $currentSignature = signature(rec_j)$ is the digital signature of the submitted transaction $rec_j$ by $u$ and $previousSignature = rec_{j-1}[currentSignature]$ is the signature of the previous record stored in $r_i^T$. We are interested in stroring the username of the user who submitted the transaction because it enables us to fetch the public key of the user and verify their digital signature on the submitted record.
 
 \textbf{Proposition. Chain verification}
 To verify if a chain of the records are valid, the following steps are proposed:
