@@ -1,7 +1,6 @@
 \chapter{Problem Definition and Algorithms}
 
-In this chapter we will formally define the query optimization problem in the
-context of temporal relational databases.
+In this chapter, we fomally define the problem of large query workload inefficiency in the context of temporal relational databases and then we propose a solution to lower the cost of such queries. In the next stage, we offer a practical procedure to implement the Blockchain methodology as well as the principles to add and verify trustworthiness of the records using Blockchain in a temporal relational database.
 
 \section{Problem definition}
 Keeping the historical records of transactions on a database system is useful because it stores the entire updates of a database. In our proposed system these historical records could be used to regenerate the form of a table (snapshot) or a record in a specific timestamp. Also, cryptographic techniques could be used to create a cryptographic chain in order to secure these records from tampering, therefore by investigating the authenticity of all transactions applied to an specific record throughout its lifecycle, the trustworthiness of that record could be ensured. Append-only temporal relational tables, if chosen for keeping the historical records, are beneficial because not only they are simple to implement, but also there is the luxary of having RDBMS to manage and perform queries on such tables.
@@ -421,6 +420,90 @@ Minimizing objective function is achieved by the relocation of $\mu_j$ until no 
 	\Return\{$\mu_1,...,\mu_m$\}
 }
 \end{algorithm}
+
+\section{Blockchain}
+\subsection{Temporal database with security information}
+Let $r_i^T$ be the temporal relational table with attributes $attr(r_i^T)$=$\{attr(r_i), updated,deleted\}$, denote $\alpha_u$ as the security information of the user $u$, including the user's cryptographic keys $<K_{priv}^u, K_{pub}^u>$.
+
+
+\textbf{Proposition. digital signature of the transactions}. Given a set of records $rec_j =\{rec_1,rec_2,...,rec_n\} \in r_i^T$, the signature of each record could be computed as $$signature(rec_j|\alpha_u)= encrypt(hash(rec_j),K_{priv}^u)$$  
+
+Digital signatures provide a strong mean to identify whether or not a record has been submitted by a ligitimate user. They are also used to certify if the record has not been altered as any minor change in the record results in a completely different digital signature. Also faking a digital signature is computationally infeasable, therefore digital signatures provide a strong security guarantees \cite{katz2010digital}.
+
+\textbf{Propositin. Temporal table with chained security information}.  The temporal relational table with chained security information $r_i^{T*}$ is a table with the attributes $$attr(r_i^{T*}) = attr(r_i^T) \cup \{username,currentSignature, previousSignature)\}$$ where $username$ is the username of the user $u$ who submitted the transaction, $currentSignature = signature(rec_j)$ is the digital signature of the submitted transaction $rec_j$ by $u$ and $previousSignature = signature(rec_{j-1})$ is the signature of the previous record stored in $r_i^T$. We are interested in stroring the username of the user who submitted the transaction because it enables us to fetch the public key of the user and verify their digital signature on the submitted record.
+
+\textbf{Proposition. Chain verification}
+To verify if a chain of the records are valid, the following steps are proposed:
+
+\begin{itemize}
+	\item \textbf{step 1.} verify the $currentSignature$ of individual records.
+	\item \textbf{step 2.} check if $rec_j[previousSignature] == rec_{j-1}[currentSignature]$ except for $rec_0$
+\end{itemize}
+
+A chain is said to be broken if inconsistent information being gained in any of the above steps.
+
+\textbf{Example.} The Table \ref{temporal_blockchain_table} is an example of a temporal relational table with chained security information. With assumption that each record is a block, this table also could be depicted as Figure \ref{fig:blockchain_representation} which is the blockchian representation of Table \ref{temporal_blockchain_table}.
+
+\begin{center}
+\begin{table}
+	\centering
+	\footnotesize
+	\caption{Temporal Table $r_1^T$ with chained security information}
+	\label{temporal_blockchain_table}
+	\begin{tabular}{p{0.5cm}p{0.5cm}p{1cm}p{0.5cm}p{1.7cm}p{1.7cm}p{1.5cm}p{1.5cm}p{1.5cm}}
+		\hline
+		r\_id & id & item      & value  & updated  & deleted & username & curSgn & prevSgn \\ \hline
+		151& 21 & Ruler    & 3.25  & 2018-02-10  &  - & Bob &r3T49TR & 0\\  
+		152& 21 & Ruler    & 3.25  & -  &  2018-02-20 & Alice & yu0PmER & r3T49TR\\
+		153& 22 & Pencil    & 8.0  & 2018-03-21  &  - & Alice & gI90vjN & yu0PmER\\
+		154& 23 & Pen    & 12.0  & 2018-03-30  &  - & Bob & 89Ec578 & gI90vjN\\
+		155& 22 & Pencil & 7.50  & 2018-04-01 & - & Eve & Ipu32h6 & 89Ec578\\ \hline
+	\end{tabular}
+\end{table} 
+\end{center}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{figs/temporal_blockchain.pdf}
+	\caption{Blockchain representation of the table $r_1^T$.}
+	\label{fig:blockchain_representation}
+\end{figure}
+
+\subsection{Trusted Snspshots}
+Using blockchain to ensure the trustworthiness of data, requires a consistent chain of blocks. To make sure that a chain is consistent, all the blocks in the temporal table need to be visited and their trustworthiness need to be examined. This computation requires linear time and makes application of snapshot materialization that we discussed earlier pointless. To solve this problem, we propose the idea of trusted snapshots.
+
+\textbf{proposition. Trusted Snapshots}. The trusted snapshot $s^*$ is a table with attributes $attr(s)\cup \{signature\}$ where $$tail(s^*[signature]) = signature(\sum_{i=0}^n (rec_i):rec_i \in s)$$
+
+\textbf{Proposition. Trusted snaphsot materialization} We earlier talked about the materialization of snapshots for the sake of less computational time when querying the temporal database. To ensure the trustworthiness of the records while materializing trusted snapshots, we propose the following steps to be taken:
+\begin{itemize}
+	\item \textbf{step 1.} the signature of the materialized snapshot to be checked.
+	\item \textbf{step 2.} The trustworthiness of the records which fall in between the query $q$ and snapshot $s$ to be verified using blockchain verification.
+\end{itemize}
+The steps which should be taken to verify the trustworthiness of the records in the case of snapshot materialization could be depicted as Figure \ref{fig:blockchain_snapshot_materialization}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{figs/trusted_snapshot_materialization.pdf}
+	\caption{verify trustworthiness of the records in snapshot materialization}
+	\label{fig:blockchain_snapshot_materialization}
+\end{figure}
+
+The remaining issue is that, to digitally sign the records in $s$, we need to make sure the trustworthiness of the records before hand, therefore we propose the following rules for that purpose:
+
+\begin{itemize}
+	\item The first snapshot's records trustworthiness is checked using blockchain verification.
+	\item The subsequent snapshots materialize their previous snapshot, hence we take the same steps that was proposed in Proposition \ref{}
+\end{itemize}
+
+Figure \ref{fig:signing_snapshots} depicts the rules that needs to be followed when signing a precomputed snapshot.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{figs/signing_snapshots.pdf}
+	\caption{rules that needs to be followed when signing precomputed snapshots}
+	\label{fig:signing_snapshots}
+\end{figure}
+
 \section{Discussion}
 In this section, the problem of linear time for query answering in append-only databases discussed. Creating snapshots and looking for the form of a table in an specific time on append-ony databases are inefficient therefore we proposed to place $m$ number of snapshots for materialization of subsequent queries. these snapshots indicate the latest version of a database until that specific time. Although it seems to be inefficient to store $m$ number of snapshots in a system, but with current cloud storages, it doesnot seem to be an overly burden task anymore. Note that $m$ is determined by checking the available resources of the host system.
 
