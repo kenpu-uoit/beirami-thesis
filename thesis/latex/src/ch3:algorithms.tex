@@ -15,8 +15,18 @@ Keeping the historical records of transactions on a database system is useful be
 \end{figure}
 
 
-\textbf{Proposition. Linear time in creating snapshots}:The notion of creating a snapshot which shows the instance of the table $r$ in a certain timestamp $t$, using historical records stored in an append-only temporal relational table $r^T$ defined in \textbf{Definition 5}. Assume that the tables are updated at a constant rate over time, then the complexity of $\mathrm{snapshot}(r, t)$ is $$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \leq t\}|)\simeq \mathcal{O}(t)$$
-Since $r^T$ could be seen as a timeline, the records which needs to be checked can be depicted in \ref{fig:checked_records}. This clearly indicates that a linear time is required to compute a snapshot at a timestamp of interest and as the size of $r^T$ grows in size, creating snapshot become computationally more expensive.
+\textbf{Proposition. Linear time in creating snapshots}:The notion of creating a
+snapshot which shows the instance of the table $r$ in a certain timestamp $t$,
+using historical records stored in an append-only temporal relational table
+$r^T$ defined in \textbf{Definition 5}. Assume that the tables are updated at a
+constant rate over time, then the complexity of $\mathrm{snapshot}(r, t)$ is
+$$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \leq t\}|)\simeq
+\mathcal{O}(t)$$
+Since $r^T$ could be seen as a timeline, the records which needs to be checked
+can be depicted in \ref{fig:checked_records}. This clearly indicates that a
+linear time is required to compute a snapshot at a timestamp of interest and as
+the size of $r^T$ grows in size, creating snapshot become computationally more
+expensive.
 
 \begin{figure}[b]
 	\centering
@@ -212,18 +222,29 @@ $$\mathrm{cost}(T_q | s) = \sum_{q\in T_q} |q - s|$$
 Now if multiple snapshots at timestamps $S=\{s_1, s_2, \dots, s_m : s_j \in \mathcal{T}\}$ were precomputed and materialized, then 
 $$\mathrm{cost}(T_q|S) = \sum_{q\in T_q} \min\{|q-s| : s\in S\}$$
 
-\textbf{Definition. (Optimal Snapshot placement)}: For the \emph{single snapshot placement} problem, the goal is to find the timestamp $s^*$ such that 
+\begin{defn}[Optimal Snapshot placement]: 
+    For the \emph{single snapshot placement} problem, the goal is to find the timestamp $s^*$ such that 
 $$cost(T_q|s)= Arg min(\sum_{q\in T_q}|q - s|)$$
 
 The \emph{$m$-snapshot placement} problem is to compute $m$ number of timestamps $S^*=\{s_1, s_2, \dots, s_m: s_j \in \mathcal{T}\}$ to place $m$ number of snapshots for materialization, such that 
 $$cost(T_q|S)= Arg min(\sum_{q\in T_q}\{|q - s|:s \in S\})$$
+\end{defn}
 
-in the subsequent sections, we present the algorithms to address the problem of snapshot placement.
+In the subsequent sections, we present the algorithms to address the problem of snapshot placement.
 
 \section{Optimal single snapshot placement}
 \textbf{Proposition} Let $T_q^* = {q_1,q_2, \dots , q_n}$ be $n$ number of queries performed on the temporal database. $T_q^*$ gives us a valuable insight into the query patterns on the temporal database, that could be used to find optimal position of snapshots.
 
-\textbf{Proposition}: Given the performed queries $T_q^*$, the optimal position for a single snapshot on the timeline for materialization is $s^*(T_q^*)=median(T_q^*)$ that can be computed in $\mathcal{O}(|T_q^*|)$. Figure \ref{fig:optimal_materialization} shows the notion of placing snapshot in the median of queries for materialization.
+\begin{prop}
+Given the performed queries $T_q^*$, the optimal position for a single snapshot
+    on the timeline for materialization is $s^*(T_q^*)=median(T_q^*)$ that can
+    be computed in $\mathcal{O}(|T_q^*|)$. 
+    \label{prop:compute-median}
+\end{prop}
+    
+Figure
+\ref{fig:optimal_materialization} shows the notion of placing snapshot in
+the median of queries for materialization.
 
 \begin{figure}
 	\centering
@@ -232,7 +253,7 @@ in the subsequent sections, we present the algorithms to address the problem of 
 	\label{fig:optimal_materialization}
 \end{figure}
 
-\textbf{\emph{Proof of the proposition}}:
+\textbf{\emph{Proof of the Proposition~\ref{prop:compute-median}}}:
 At first, the placement of a single snapshot for two queries are discussed and then the argument is generalized for multiple queries:\\
 Assume that there are two queries $T_q=\{q_1,q_2\ : q_i \in \mathcal{T}\}$ on the timeline, such that, $q_1<q_2$. for the placement of a single snapshot $s^* \in \mathcal{T}$ on the timeline, there are several cases which needs to be considered:\\
 \emph{Case 1}:
