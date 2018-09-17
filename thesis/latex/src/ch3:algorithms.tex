@@ -5,7 +5,10 @@ In this chapter, we fomally define the problem of large query workload inefficie
 \section{Problem definition}
 Keeping the historical records of transactions on a database system is useful because it stores the entire updates of a database. In our proposed system these historical records could be used to regenerate the form of a table (snapshot) or a record in a specific timestamp. Also, cryptographic techniques could be used to create a cryptographic chain in order to secure these records from tampering, therefore by investigating the authenticity of all transactions applied to an specific record throughout its lifecycle, the trustworthiness of that record could be ensured. Append-only temporal relational tables, if chosen for keeping the historical records, are beneficial because not only they are simple to implement, but also there is the luxary of having RDBMS to manage and perform queries on such tables.
 
-\textbf{Example.} Definition of a timeline was introduced in \textbf{Definition 4}. The historical records obtained from auditing the database transaction could be seen as a timeline. A request to regenerate the form of a table (snapshot) or a record can be depicted in \ref{fig:snapshot_notion}
+\begin{example}
+	Definition of a timeline was introduced in Definition \ref{dfn:timeline}. The historical records obtained from auditing the database transaction could be seen as a timeline. A request to regenerate the form of a table (snapshot) or a record can be depicted in \ref{fig:snapshot_notion}
+\label{example:timeline}
+\end{example}
 
 \begin{figure}
 	\centering
@@ -15,18 +18,11 @@ Keeping the historical records of transactions on a database system is useful be
 \end{figure}
 
 
-\textbf{Proposition. Linear time in creating snapshots}:The notion of creating a
-snapshot which shows the instance of the table $r$ in a certain timestamp $t$,
-using historical records stored in an append-only temporal relational table
-$r^T$ defined in \textbf{Definition 5}. Assume that the tables are updated at a
-constant rate over time, then the complexity of $\mathrm{snapshot}(r, t)$ is
-$$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \leq t\}|)\simeq
-\mathcal{O}(t)$$
-Since $r^T$ could be seen as a timeline, the records which needs to be checked
-can be depicted in \ref{fig:checked_records}. This clearly indicates that a
-linear time is required to compute a snapshot at a timestamp of interest and as
-the size of $r^T$ grows in size, creating snapshot become computationally more
-expensive.
+\begin{prop}[Linear time in creating snapshots]
+	The notion of creating a snapshot that shows the instance of the table $r$ in a certain timestamp $t$, using historical records stored in an append-only temporal relational table $r^T$ defined in \textbf{Definition 5}. Assume that the tables were updated at a constant rate over time, then the complexity of $\mathrm{snapshot}(r, t)$ is $$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \leq t\}|)\simeq \mathcal{O}(t)$$ 
+	Since $r^T$ could be seen as a timeline, the records which need to be checked can be depicted in \ref{fig:checked_records}. This clearly indicates that a linear time is required to compute a snapshot at a timestamp of interest and as the size of $r^T$ grows in size, creating snapshot become computationally more expensive.
+\label{prop:linear_time}
+\end{prop}
 
 \begin{figure}[b]
 	\centering
@@ -35,9 +31,12 @@ expensive.
 	\label{fig:checked_records}
 \end{figure}
 
-\textbf{Example.} Given a normal relational table $r_1$ (Table \ref{table:normal_table_2}) and a temporal relational table $r_1^T$ (Table \ref{table:temporal_table_2}) which contains the historical data of $r_1$, the $r_1$ at $t=2018-04-01$ looked like Table $\ref{table:normal_table_2_t}$
-\begin{center}
+\begin{example}
+	Given a normal relational table $r_1$ (Table \ref{table:normal_table_2}) and a temporal relational table $r_1^T$ (Table \ref{table:temporal_table_2}) which contains the historical data of $r_1$, the $r_1$ at $t=2018-04-01$ looked like Table $\ref{table:normal_table_2_t}$
+\label{example:snapshot_table}
+\end{example}
 
+\begin{center}
 \begin{table}[t]
 	\centering
 	\caption{Normal Relational Table $r_1$}
@@ -86,8 +85,7 @@ expensive.
 \end{center}
 
 \subsection{Query answering using snapshots} 
-
-Using precomputed materialized view has been proven to be effective in reducing computational time of query answering \cite{sohrabi2016materialized} \cite{du2017deepsea}. Since running queries $Q(t)$ on temporal table $r^T$ to build snapshots or generate latest version of a record at a timestamp of interest requires linear time with time complexity of approximately $\mathcal{O}(t)$, therefore in the presence of multiple and concurrent queries, such transactions are computationally expensive and inefficient. We argue that, if a snapshot is computed at the timestamp $t$ and placed on the timeline, computational time of answering to the subsequent queries on $r^T$ is reduced. The notion of having precomputed snapshots for materialization can be depicted as Figure \ref{fig:snapshot_materialization}. Note that the snapshot could exist before or after a query and in both cases the query can use the snaphsot for materialization.
+Using pre-computed materialized view has been proven to be effective in reducing the computational time of query answering \cite{sohrabi2016materialized} \cite{du2017deepsea}. Since running queries $Q(t)$ on temporal table $r^T$ to build snapshots or generate latest version of a record at a timestamp of interest requires linear time with time complexity of approximately $\mathcal{O}(t)$, consequently in the presence of multiple and concurrent queries, such transactions are computationally expensive and inefficient. We argue that, if a snapshot is computed at the timestamp $t$ and placed on the timeline, the computational time of answering to the subsequent queries on $r^T$ is reduced. The notion of having precomputed snapshots for materialization can be depicted as Figure \ref{fig:snapshot_materialization}. Note that the snapshot could exist before or after a query and in both cases, the query can use the snapshot for materialization.
 
 \begin{figure}[t]
 	\centering
@@ -96,10 +94,16 @@ Using precomputed materialized view has been proven to be effective in reducing 
 	\label{fig:snapshot_materialization}
 \end{figure}
 
-\textbf{Proposition} suppose we have a materialized snapshot $snapshot(r,s)$. Then $snapshot(r,t)$ can be computed with complexity:
-$$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \in [s,t]\}|) \simeq \mathcal{O}(|s-t|)$$
+\begin{prop}
+	suppose we have a materialized snapshot $snapshot(r,s)$. Then $snapshot(r,t)$ can be computed with complexity:
+	$$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \in [s,t]\}|) \simeq \mathcal{O}(|s-t|)$$
+\label{prop:materialized_snapshot_complexity}
+\end{prop}
 
-\textbf{Example.} Given a temporal relational table $r_1^T$ (Table \ref{table:temporal_table_3}) and a precomputed snapshot table $s_1$ at timestamp $t = 2018-03-11$(Table \ref{table:snapshot_s1}), we are interested to create a snapshot $s_2$ which is the instance of table $r_1$ at the timestamp of $t = 2018-03-15$. In order to compute snapshot $s_2$, Table \ref{table:transactions_nonmaterialized} shows the transactions which needs to be evaluated without using snapshot $s_1$ and Table \ref{table:transactions_nonmaterialized} is when $s_1$ is used for materialization. This example clearly shows that when creating snapshot $s_2$ (Table \ref{table:snapshot_s2}), less transactions need to be evaluated when $s_1$ is used for materialization.
+\begin{example}
+	Given a temporal relational table $r_1^T$ (Table \ref{table:temporal_table_3}) and a precomputed snapshot table $s_1$ at timestamp $t = 2018-03-11$(Table \ref{table:snapshot_s1}), we are interested to create a snapshot $s_2$ which is the instance of table $r_1$ at the timestamp of $t = 2018-03-15$. In order to compute snapshot $s_2$, Table \ref{table:transactions_nonmaterialized} shows the transactions which needs to be evaluated without using snapshot $s_1$ and Table \ref{table:transactions_nonmaterialized} is when $s_1$ is used for materialization. This example clearly shows that when creating snapshot $s_2$ (Table \ref{table:snapshot_s2}), less transactions need to be evaluated when $s_1$ is used for materialization.
+\label{example:materialized_snapshot_complexity}
+\end{example}
 
 \begin{center}
 \begin{table}
@@ -217,34 +221,34 @@ $$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \in [s,t]\}|) \s
 \subsection{Optimal materialization of snapshots}
 Let $T_q = \{q_1, q_2, \dots, q_n :q_i \in \mathcal{T}\}$ be the timestamps of $n$ queries, each querying the database at $D^T(q_i)$. To save on computational cost in answering the queries on temporal database $D^T$, we propose to compute $m$ number of snapshots $snapshot_j(r,t)$ in optimal timestamps on the timeline to answer to $T_q$ at lowest possible cost. The cost function is defined as the total query answering cost given $m$ number of precomputed snapshots. Note that $m$ is defined based on available resources in the system.
 
-\textbf{Definition. (Cost of Query Answering)}: In the presence of a single materialized precomputed snapshot at timestamp $s \in \mathcal{T}$, the cost of answering the query $T_q$ is calculated as:
-$$\mathrm{cost}(T_q | s) = \sum_{q\in T_q} |q - s|$$
-Now if multiple snapshots at timestamps $S=\{s_1, s_2, \dots, s_m : s_j \in \mathcal{T}\}$ were precomputed and materialized, then 
-$$\mathrm{cost}(T_q|S) = \sum_{q\in T_q} \min\{|q-s| : s\in S\}$$
+\begin{defn}[Cost of Query Answering] 
+	In the presence of a single materialized precomputed snapshot at timestamp $s \in \mathcal{T}$, the cost of answering the query $T_q$ is calculated as:
+	$$\mathrm{cost}(T_q | s) = \sum_{q\in T_q} |q - s|$$
+	Now if multiple snapshots at timestamps $S=\{s_1, s_2, \dots, s_m : s_j \in \mathcal{T}\}$ were precomputed and materialized, then 
+	$$\mathrm{cost}(T_q|S) = \sum_{q\in T_q} \min\{|q-s| : s\in S\}$$
+\label{defn:cost_of_query_answering}
+\end{defn}
 
 \begin{defn}[Optimal Snapshot placement]: 
     For the \emph{single snapshot placement} problem, the goal is to find the timestamp $s^*$ such that 
-$$cost(T_q|s)= Arg min(\sum_{q\in T_q}|q - s|)$$
+	$$cost(T_q|s)= Arg min(\sum_{q\in T_q}|q - s|)$$
 
-The \emph{$m$-snapshot placement} problem is to compute $m$ number of timestamps $S^*=\{s_1, s_2, \dots, s_m: s_j \in \mathcal{T}\}$ to place $m$ number of snapshots for materialization, such that 
-$$cost(T_q|S)= Arg min(\sum_{q\in T_q}\{|q - s|:s \in S\})$$
+	The \emph{$m$-snapshot placement} problem is to compute $m$ number of timestamps $S^*=\{s_1, s_2, \dots, s_m: s_j \in \mathcal{T}\}$ to place $m$ number of snapshots for materialization, such that 
+	$$cost(T_q|S)= Arg min(\sum_{q\in T_q}\{|q - s|:s \in S\})$$
+\label{defn:optimal_snapshot_placement}
 \end{defn}
 
 In the subsequent sections, we present the algorithms to address the problem of snapshot placement.
 
 \section{Optimal single snapshot placement}
-\textbf{Proposition} Let $T_q^* = {q_1,q_2, \dots , q_n}$ be $n$ number of queries performed on the temporal database. $T_q^*$ gives us a valuable insight into the query patterns on the temporal database, that could be used to find optimal position of snapshots.
+We begin solving the problem of snapshot placement by first finding the optimal timestamp for a single snapshot. Let $T_q^* = {q_1,q_2, \dots , q_n}$ be $n$ number of queries performed on the temporal database. $T_q^*$ gives us a valuable insight into the query patterns on the temporal database, that could be used to find optimal position of snapshots.
 
 \begin{prop}
-Given the performed queries $T_q^*$, the optimal position for a single snapshot
-    on the timeline for materialization is $s^*(T_q^*)=median(T_q^*)$ that can
-    be computed in $\mathcal{O}(|T_q^*|)$. 
-    \label{prop:compute-median}
+	Given the performed queries $T_q^*$, the optimal position for a single snapshot on the timeline for materialization is $s^*(T_q^*)=median(T_q^*)$ that can be computed in $\mathcal{O}(|T_q^*|)$. 
+\label{prop:compute-median}
 \end{prop}
     
-Figure
-\ref{fig:optimal_materialization} shows the notion of placing snapshot in
-the median of queries for materialization.
+Figure \ref{fig:optimal_materialization} shows the notion of placing snapshot in the median of queries for materialization.
 
 \begin{figure}
 	\centering
@@ -254,37 +258,52 @@ the median of queries for materialization.
 \end{figure}
 
 \textbf{\emph{Proof of the Proposition~\ref{prop:compute-median}}}:
-At first, the placement of a single snapshot for two queries are discussed and then the argument is generalized for multiple queries:\\
-Assume that there are two queries $T_q=\{q_1,q_2\ : q_i \in \mathcal{T}\}$ on the timeline, such that, $q_1<q_2$. for the placement of a single snapshot $s^* \in \mathcal{T}$ on the timeline, there are several cases which needs to be considered:\\
-\emph{Case 1}:
-$s^* \in [q_1,q_2]$, hence $q_1\leq s^*\leq q_2$.
-in this case, the cost is:\\
-$$cost(T_q|s^*)=\sum_{i=1}^2|q_i-s^*| = (s^*-q_1+q_2-s^*)=(q_2-q_1)$$\\
-from above, it is concluded that the cost of running two queries $q_1$ and $q_2$ when snapshot is placed between them, is equal to the deviation between the two queries.\\
-\emph{Case 2}:
-$s^* \notin [q_1,q_2]$ and $s^* < q_1 < q_2$. for this case the cost could be calculated as follows:
-$$cost_T(T_q|s^*)=\sum_{i=1}^2|q_i-s^*| = (q_1-s^*+q_2-s^*)=(q_1+q_2-2s^*) $$$$>(q_1+q_2-2q_1)=(q_2-q_1)$$\\
-Therefore we conclude that if the snapshot $s^*$ is placed before queries $T_q$, the cost to perform both queries is greater than when the snapshot is placed between the two queries.\\
-\emph{Case 3}:
-$s^* \notin [q_1,q_2]$ and $q_1 < q_2 < s^*$.
-$$cost(T_q|s^*)=\sum_{i=1}^2|q_i-s^*| = (s^*-q_1+s^*-q_2)=(2s^*-q_1-q_2) $$$$>(2q_2-q_1-q_2)=(q_2-q_1)$$\\
-hence, if the snapshot $s^*$ is placed after the queries $T_q$, then the cost of performing those queries are greater than when the snapshot is placed between them.\\
-From case1, case2 and case3, we can conclude that the optimal timestamp on the timeline where we can place the single snapshot $s^* \in \mathcal{T}$ to perform two queries $T_q = \{q_1,q_2:q_i\in \mathcal{T}\}$, where $q_1<q_2$ is when $s^* \in [q_1,q_2]$, meaning that $q_1 \leq s^* \leq q_2$, where the cost is equal to $q_2-q_1$.\\
+	At first, we solve the problem of a single snapshot placement for two queries, and then we generalize the conclusion for multiple queries:
 
-Now, we generalize our conclusion from the cases that we evaluated, for the placement of a single snapshot in the presence of $n$ number of queries on the timeline: 
+	Assume that there are two queries $T_q=\{q_1,q_2\ : q_i \in \mathcal{T}\}$ on the timeline, such that, $q_1<q_2$. for the placement of a single snapshot $s^* \in \mathcal{T}$ on the timeline, there are several cases which needs to be considered:
 
-Suppose that there is a set of queries $T_q=\{q_1,q_2,...,q_n:q_i \in \mathcal{T}\}$ performed on the timeline. To evaluate the most optimal position to place the single snapshot $s^* \in \mathcal{T}$ for materialization, we breakdown the set of queries into the set of nested intervals $[q_1,q_n],[q_2,q_{n-1}],...,[q_i,q_{n+1-i}]$ where $n$ is the number of queries on timeline and $i=0,1,2,...,c$ where $c=\frac{n+1}{2}$ when there are odd number of queries and $c=\frac{n}{2}$ when there are even number of queries present on the timeline.\\ 
-Based on the conclusion that we obtained from examining case 1, case 2 and case 3 earlier, for each nested interval, the cost of queries inside them is minimized if snapshot $s^*$ is placed in a middle of the interval. Therefore if the snapshot is placed in a position which $s^*\in \{ [q_1,q_n] \wedge [q_2,q_{n-1}] \wedge ... \wedge [q_i,q_{n+1-i}] \}$ the overall cost for all queries is minimized. In other words, if the snapshot is placed in a position that is in the middle of all nested intervals, then the total sum of absolute deviation of the snapshot from all queries is minimized. The placement of snapshot $s^*$ in the median position of $T_q$, guarantees that the snapshot is placed in the middle of all nested query intervals, where the cost of queries is calculated as follows:
-$$cost(T_q|s^*)=\sum_{i=1}^n |q_i-s^*| = $$
-$$[(|q_1-s^*|+|q_n-s^*|)+(|q_2-s^*|+|q_{n-1}-s^*|)+...+|q_c-s^*|+|q_{n+1-c}-s^*|)]=$$
-$$[(s^*-q_1+q_n-s^*)+(s^*-q_2+q_{n-1}-s^*)+...+(s^*-q_c+q_{n+1-c}-s^*)]=$$
-$$[(q_n-q_1)+(q_{n-1}-q_2)+...+(q_{n+1-c}-q_c)]$$\\
-where parenthesis indicate the deviation from endpoints for one of nested intervals. In the case when there are odd number of queries performed on the timeline, the innermost interval is $[q_{\frac{n+1}{2}},q_{\frac{n+1}{2}}]$ and the position of $q_{\frac{n+1}{2}}$ is the optimal position to place snapshot $s^*$. also when there are even number of queries the innermost interval is $[q_{\frac{n}{2}},q_{\frac{n}{2}+1}]$, therefore if we choose snapshot $s^*$'s position to be at $q_{\frac{n}{2}}\leq s^*\leq q_{\frac{n}{2}+1}$,it guarantees that the snapshot exists inside each of nested intervals, and hence the sum of absolute deviation is minimized. \\
+	\emph{Case 1}:
+	$s^* \in [q_1,q_2]$, hence $q_1\leq s^*\leq q_2$.
+	in this case, the cost is:
+
+	$$cost(T_q|s^*)=\sum_{i=1}^2|q_i-s^*| = (s^*-q_1+q_2-s^*)=(q_2-q_1)$$
+
+	from case 1, we can infer that the cost of running two queries $q_1$ and $q_2$ when the snapshot is placed between them, is equal to the deviation between the two queries.
+
+	\emph{Case 2}:
+	$s^* \notin [q_1,q_2]$ and $s^* < q_1 < q_2$. for this case the cost could be calculated as follows:
+	$$cost_T(T_q|s^*)=\sum_{i=1}^2|q_i-s^*| = (q_1-s^*+q_2-s^*)=(q_1+q_2-2s^*) $$$$>(q_1+q_2-2q_1)=(q_2-q_1)$$
+
+	Therefore we conclude that if the snapshot $s^*$ is placed before queries $T_q$, the cost to perform both queries is greater than when the snapshot is placed between the two queries.
+
+	\emph{Case 3}:
+	$s^* \notin [q_1,q_2]$ and $q_1 < q_2 < s^*$.
+	$$cost(T_q|s^*)=\sum_{i=1}^2|q_i-s^*| = (s^*-q_1+s^*-q_2)=(2s^*-q_1-q_2) $$$$>(2q_2-q_1-q_2)=(q_2-q_1)$$
+
+	hence, if the snapshot $s^*$ is placed after the queries $T_q$, then the cost of performing those queries are greater than when the snapshot is placed between them.
+
+	From case1, case2 and case3, we can conclude that the optimal timestamp on the timeline that we can place the single snapshot $s^* \in \mathcal{T}$ to perform two queries $T_q = \{q_1,q_2:q_i\in \mathcal{T}\}$, where $q_1<q_2$ is when $s^* \in [q_1,q_2]$, meaning that $q_1 \leq s^* \leq q_2$, where the cost is equal to $q_2-q_1$.
+
+	Now, we generalize our conclusion from the cases that we evaluated, for the placement of a single snapshot in the presence of $n$ number of queries on the timeline: 
+
+	Suppose that there is a set of queries $T_q=\{q_1,q_2,...,q_n:q_i \in \mathcal{T}\}$ performed on the timeline. To evaluate the most optimal position to place the single snapshot $s^* \in \mathcal{T}$ for materialization, we breakdown the set of queries into the set of nested intervals $[q_1,q_n],[q_2,q_{n-1}],...,[q_i,q_{n+1-i}]$ where $n$ is the number of queries on timeline and $i=0,1,2,...,c$ where $c=\frac{n+1}{2}$ for odd number of queries and $c=\frac{n}{2}$ for even number of queries present on the timeline.
+
+	Based on the conclusion that we obtained from examining case 1, case 2 and case 3 earlier, for each nested interval, the cost of queries inside them is minimized if snapshot $s^*$ is placed in a middle of the interval. Therefore if the snapshot is placed in a position which $s^*\in \{ [q_1,q_n] \wedge [q_2,q_{n-1}] \wedge ... \wedge [q_i,q_{n+1-i}] \}$ the overall cost for all queries is minimized. In other words, if the snapshot is placed in a position that is in the middle of all nested intervals, then the total sum of absolute deviation of the snapshot from all queries is minimized. The placement of snapshot $s^*$ in the median position of $T_q$ guarantees that the snapshot is placed in the middle of all nested query intervals, where the cost of queries is calculated as follows:
+	$$cost(T_q|s^*)=\sum_{i=1}^n |q_i-s^*| = $$
+	$$[(|q_1-s^*|+|q_n-s^*|)+(|q_2-s^*|+|q_{n-1}-s^*|)+...+|q_c-s^*|+|q_{n+1-c}-s^*|)]=$$
+	$$[(s^*-q_1+q_n-s^*)+(s^*-q_2+q_{n-1}-s^*)+...+(s^*-q_c+q_{n+1-c}-s^*)]=$$
+	$$[(q_n-q_1)+(q_{n-1}-q_2)+...+(q_{n+1-c}-q_c)]$$\\
+	where parenthesis indicate the deviation from endpoints for one of nested intervals. In the case when there are odd number of queries performed on the timeline, the innermost interval is $[q_{\frac{n+1}{2}},q_{\frac{n+1}{2}}]$ and the position of $q_{\frac{n+1}{2}}$ is the optimal position to place snapshot $s^*$. also when there are even number of queries the innermost interval is $[q_{\frac{n}{2}},q_{\frac{n}{2}+1}]$, therefore if we choose snapshot $s^*$'s position to be at $q_{\frac{n}{2}}\leq s^*\leq q_{\frac{n}{2}+1}$,it guarantees that the snapshot exists inside each of nested intervals, and hence the sum of absolute deviation is minimized. 
+
 
 \section{Optimal multiple snapshot placement}
 In the presence of thousands of queries on a temporal database with millions of records, having a single snapshot reduces the cost of query answering but it is still not enough. Therefore, to reduce the overall cost of query answring, optimal timestamps should be computed on the timeline of the temporal database to place snapshots for materialization. In the following section, different approaches to compute the optimal positions on the timeline are discussed.
 
-\textbf{\emph{Proposition (Segmentation of queries)}}: Given an ordered set of snapshot timestamps $S=\{s_1,s_2,...,s_m:s_i \in \mathcal{T}\}$, such that $s_i \leq s_{i+1}$, and $n$ number of queries $Q = \{q_1,q_2,...,q_n: q_i \in \mathcal{T}\}$, snapshots create $m$ number of non-overlapping segments on the queries $Q[1,i_1],Q[i_1+1,i_2],...,Q[i_{m-1},i_m]$ such that queries in the segment $Q[i_j,i_{j+1}]$ use $s_j$ to answer the queries in the optimal query answering strategy. The notion of creating segmentations is depicted in Figure \ref{fig:segmentation}.
+\begin{prop}[Segmentation of queries] 
+	Given an ordered set of snapshot timestamps $S=\{s_1,s_2,...,s_m:s_i \in \mathcal{T}\}$, such that $s_i \leq s_{i+1}$, and $n$ number of queries $Q = \{q_1,q_2,...,q_n: q_i \in \mathcal{T}\}$, snapshots create $m$ number of non-overlapping segments on the queries $Q[1,i_1],Q[i_1+1,i_2],...,Q[i_{m-1},i_m]$ such that queries in the segment $Q[i_j,i_{j+1}]$ use $s_j$ to answer the queries in the optimal query answering strategy.
+\label{prop:segmentation_of_queries}
+\end{prop}
+The notion of creating segmentations is depicted in Figure \ref{fig:segmentation}.
 
 \begin{figure}
 	\centering
@@ -297,11 +316,13 @@ In the presence of thousands of queries on a temporal database with millions of 
 
 Let $\mathrm{opt}(Q, m)$ be the optimal $m$-snapshot placements for the query workload $Q$. Denote $Q[i,j] = \{q_i,q_{i+1},...,q_{j-1},q_j\}$.
 
-\textbf{\emph{Proposition. (Optimality of sub-problems)}}
-Let $S^* = \mathrm{opt}(Q, m)$.  Let $\mathcal{Q}$ be the partition of segments created by $S^*$.  Then, the prefix of $S^*$ is also an optimal $m-1$ snapshot placement of the prefix of $\mathcal{Q}$. Formally, $$\mathrm{prefix}(S^*) = \mathrm{opt}(\cup\mathrm{prefix}(\mathcal{Q}), m-1)$$
-We can formulate a recursive definition of $\mathrm{opt}(Q, m)$ using
-Proposition~\ref{thm:subopt}.  The intuition is that we try out all possible
-{\em last} segment of $Q$, and pick the one with the lowest cost.
+\begin{prop}[Optimality of sub-problems]
+	Let $S^* = \mathrm{opt}(Q, m)$.  Let $\mathcal{Q}$ be the partition of segments created by $S^*$.  Then, the prefix of $S^*$ is also an optimal $m-1$ snapshot placement of the prefix of $\mathcal{Q}$. Formally, $$\mathrm{prefix}(S^*) = \mathrm{opt}(\cup\mathrm{prefix}(\mathcal{Q}), m-1)$$
+\label{prop:optimality_of_subproblems}
+\end{prop}
+
+\subsection{recursive approach to find optimal segmentations of the timeline}
+We can formulate a recursive definition of $\mathrm{opt}(Q, m)$ using Proposition~\ref{prop:optimality_of_subproblems}. The intuition is that we try out all possible {\em last} segment of $Q$, and pick the one with the lowest cost.
 
 The recursive definition of $\mathrm{opt}(Q, m)$ is given as:
 
@@ -316,7 +337,10 @@ The recursive definition of $\mathrm{opt}(Q, m)$ is given as:
 \end{itemize}
 The recursive formulation of $\mathrm{opt}(Q, m)$ requires $\mathcal{O}(2^{m})$.
 
-\textbf{Example.} Given the queries $Q=\{q_1=2,q_2=4,q_3=9,q_4=11,q_5=17,q_6=20\}$ (Figure \ref{fig:example_recursive_queries}) and maximum number of snapshots $m=3$, the goal is to find the most optimal segmentations using recursive algorithm to place snapshots for materialization. The steps to compute $m$ number of optimal segmentations is shown in Figure \ref{fig:example_recursive_steps}. In this example, the most optimal segmentation possible for 3 snapshots is when $segment_1 = \{q_0,q_1\}$, $segment_2 = \{q_2,q_3\}$, $segment_3= \{q_4,q_5\}$ where the total cost is 7 units. Figure \ref{fig:example_recursive_segmentation}.
+\begin{example}
+	Given the queries $Q=\{q_1=2,q_2=4,q_3=9,q_4=11,q_5=17,q_6=20\}$ (Figure \ref{fig:example_recursive_queries}) and maximum number of snapshots $m=3$, the goal is to find the most optimal segmentations using recursive algorithm to place snapshots for materialization. The steps to compute $m$ number of optimal segmentations is shown in Figure \ref{fig:example_recursive_steps}. In this example, the most optimal segmentation possible for 3 snapshots is when $segment_1 = \{q_0,q_1\}$, $segment_2 = \{q_2,q_3\}$, $segment_3= \{q_4,q_5\}$ where the total cost is 7 units. Figure \ref{fig:example_recursive_segmentation}.
+\label{example:recursive_segmantation}
+\end{example}
 
 \begin{figure}[b]
 	\centering
@@ -341,12 +365,12 @@ The recursive formulation of $\mathrm{opt}(Q, m)$ requires $\mathcal{O}(2^{m})$.
 \end{figure}
 
 
-\subsection{Dynamic programming approach to optimal snapshot placements}
+\subsection{Dynamic programming approach to find optimal segmentation of the timeline}
 
-Dynamic programming improves the time complexity of finding optimal segmentations in recursive algorithm by utilizing memoization technique. In the memoization technique, if the cost of a segmentation is calculated, it is stored in a table where the recursive calls can look up the results in the table instead of recalculating them. We can build a table $\mathbf{OPT}$ as a two dimensional array
+Dynamic programming improves the time complexity of finding optimal segmentations in recursive algorithm by utilizing memoization technique \cite{johnsonbaugh2003algorithms}. In the memoization technique, if the cost of a segmentation is calculated, it is stored in a table where the recursive calls can look up the results in the table instead of recalculating them. We can build a table $\mathbf{OPT}$ as a two dimensional array
 indexed by $(i, k)$ where $i\in [1, n]$ and $k\in [1, m]$.  Each entry
 in the table $\mathbf{OPT}[i,k] = \mathrm{opt}(Q[1,i], k)$.
-We can compute $\mathbf{OPT}[i,k]$ in a bottom up fashion \cite{}.
+We can compute $\mathbf{OPT}[i,k]$ in a bottom up fashion \cite{kossmann2000iterative}.
 
 \begin{algorithm}[H]
 \SetAlgoLined
@@ -370,7 +394,10 @@ We can compute $\mathbf{OPT}[i,k]$ in a bottom up fashion \cite{}.
 
 The complexity of computing all the entries of $\mathbf{OPT}$ is $\mathcal{O}(mn^2)$.
 
-\textbf{Example.} Given a set of queries $Q={q_0=2,q_1=4,q_2=9,q_3=11}$, we want to compute 3 segmentations from these queries, such that putting a snapshot in each segmentation, make the overall cost of answering to the queries optimal. The process of computing optimal snapshots has been showin Table \ref{table:dynamic_programming}. This method is more efficient than recursive algorithm as for example in the memoization table T[3][2], the recursive call uses the cost stored in T[2][1], T[2][2] and T[2][3] without the need to recalulate them. In this example, the most optimal overall cost is 2 which is achieved by either $\{segment1 =[q_0,q_1],segment2=[q_2],segment3=[q_3]\}$ or $\{segment1 =[q_0], segment2 = [q_1], segment3 = [q_2, q_3]\}$
+\begin{example}
+	Given a set of queries $Q={q_0=2,q_1=4,q_2=9,q_3=11}$, we want to compute 3 segmentations from these queries, such that putting a snapshot in each segmentation, make the overall cost of answering to the queries optimal. The process of computing optimal snapshots has been showin Table \ref{table:dynamic_programming}. This method is more efficient than recursive algorithm as for example in the memoization table T[3][2], the recursive call uses the cost stored in T[2][1], T[2][2] and T[2][3] without the need to recalulate them. In this example, the most optimal overall cost is 2 which is achieved by either $\{segment1 =[q_0,q_1],segment2=[q_2],segment3=[q_3]\}$ or $\{segment1 =[q_0], segment2 = [q_1], segment3 = [q_2, q_3]\}$
+\label{example:dynamic_programming}
+\end{example}
 
 \begin{table}[]
 \scriptsize
@@ -417,7 +444,11 @@ $min\left\{\begin{array}{lll}  0+7 = 7 \\ 0 + 2 = 2 \\ 2+0=2 \\ 4+0 = 4 \end{arr
 \subsection{Heuristic snapshot placements}
 In the heuristic technique, the optimal solution to a problem is not guaranteed however because of the low computational cost and satisfactory results, this approach is used when non-heuristic techniques are inefficient to implement. For the purpose of finding the optimal segmentation of queries for optimal query answering, we utilized K-means clustering technique.
 
-\textbf{Proposition}: Given $T_q^* = \{q_0,q_1,...,q_n\}$ as $n$ number of queries performed on the temporal relation $r^T$, we would like to group the $q_i \in T_q^*$ into $m$ number of \textit{"clusters"}. Applying K-means clustering methodology to this problem requires to minimize the objective function defined as:
+\begin{prop} 
+	Given $T_q^* = \{q_0,q_1,...,q_n\}$ as $n$ number of queries performed on the temporal relation $r^T$, we would like to group the $q_i \in T_q^*$ into $m$ number of \textit{"clusters"}. 
+\label{prop:heuristic_method}
+\end{prop}
+Applying K-means clustering methodology to this problem requires to minimize the objective function defined as:
 $$J = \sum_{j=1}^{m} \sum_{i=1}^{n} ||q_i^{(j)}-\mu_j||^2$$
 where $\mu_j$ is the centroid of $j^{th}$ cluster and $||q_i^{(j)}-\mu_j||^2$ is the squared error function which indicates the distance between each query and their assigned centroids.
 Minimizing objective function is achieved by the relocation of $\mu_j$ until no changes occur in the objective function.
@@ -449,23 +480,34 @@ In this section we extensively talk about the implementation of a Blockchain bas
 Let $r_i^T$ be the temporal relational table with attributes $attr(r_i^T)$=$\{attr(r_i), updated,deleted\}$, denote $\alpha_u$ as the security information of the user $u$, including the user's cryptographic keys $<K_{priv}^u, K_{pub}^u>$.
 
 
-\textbf{Proposition. digital signature of the transactions}. Given a set of records $rec_j =\{rec_1,rec_2,...,rec_n\} \in r_i^T$, the signature of each record could be computed as $$signature(rec_j|\alpha_u)= encrypt(hash(rec_j),K_{priv}^u)$$  
+\begin{defn}[digital signature of the transactions] 
+	Given a set of records $rec_j =\{rec_1,rec_2,...,rec_n\} \in r_i^T$, the signature of each record could be computed as $$signature(rec_j|\alpha_u)= encrypt(hash(rec_j),K_{priv}^u)$$  
+\label{defn:digital_signature}
+\end{defn}
 
 Digital signatures provide a strong mean to identify whether or not a record has been submitted by a ligitimate user. They are also used to certify if the record has not been altered as any minor change in the record results in a completely different digital signature. Also faking a digital signature is computationally infeasable, therefore digital signatures provide a strong security guarantees \cite{katz2010digital}.
 
-\textbf{Propositin. Temporal table with chained security information}.  The temporal relational table with chained security information $r_i^{T*}$ is a table with the attributes $$attr(r_i^{T*}) = attr(r_i^T) \cup \{username,currentSignature, previousSignature)\}$$ where $username$ is the username of the user $u$ who submitted the transaction, $currentSignature = signature(rec_j)$ is the digital signature of the submitted transaction $rec_j$ by $u$ and $previousSignature = rec_{j-1}[currentSignature]$ is the signature of the previous record stored in $r_i^T$. We are interested in stroring the username of the user who submitted the transaction because it enables us to fetch the public key of the user and verify their digital signature on the submitted record.
+\begin{defn}[Temporal table with chained security information]
+	The temporal relational table with chained security information $r_i^{T*}$ is a table with the attributes $$attr(r_i^{T*}) = attr(r_i^T) \cup \{username,currentSignature, previousSignature)\}$$ where $username$ is the username of the user $u$ who submitted the transaction, $currentSignature = signature(rec_j)$ is the digital signature of the submitted transaction $rec_j$ by $u$ and $previousSignature = rec_{j-1}[currentSignature]$ is the signature of the previous record stored in $r_i^T$. 
+\label{defn:temporal_blockchain}
+\end{defn}
 
-\textbf{Proposition. Chain verification}
-To verify if a chain of the records are valid, the following steps are proposed:
+We are interested in stroring the username of the user who submitted the transaction because it enables us to fetch the public key of the user and verify their digital signature on the submitted record.
 
-\begin{itemize}
-	\item \textbf{step 1.} verify the $currentSignature$ of individual records.
-	\item \textbf{step 2.} check if $rec_j[previousSignature] == rec_{j-1}[currentSignature]$ except for $rec_0$
-\end{itemize}
-
+\begin{defn}[Chain verification]
+	To verify if a chain of the records are valid, the following steps are proposed:
+	\begin{itemize}
+		\item \textbf{step 1.} verify the $currentSignature$ of individual records.
+		\item \textbf{step 2.} check if $rec_j[previousSignature] == rec_{j-1}[currentSignature]$ except for $rec_0$
+	\end{itemize}
+\label{chain_verification}
+\end{defn}
 A chain is said to be broken if inconsistent information being gained in any of the above steps.
 
-\textbf{Example.} The Table \ref{temporal_blockchain_table} is an example of a temporal relational table with chained security information. With assumption that each record is a block, this table also could be depicted as Figure \ref{fig:blockchain_representation} which is the blockchian representation of Table \ref{temporal_blockchain_table}.
+\begin{example} 
+	The Table \ref{temporal_blockchain_table} is an example of a temporal relational table with chained security information. With assumption that each record is a block, this table also could be depicted as Figure \ref{fig:blockchain_representation} which is the blockchian representation of Table \ref{temporal_blockchain_table}.
+\label{example:blockchain}
+\end{example}
 
 \begin{center}
 \begin{table}
@@ -495,15 +537,20 @@ A chain is said to be broken if inconsistent information being gained in any of 
 \subsection{Trusted Snspshots}
 Using blockchain to ensure the trustworthiness of data, requires a consistent chain of blocks. To make sure that a chain is consistent, all the blocks in the temporal table need to be visited and their trustworthiness need to be examined. This computation requires linear time and makes application of snapshot materialization that we discussed earlier pointless. To solve this problem, we propose the idea of trusted snapshots.
 
-\textbf{proposition. Trusted Snapshots}. The trusted snapshot $s^*$ is a table with attributes $attr(s)\cup \{signature\}$ where $$tail(s^*[signature]) = signature(\sum_{i=0}^n (rec_i):rec_i \in s)$$
+\begin{defn}[Trusted Snapshots] 
+	The trusted snapshot $s^*$ is a table with attributes $attr(s)\cup \{signature\}$ where $$tail(s^*[signature]) = signature(\sum_{i=0}^n (rec_i):rec_i \in s)$$
+\label{defn:trusted_snapshot}
+\end{defn}
 
-\textbf{Proposition. Trusted snaphsot materialization} We earlier talked about the materialization of snapshots for the sake of less computational time when querying the temporal database. To ensure the trustworthiness of the records while materializing trusted snapshots, we propose the following steps to be taken:
-\begin{itemize}
-	\item \textbf{step 1.} the signature of the materialized snapshot to be checked.
-	\item \textbf{step 2.} The trustworthiness of the records which fall in between the query $q$ and snapshot $s$ to be verified using blockchain verification.
-\end{itemize}
-The steps which should be taken to verify the trustworthiness of the records in the case of snapshot materialization could be depicted as Figure \ref{fig:blockchain_snapshot_materialization}.
-
+\begin{defn}[Trusted snaphsot materialization] 
+	We earlier talked about the materialization of snapshots for the sake of less computational time when querying the temporal database. To ensure the trustworthiness of the records while materializing trusted snapshots, we propose the following steps to be taken:
+	\begin{itemize}
+		\item \textbf{step 1.} the signature of the materialized snapshot to be checked.
+		\item \textbf{step 2.} The trustworthiness of the records which fall in between the query $q$ and snapshot $s$ to be verified using blockchain verification.
+	\end{itemize}
+	The steps which should be taken to verify the trustworthiness of the records in the case of snapshot materialization could be depicted as Figure \ref{fig:blockchain_snapshot_materialization}.
+\label{defn:trusted_snapshot}
+\end{defn}
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{figs/trusted_snapshot_materialization.pdf}
