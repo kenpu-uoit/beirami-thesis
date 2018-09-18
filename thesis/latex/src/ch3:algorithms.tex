@@ -371,27 +371,6 @@ Dynamic programming improves the time complexity of finding optimal segmentation
 indexed by $(i, k)$ where $i\in [1, n]$ and $k\in [1, m]$.  Each entry
 in the table $\mathbf{OPT}[i,k] = \mathrm{opt}(Q[1,i], k)$.
 We can compute $\mathbf{OPT}[i,k]$ in a bottom up fashion \cite{kossmann2000iterative}.
-
-\begin{algorithm}[H]
-\SetAlgoLined
-\caption{Dynamic programming method to compute $m$ number of optimal segmentations}
-\label{alg:dynamic_programming}
-\DontPrintSemicolon
- \SetKwFunction{FMain}{computeOPT}
- \SetKwProg{Fn}{Function}{:}{}
- \Fn{\FMain{$Q$, $m$}}{
-    $n = |Q|$\;
-    \textbf{OPT}$[i,0]$ = $\infty$ \;
-    \For{$k \gets 1$ \KwTo $m$}{
-    	\For{$i \gets 1$ \KwTo $n$}{
-    		$j^* = \underset{j\in[1,i]}{\mathrm{argmin}}(\mathrm{cost}(\mathbf{OPT}[j,k-1]) + \mathrm{cost}(Q[j+1, n]))$ \;
-    		$\mathbf{OPT}[i,k] = \mathbf{OPT}[j^*, k-1] \cup \{\mathrm{median}(Q[j+1], n)\}$ 
-    	}
-    }
-}
- 
-\end{algorithm}
-
 The complexity of computing all the entries of $\mathbf{OPT}$ is $\mathcal{O}(mn^2)$.
 
 \begin{example}
@@ -452,26 +431,6 @@ Applying K-means clustering methodology to this problem requires to minimize the
 $$J = \sum_{j=1}^{m} \sum_{i=1}^{n} ||q_i^{(j)}-\mu_j||^2$$
 where $\mu_j$ is the centroid of $j^{th}$ cluster and $||q_i^{(j)}-\mu_j||^2$ is the squared error function which indicates the distance between each query and their assigned centroids.
 Minimizing objective function is achieved by the relocation of $\mu_j$ until no changes occur in the objective function.
-
-\begin{algorithm}[H]
-\SetAlgoLined
-\caption{K-means clustering to compute $m$ number of segmentations}
-\label{alg:Kmeans}
-\DontPrintSemicolon
- \SetKwFunction{FMain}{K-Means}
- \SetKwProg{Fn}{Function}{:}{}
- \Fn{\FMain{$T_q^*\{q_1,...,q_n\}$, $m$}}{
-    $\{\mu_1,...,\mu_m\} \gets SelectRandomSeeds(\{q_i\in T_q^*\},m)$ \;
-	\For{$i \gets 1$ \KwTo $n$}{
-		$J \gets argmin_{J^*}||\mu_{J^*}-q_i||^2$ \;
-		$\mathcal{L}_j \gets \mathcal{L}_j \cup \{q_i\}$ 
-	}
-	\For{$j \gets 1$ \KwTo $m$}{
-		$\mu_j \gets \frac{1}{\mathcal{L}_j} \sum_{q \in \mathcal{L}_j} q $
-	}
-	\Return\{$\mu_1,...,\mu_m$\}
-}
-\end{algorithm}
 
 \section{Blockchain}
 In this section we extensively talk about the implementation of a Blockchain based mechanism to verify the trustworthiness of the records. In the first step we talk about temporal tables with security information and then we discuss about the procedure of creating a chain of the records in these tables. In the next steps we talk about steps and rules that needs to be applied in order to verify the trustworthiness of the records in a table, as well as utilizing this mechanism in the case of snapshot materialization.
