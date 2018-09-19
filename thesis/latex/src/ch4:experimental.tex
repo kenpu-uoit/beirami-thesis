@@ -138,7 +138,7 @@
 				}
 			\end{algorithm}
 
-		\subsection{Implementation of heuristic method}
+		\subsection{Implementation of heuristic method} \label{sec:implementation_heuristic}
 			To evaluate the performance of heuristic method in finding $m$ number of optimal segmentation of the timeline for snapshot placement, we chose K-means clustering method. The K-means clustering algorithm is given as Algorithm \ref{alg:Kmeans}.
 			\begin{algorithm}[H]
 				\SetAlgoLined
@@ -160,7 +160,7 @@
 				}
 			\end{algorithm}
 
-		\subsection{Evaluating approaches for optimal placement of $m$ snapshots}
+		\subsection{Evaluating approaches for optimal placement of $m$ snapshots} \label{sec:evaluating_approaches}
 			As discussed in section \ref{}, we examine 3 approaches to find the optimal timestamps for $m$ number of snashots for materialization. The performed approaches are:
 			\begin{itemize}
 				\item Recursive algorithm.
@@ -218,7 +218,7 @@
 				\begin{tabular}{p{2cm}p{3cm}p{3cm}}
 					\hline
 					Snapshots  & Dynamic  & Clustering \\ \hline
-					1 &   0.01  \\  
+					1 &   0.01 & 0.01 \\  
 					2 &  0.17  & 0.02  \\
 					3 &  0.34  & 0.03  \\
 					4 & 0.52  & 0.04  \\
@@ -293,7 +293,7 @@
 			\end{table}
 			\end{center}
 
-			\subsection{Evaluating the heuristic method}
+			\subsection{Evaluating the heuristic method} \label{sec:evaluating_heuristic}
 			In the previous section we showed that the heuristic method (K-Means clustering method in this case) is computationally more favorable than the recursive algorithm and dynamic programming method. However unlike recursive algorithm and dynamic programming which compute the exact optimal timestamps for the snapshots, the heuristic method approximates the optimal timestamps. Because of this, in the heuristic method, finding the most optimal timestamps for the snapshots is not guaranteed. Therefore a comparison was needed to evaluate if the heuristic method could be chosen over the other two method.
 
 			We previousely showed that as the number of snapshots grow, the overall cost of answering to the queries drops. In this experiment, we compared the outcome of the dynamic programming and K-Means clustering method in varying number of snapshots to see how increasing the number of snapshots affect the overall cost of query answering in both methods. As it could be seen in Figure \ref{fig:dynamic_vs_heuristic} and Table \ref{table:dynamic_vs_heuristic}, the outcome of dynamic programming and heuristic method is slightly different but the all in all the result of the heuristic method is satisfactory.
@@ -394,4 +394,22 @@
 			\end{table}
 			\end{center}
 
-	\section{Discussion}
+		\section{Discussion}
+				Each method has their pros and cons which are shown in Table \ref{table:segmentation_comparison}. In the next section we support the comparison between methods with different experiments and we depict the observations followed by drawing a conclusion. 
+		
+		\begin{center}
+			\begin{table}
+				\centering
+				\small
+				\caption{Snapshot $s_2$ at $t = 2018-03-15$}
+				\label{table:segmentation_comparison}
+				\begin{tabular}{p{4cm}p{4cm}p{4cm}}
+					\hline
+					method & Pros  & Cons  \\ \hline
+					Recursive algorithm & Exact optimal solution & computationally expensive for large number of queries and segmentations   \\ \hline
+					Dynamic programming & Exact optimal solution & computationally expensive for large number of queries and segmentations\\ 
+					  & Computationally cheaper than dynamic programming &    \\ \hline
+					K-Means clustering & Fast in computation & optimal solution not guaranteed \\ \hline
+				\end{tabular}
+			\end{table}
+		\end{center}
