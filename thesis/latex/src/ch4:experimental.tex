@@ -395,21 +395,26 @@
 			\end{center}
 
 		\section{Discussion}
-				Each method has their pros and cons which are shown in Table \ref{table:segmentation_comparison}. In the next section we support the comparison between methods with different experiments and we depict the observations followed by drawing a conclusion. 
-		
-		\begin{center}
-			\begin{table}
-				\centering
-				\small
-				\caption{Snapshot $s_2$ at $t = 2018-03-15$}
-				\label{table:segmentation_comparison}
-				\begin{tabular}{p{4cm}p{4cm}p{4cm}}
-					\hline
-					method & Pros  & Cons  \\ \hline
-					Recursive algorithm & Exact optimal solution & computationally expensive for large number of queries and segmentations   \\ \hline
-					Dynamic programming & Exact optimal solution & computationally expensive for large number of queries and segmentations\\ 
-					  & Computationally cheaper than dynamic programming &    \\ \hline
-					K-Means clustering & Fast in computation & optimal solution not guaranteed \\ \hline
-				\end{tabular}
-			\end{table}
-		\end{center}
+			In this chapter the effectiveness of the proposed solutions to both lower the cost of queries on the temporal tables and add transaction transparency to the stored records in a database were put into experiment. We argued that the system could be developed by various tools but in order to generalize the application of our proposed methods for similar systems, we chose the most favorable programming languages and tools by developers.
+
+			The effectiveness of the snapshot materialization was the first set of experiments which was carried out. The experiments proved our claim that for a single snapshot placement for materialization, the median of the perviousely performed queries is the most optimal timestamp. The experiments also showed that for calculating the multiple optimal segmentation of queries on the timeline, the heuristic method beats the recursive and dynamic programming method in terms of computational time complexity. Our experiments showed that although the optimal solution is not guaranteed in the heuristic method, but the results obtained by using this method are satisfactory. For the sake of reducing the computational time even more, we lowered the iteration of the heuristic method and the results obtained were still satisfactory.
+
+			Briefly speaking, the advantages and disadvantages of utilizing recursive algorithm, dynamic programming and heuristic method could be shown in Table \ref{table:segmentation_comparison}. 
+			\begin{center}
+				\begin{table}
+					\centering
+					\small
+					\caption{Snapshot $s_2$ at $t = 2018-03-15$}
+					\label{table:segmentation_comparison}
+					\begin{tabular}{p{4cm}p{4cm}p{4cm}}
+						\hline
+						method & Pros  & Cons  \\ \hline
+						Recursive algorithm & Exact optimal solution & computationally expensive for large number of queries and segmentations   \\ \hline
+						Dynamic programming & Exact optimal solution & computationally expensive for large number of queries and segmentations\\ 
+						  & Computationally cheaper than dynamic programming &    \\ \hline
+						K-Means clustering & Fast in computation & optimal solution not guaranteed \\ \hline
+					\end{tabular}
+				\end{table}
+			\end{center}
+
+			

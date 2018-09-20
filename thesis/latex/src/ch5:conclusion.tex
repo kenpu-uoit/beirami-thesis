@@ -1,5 +1,34 @@
 \chapter{Conclusion}
 
-\section{Summary}
+	\section{Summary}
+		In this work, implementation of a Blockchain based tool was proposed which works on top of the Relational Database Management System (RDBMS) and ensures the trustworthiness of the records that are stored in the relational database tables. This system follows a mechanism to store the historical records of the transactions on the relational tables in the temporal databases which later on utilizes the stored data for forensic purposes. To implement the system, two major problems was identified: 
+		\begin{itemize}
+			\item Lower the cost of queries performed on the temporal database.
+			\item Add data transparency to the stored reocords in the temporal table.
+		\end{itemize}
 
-\section{Future work and other remarks}
+		The problem of linear time and storage to perform queries on the temporal databases shown both theoretically and experimentally. In the presence of multiple and concurrent queries on the temporal table, performing such queries are inefficient and infeasable. To solve this problem, the materialization of multiple precomputed snapshots proposed. The proposed method advices that keeping the timestamp of previous queries which was performed on the temporal table
+		gives insight into the pattern of queries on the table and identifies hotspots that subsequent queries have high chance of falling into. Optimal segmentation of the performed queries, clusters the hotspots and specify a precomputed snapshot for each cluster to materialize. It is expected that this method result in lowering the overall cost of query answering on the temporal database.
+
+		For the placement of a single snapshot for materialization, both mathematical and experimental approach showed that the most optimal timestamps is the median of previousely performed queries. This notion could be extended for placing multiple precomputed snapshots for materialization, in the sense that when optimal multiple segmentations of the queries were computed, the optimal place in each segmentation for placing the snapshot is the median of queries in that segment.
+
+		Finding the optimal multiple segmentations of the previousely performed queries was performed using three different aproaches: recursive algorithm, dynamic programming and heuristic method. The experiments showed that although the heuristic method does not guarantee the most optimal solution, but because of less computational time in comparison with other two methods and returning satisfactory results, it is more favorable to be utilized in this project.
+
+		Using Blockchain to add record transparency of temporal tables, require these tables to have a few mandatory attributes: the transaction submitters information, the digital signature of the record signed by transaction submitter's cryptoraphic keys and the previous record's digital signature. Having the digital signature of the previous record chains the submitted records together and makes any malicious or accidental record modification evident.
+
+		The validation of the chain of records is done by
+		\begin{itemize}
+			\item making sure that the current record's \it{'previous signature'} matches the previous record's \it{'current signature'} attribute for all the records in the table.
+			\item validate the signature of every single record by using the transaction submitters cryptographic keys.
+		\end{itemize}
+		
+		This procedures are expensive and contradicts the idea of snapshot materialization that we discussed earlier. To solve the problem, it is recommended to create a digital signature of the precomputed snapshots, then the validation of the chain of records is done by:
+		\begin{itemize}
+			\item check the digital signature of the snapshot that the query is materializing.
+			\item for the records that fall in between the query timestamp and snapshot timestamp, use the manual chain validation technique
+		\end{itemize}
+
+		Digitally signing the snapshots require the system to check the authenticity of the records that are stored in it beforehand. This procedure requires the system to manually check the validation of the chain of records. This is an expensive procedure, specially for the snapshots that are placed at the end of the timeline. To reduce the cost, it was proposed that the manual chain validation to be performed for the first snapshot and the subsequent snapshots materialize their previous snapshot for chain validation.
+
+	\section{Future work and other remarks}
+		Possible extensions that could be added are: adding the revision functionality in which the maliciousely altered records are revised to their previous form. The application of the work is endless and it ranges from ordinary relational database of an enterprise, to the databases of the social media and it could be used to find th origin of a submitted post in these mediums.
