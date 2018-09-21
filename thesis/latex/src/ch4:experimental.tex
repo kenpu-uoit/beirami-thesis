@@ -117,7 +117,7 @@
 			\end{algorithm}
 
 		\subsection{Implementation of dynamic programming} \label{sec:dynamic_implementation}
-			Dynamic programming was the second approach that we utilized in order to find $m$ number of optimal segmentation of the timeline for snapshot placement. This approach could be implemented using Algorithm \ref{alg:dynamic_programming}.
+			Dynamic programming was the second approach that we utilized in order to find $m$ number of optimal segmentation of the timeline for snapshot placement. The dynamic programming uses the memoization technique in which the algorithm stores the result of expensive function calls in a table, and retrieve the result from the table, when the same inputs to the function is given. This approach could be implemented using Algorithm \ref{alg:dynamic_programming}.
 			\begin{algorithm}
 				\SetAlgoLined
 				\caption{Dynamic programming method to compute $m$ number of optimal segmentations}
@@ -128,11 +128,13 @@
 				 \SetKwProg{Fn}{Function}{:}{}
 				 \Fn{\FMain{$Q$, $m$}}{
 				    $n = |Q|$\;
-				    \textbf{OPT}$[i,0]$ = $\infty$ \;
-				    \For{$k \gets 1$ \KwTo $m$}{
-				    	\For{$i \gets 1$ \KwTo $n$}{
-				    		$j^* = \underset{j\in[1,i]}{\mathrm{argmin}}(\mathrm{cost}(\mathbf{OPT}[j,k-1]) + \mathrm{cost}(Q[j+1, n]))$ \;
-				    		$\mathbf{OPT}[i,k] = \mathbf{OPT}[j^*, k-1] \cup \{\mathrm{median}(Q[j+1], n)\}$ 
+				    $minVal = \infty$ \;
+				    \For{$i \gets 1$ \KwTo $m$}{
+				    	\For{$j \gets 1$ \KwTo $n+1$}{
+				    		\For{$k \gets 1$ \KwTo $j$}{
+				    			$minVal = \mathrm{min}(\textrm{minVal},\mathbf{Table}[i,k] + \mathrm{cost}(Q[j-k:]))$
+				    		}
+				    	$\mathbf{Table}[i,j] = minVal$
 				    	}
 				    }
 				}
