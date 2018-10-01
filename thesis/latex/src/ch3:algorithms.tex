@@ -320,6 +320,10 @@
 			\label{prop:optimality_of_subproblems}
 			\end{prop}
 
+		\subsection{Optimal number of snapshots} \label{sec:optimal_number_segmentations}
+			Let $R$ be the total resources available on the system specified by the system designer to handle the given workload and $\mathcal{L}$ to be the average snapshot size. the maximum number of snapshots $N$ could be determined by: $$N=R/\mathcal{L}$$
+			The {\it{optimal}} number of snapshots also could be specified based on the number of {\it{appropriate}} clusters that can be created from the queries on the timeline. In this case, each cluster can be given a snapshot to materialize.
+
 		\subsection{recursive approach to find optimal segmentations of the timeline} \label{sec:optimal_recursive_segmentation}
 			We can formulate a recursive definition of $\mathrm{opt}(Q, m)$ using Proposition~\ref{prop:optimality_of_subproblems}. The intuition is that we try out all possible {\em last} segment of $Q$, and pick the one with the lowest cost.
 
@@ -420,12 +424,13 @@
 
 
 		\subsection{Heuristic method to find optimal timeline segmentation} \label{sec:heuristic_optimal}
-			In the heuristic technique, the optimal solution to a problem is not guaranteed however because of the low computational cost and satisfactory results, this approach is used when non-heuristic techniques are inefficient to implement. For the purpose of finding the optimal segmentation of queries for optimal query answering, we utilized K-means clustering technique.
+			In the heuristic technique, the optimal solution to a problem is not guaranteed however because of the low computational cost and satisfactory results, this approach is used when non-heuristic techniques are inefficient to implement. For the purpose of finding the optimal segmentation of queries for optimal query answering, we utilized K-means clustering technique. We chose K-means clustering over other clustering methods because our dataset is a one dimensional dataset and our objective is to find the optimal timestamps to place a snapshots for materialization. Therefore, the centroids resulted from computation of finding optimal segmentations using K-means clustering method is a good candidate to place the snapshots for materialization.
 
 			\begin{prop} 
 				Given $T_q^* = \{q_0,q_1,...,q_n\}$ as $n$ number of queries performed on the temporal relation $r^T$, we would like to group the $q_i \in T_q^*$ into $m$ number of \textit{"clusters"}. 
 			\label{prop:heuristic_method}
 			\end{prop}
+
 			Applying K-means clustering methodology to this problem requires to minimize the objective function defined as:
 			$$J = \sum_{j=1}^{m} \sum_{i=1}^{n} ||q_i^{(j)}-\mu_j||^2$$
 			where $\mu_j$ is the centroid of $j^{th}$ cluster and $||q_i^{(j)}-\mu_j||^2$ is the squared error function which indicates the distance between each query and their assigned centroids.
@@ -450,7 +455,7 @@
 			\label{defn:temporal_blockchain}
 			\end{defn}
 
-			We are interested in stroring the username of the user who submitted the transaction because it enables us to fetch the public key of the user and verify their digital signature on the submitted record.
+			We are interested in stroring the username of the user who submitted the transaction because it enables us to fetch the public key of the user and verify their digital signature on the submitted record. 
 
 			\begin{defn}[Chain verification]
 				To verify if a chain of the records are valid, the following steps are proposed:
@@ -544,4 +549,4 @@
 
 		To verify a chain of digital signatures, each record needs to be visited and the correctness of their digital signature as well as the correctness of their previous record's digital signature needs to be investigated. We call this the manual blockchain verification method and it contradicts the idea of snapshot materialization which was meant to be way to not to visit each record on the table. To solve this problem, we proposed to digitally sign the snapshots that are going to be materialized. In our solution, when a query is performed, first the digital signature of the materialized snapshot is investigated and then the other records which fall in between the timestamps of the query and the timestamp of the snapshots are investigated using manual blockchain verification. We call this materialized blockchain verification.
 		
-		Digitally signing the precomputed snapshots requires to investigate the trustworthiness of their records before signing them. This process requires manual blockchain verification which is costly and infeasable especially for the snapshots that fall at the end of the timeline. In order to save the computational time, we propose that only first snapshot use the manual Blockchain verification and the subsequent snapshots use the materialized Blockchain verification using their previous precomputed snapshot.
+		Digitally signing the precomputed snapshots requires to investigate the trustworthiness of their records before signing them. This process requires manual blockchain verification which is costly and infeasable especially for the snapshots that fall at the end of the timeline. In order to save the computational time, we propose that only first snapshot use the manual Blockchain verification and the subsequent snapshots use the materialized Blockchain verification using their previous precomputed snapshot. Incremental maintenance of blockchain can be done in constant time. This makes the trust update scalable for very large transaction databases.

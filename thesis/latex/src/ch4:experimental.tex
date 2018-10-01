@@ -98,7 +98,7 @@
 
 			\begin{algorithm}
 				\SetAlgoLined
-				\caption{Dynamic programming method to compute $m$ number of optimal segmentations}
+				\caption{Recursive algorithm method to compute $m$ number of optimal segmentations}
 				\SetAlCapNameFnt{\tiny}
 				\label{alg:recursive}
 				\DontPrintSemicolon
@@ -141,8 +141,10 @@
 			\end{algorithm}
 
 		\subsection{Implementation of heuristic method} \label{sec:implementation_heuristic}
-			To evaluate the performance of heuristic method in finding $m$ number of optimal segmentation of the timeline for snapshot placement, we chose K-means clustering method. The K-means clustering algorithm is given as Algorithm \ref{alg:Kmeans}.
-			\begin{algorithm}[H]
+			To evaluate the performance of heuristic method in finding $m$ number of optimal segmentation of the timeline for snapshot placement, we chose K-means clustering method. Although the K-means clustering method doesnot guarantee the most optimal solution of creating the segmentations, but we expect a satisfactory results obtained from this method.
+
+			The K-means clustering algorithm is given as Algorithm \ref{alg:Kmeans}.
+			\begin{algorithm}
 				\SetAlgoLined
 				\caption{K-means clustering to compute $m$ number of segmentations}
 				\label{alg:Kmeans}
@@ -163,7 +165,7 @@
 			\end{algorithm}
 
 		\subsection{Evaluating approaches for optimal placement of $m$ snapshots} \label{sec:evaluating_approaches}
-			As discussed in section \ref{}, we examine 3 approaches to find the optimal timestamps for $m$ number of snashots for materialization. The performed approaches are:
+			In this research, we examine 3 approaches to find the optimal timestamps for $m$ number of snashots for materialization. The performed approaches are:
 			\begin{itemize}
 				\item Recursive algorithm.
 				\item Dynamic programming.
@@ -266,7 +268,7 @@
 			\end{table}
 			\end{center}
 
-			Figure \ref{fig:variable_queries_2} and Table \ref{table:variable_queries_2} shows that similar to the previous experiment, recursive algorithm has proven to be expensive in computing the optimal timestamps for the snapshots. To see the difference between the dynamic programming and the clustering method, we compared the performance of both in Figure \ref{fig:variable_queries_2} and Table \ref{table:variable_queries_2}. These results also show that utilizing the clustering method is computationally more optimal than the other two method.
+			Figure \ref{fig:variable_queries_2} and Table \ref{table:variable_queries_2} shows that similar to the previous experiment, recursive algorithm has proven to be expensive in computing the optimal timestamps for the snapshots. To see the difference between the dynamic programming and the clustering method, we compared the performance of both in Figure \ref{fig:variable_queries_2} and Table \ref{table:variable_queries_2}. 
 
 			\begin{figure}
 				\centering
@@ -294,6 +296,8 @@
 				\end{tabular}
 			\end{table}
 			\end{center}
+
+			The results obtained from these set of experiments show that, for the dynamic programming to find the most optimal timestamps to place snapshots, it takes 21.09 seconds to find 40 number of optimal segmentations from 140 queries. This amount of runtime could be sufficient for the systems in which the {\it{exact optimal}} solution is needed or the computational time is not that important. However, in larger systems with thousands of queries and the need for hundreds of snapshots, the computational time is a very important factor. Mobile systems are also another example in which the runtime matters the most. This motivated us to look into the heuristic method with more favorable runtime.
 
 			\subsection{Evaluating the heuristic method} \label{sec:evaluating_heuristic}
 			In the previous section we showed that the heuristic method (K-Means clustering method in this case) is computationally more favorable than the recursive algorithm and dynamic programming method. However unlike recursive algorithm and dynamic programming which compute the exact optimal timestamps for the snapshots, the heuristic method approximates the optimal timestamps. Because of this, in the heuristic method, finding the most optimal timestamps for the snapshots is not guaranteed. Therefore a comparison was needed to evaluate if the heuristic method could be chosen over the other two method.
@@ -418,5 +422,4 @@
 					\end{tabular}
 				\end{table}
 			\end{center}
-
 			
