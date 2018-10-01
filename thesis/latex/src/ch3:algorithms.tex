@@ -2,7 +2,7 @@
 	In this chapter, we fomally define the problem of large query workload inefficiency in the context of temporal relational databases and then we propose a solution to lower the cost of such queries. In the next stage, we offer a practical procedure to implement the Blockchain methodology as well as the principles to add and verify trustworthiness of the records using Blockchain in a temporal relational database.
 
 	\section{Problem definition} \label{sec:problem_def}
-		Keeping the historical records of transactions on a database system is useful because it stores the entire updates of a database. In our proposed system these historical records could be used to regenerate the form of a table (snapshot) or a record in a specific timestamp. Also, cryptographic techniques could be used to create a cryptographic chain in order to secure these records from tampering, therefore by investigating the authenticity of all transactions applied to an specific record throughout its lifecycle, the trustworthiness of that record could be ensured. Append-only temporal relational tables, if chosen for keeping the historical records, are beneficial because not only they are simple to implement, but also there is the luxary of having RDBMS to manage and perform queries on such tables.
+		Keeping the historical records of transactions on a relational database system is useful because it stores the entire updates of a database. This  provides data provenance for the records that are stored in a relational database. Historical records of a table in a relational database could be used to regenerate the form of that table (snapshot) in a specific timestamp. Append-only temporal relational tables, if chosen for keeping the historical records, are beneficial because not only they are simple to implement and gives us the ability to attach the proof of work for each record, but also there is the luxary of having RDBMS to manage and perform queries on such tables.
 
 		\begin{example}
 			Definition of a timeline was introduced in Definition \ref{dfn:timeline}. The historical records obtained from auditing the database transaction could be seen as a timeline. A request to regenerate the form of a table (snapshot) or a record can be depicted in \ref{fig:snapshot_notion}
@@ -55,16 +55,16 @@
 			\label {table:temporal_table_2}
 			\begin{tabular}{p{1cm}p{2cm}p{3cm}p{3cm}p{2cm}}
 				\hline
-				id & item      & value  & updated  & deleted\\ \hline
-				21 & Ruler    & 3.25  & 2018-02-10  &  - \\  
-				22 & Pencil    & 8.0  & 2018-03-21  &  - \\
-				22 & Pencil    & 9.0  & 2018-03-30  &  -\\
-				23 & Notebook & 11.0  & 2018-04-01 & - \\
-				22 & Pencil & 6.0  & 2018-04-01 & - \\
-				21 & Ruler    & 3.25  & -  &  2018-04-02 \\
-				23 & Notebook & 12.0  & 2018-04-02 & - \\ 
-				22 & Pencil & 7.50  & 2018-04-05 & - \\ 
-				24 & Console & 230.0  & 2018-04-05 & - \\ \hline
+				id & item      & value  & timestamp  & deleted\\ \hline
+				21 & Ruler    & 3.25  & 2018-02-10  &  False \\  
+				22 & Pencil    & 8.0  & 2018-03-21  &  False \\
+				22 & Pencil    & 9.0  & 2018-03-30  &  False\\
+				23 & Notebook & 11.0  & 2018-04-01 & False \\
+				22 & Pencil & 6.0  & 2018-04-01 & False \\
+				21 & Ruler    & 3.25  & 2018-04-02  &  True \\
+				23 & Notebook & 12.0  & 2018-04-02 & False \\ 
+				22 & Pencil & 7.50  & 2018-04-05 & False \\ 
+				24 & Console & 230.0  & 2018-04-05 & False \\ \hline
 			\end{tabular}
 		\end{table}
 		\end{center}
@@ -111,27 +111,27 @@
 				\label {table:temporal_table_3}
 				\begin{tabular}{p{1cm}p{2cm}p{3cm}p{3cm}p{2cm}}
 					\hline
-					id & item & value  & updated  & deleted\\ \hline
-					1 & Paper & 0.25  & 2018-02-10  &  - \\  
-					2 & Scissors & 8.0  & 2018-02-12  &  - \\
-					3 & Folder & 1.50  & 2018-02-12  &  - \\
-					1 & Paper & 0.30  & 2018-02-13  &  - \\
-					4 & Pencil & 3.0  & 2018-02-16  &  - \\
-					3 & Folder & 1.75  & 2018-02-21  &  - \\
-					5 & Batteries & 8.0  & 2018-02-23  &  - \\
-					1 & Paper & 0.35  & 2018-02-25  &  - \\
-					6 & Notebook & 7.0  & 2018-03-01  &  - \\
-					5 & Batteries & 9.0  & 2018-03-01  &  - \\
-					4 & Pencil & 3.25  & 2018-03-04  &  - \\
-					1 & Paper & 0.35  &  - &  2018-03-04 \\
-					7 & Ruler & 4.0  & 2018-03-06  &  - \\
-					2 & Scissors & 8.50  & 2018-03-07  &  - \\
-					7 & Ruler & 4.50  & 2018-03-08  &  -\\
-					5 & Batteries & 11.0  & 2018-03-10 & - \\
-					3 & Folder & 1.75  & - & 2018-03-11 \\
-					7 & Ruler & 4.50  & -  &  2018-03-12 \\
-					6 & Notebook & 7.50  & 2018-03-15 & - \\ 
-					2 & Scissors & 7.50  & 2018-03-17 & - \\ \hline
+					id & item & value  & timestamp  & deleted\\ \hline
+					1 & Paper & 0.25  & 2018-02-10  &  False \\  
+					2 & Scissors & 8.0  & 2018-02-12  &  False \\
+					3 & Folder & 1.50  & 2018-02-12  &  False \\
+					1 & Paper & 0.30  & 2018-02-13  &  False \\
+					4 & Pencil & 3.0  & 2018-02-16  &  False \\
+					3 & Folder & 1.75  & 2018-02-21  &  False \\
+					5 & Batteries & 8.0  & 2018-02-23  &  False \\
+					1 & Paper & 0.35  & 2018-02-25  &  False \\
+					6 & Notebook & 7.0  & 2018-03-01  &  False \\
+					5 & Batteries & 9.0  & 2018-03-01  &  False \\
+					4 & Pencil & 3.25  & 2018-03-04  &  False \\
+					1 & Paper & 0.35  &  2018-03-04 & True \\
+					7 & Ruler & 4.0  & 2018-03-06  &  False \\
+					2 & Scissors & 8.50  & 2018-03-07  &  False \\
+					7 & Ruler & 4.50  & 2018-03-08  &  False\\
+					5 & Batteries & 11.0  & 2018-03-10 & False \\
+					3 & Folder & 1.75  & 2018-03-11 & True \\
+					7 & Ruler & 4.50  & 2018-03-12  & True  \\
+					6 & Notebook & 7.50  & 2018-03-15 & False \\ 
+					2 & Scissors & 7.50  & 2018-03-17 & False \\ \hline
 				\end{tabular}
 			\end{table}
 			\begin{table}
@@ -218,12 +218,12 @@
 			\end{center}
 
 		\subsection{Optimal materialization of snapshots} \label{sec:optimal_materialization}
-			Let $T_q = \{q_1, q_2, \dots, q_n :q_i \in \mathcal{T}\}$ be the timestamps of $n$ queries, each querying the database at $D^T(q_i)$. To save on computational cost in answering the queries on temporal database $D^T$, we propose to compute $m$ number of snapshots $snapshot_j(r,t)$ in optimal timestamps on the timeline to answer to $T_q$ at lowest possible cost. The cost function is defined as the total query answering cost given $m$ number of precomputed snapshots. Note that $m$ is defined based on available resources in the system.
+			Let $T_q = \{q_1, q_2, \dots, q_n\}$ be the timestamps of $n$ queries, each querying the database at $D^T(q_i)$. To save on computational cost in answering the queries on temporal database $D^T$, we propose to compute $m$ number of snapshots $snapshot_j(r,t)$ in optimal timestamps on the timeline to answer to $T_q$ at lowest possible cost. The cost function is defined as the total query answering cost given $m$ number of precomputed snapshots. Note that $m$ is defined based on available resources in the system.
 
 			\begin{defn}[Cost of Query Answering] 
-				In the presence of a single materialized precomputed snapshot at timestamp $s \in \mathcal{T}$, the cost of answering the query $T_q$ is calculated as:
+				In the presence of a single materialized precomputed snapshot $s$ , the cost of answering the query $T_q$ is calculated as:
 				$$\mathrm{cost}(T_q | s) = \sum_{q\in T_q} |q - s|$$
-				Now if multiple snapshots at timestamps $S=\{s_1, s_2, \dots, s_m : s_j \in \mathcal{T}\}$ were precomputed and materialized, then 
+				Now if multiple snapshots $S=\{s_1, s_2, \dots, s_m \}$ were precomputed and materialized, then 
 				$$\mathrm{cost}(T_q|S) = \sum_{q\in T_q} \min\{|q-s| : s\in S\}$$
 			\label{defn:cost_of_query_answering}
 			\end{defn}
@@ -232,7 +232,7 @@
 			    For the \emph{single snapshot placement} problem, the goal is to find the timestamp $s^*$ such that 
 				$$cost(T_q|s)= Arg min(\sum_{q\in T_q}|q - s|)$$
 
-				The \emph{$m$-snapshot placement} problem is to compute $m$ number of timestamps $S^*=\{s_1, s_2, \dots, s_m: s_j \in \mathcal{T}\}$ to place $m$ number of snapshots for materialization, such that 
+				The \emph{$m$-snapshot placement} problem is to compute $m$ number of timestamps $S^*=\{s_1, s_2, \dots, s_m\}$ to place $m$ number of snapshots for materialization, such that 
 				$$cost(T_q|S)= Arg min(\sum_{q\in T_q}\{|q - s|:s \in S\})$$
 			\label{defn:optimal_snapshot_placement}
 			\end{defn}
@@ -259,7 +259,7 @@
 		\textbf{\emph{Proof of the Proposition~\ref{prop:compute-median}}}:
 			At first, we solve the problem of a single snapshot placement for two queries, and then we generalize the conclusion for multiple queries:
 
-			Assume that there are two queries $T_q=\{q_1,q_2\ : q_i \in \mathcal{T}\}$ on the timeline, such that, $q_1<q_2$. for the placement of a single snapshot $s^* \in \mathcal{T}$ on the timeline, there are several cases which needs to be considered:
+			Assume that there are two queries $T_q=\{q_1,q_2 \}$ on the timeline, such that, $q_1<q_2$. for the placement of a single snapshot $s^*$ on the timeline, there are several cases which needs to be considered:
 
 			\emph{Case 1}:
 			$s^* \in [q_1,q_2]$, hence $q_1\leq s^*\leq q_2$.
@@ -281,11 +281,11 @@
 
 			hence, if the snapshot $s^*$ is placed after the queries $T_q$, then the cost of performing those queries are greater than when the snapshot is placed between them.
 
-			From case1, case2 and case3, we can conclude that the optimal timestamp on the timeline that we can place the single snapshot $s^* \in \mathcal{T}$ to perform two queries $T_q = \{q_1,q_2:q_i\in \mathcal{T}\}$, where $q_1<q_2$ is when $s^* \in [q_1,q_2]$, meaning that $q_1 \leq s^* \leq q_2$, where the cost is equal to $q_2-q_1$.
+			From case1, case2 and case3, we can conclude that the optimal timestamp on the timeline that we can place the single snapshot $s^*$ to perform two queries $T_q = \{q_1,q_2\}$, where $q_1<q_2$ is when $s^* \in [q_1,q_2]$, meaning that $q_1 \leq s^* \leq q_2$, where the cost is equal to $q_2-q_1$.
 
 			Now, we generalize our conclusion from the cases that we evaluated, for the placement of a single snapshot in the presence of $n$ number of queries on the timeline: 
 
-			Suppose that there is a set of queries $T_q=\{q_1,q_2,...,q_n:q_i \in \mathcal{T}\}$ performed on the timeline. To evaluate the most optimal position to place the single snapshot $s^* \in \mathcal{T}$ for materialization, we breakdown the set of queries into the set of nested intervals $[q_1,q_n],[q_2,q_{n-1}],...,[q_i,q_{n+1-i}]$ where $n$ is the number of queries on timeline and $i=0,1,2,...,c$ where $c=\frac{n+1}{2}$ for odd number of queries and $c=\frac{n}{2}$ for even number of queries present on the timeline.
+			Suppose that there is a set of queries $T_q=\{q_1,q_2,...,q_n\}$ performed on the timeline. To evaluate the most optimal position to place the single snapshot $s^*$ for materialization, we breakdown the set of queries into the set of nested intervals $[q_1,q_n],[q_2,q_{n-1}],...,[q_i,q_{n+1-i}]$ where $n$ is the number of queries on timeline and $i=0,1,2,...,c$ where $c=\frac{n+1}{2}$ for odd number of queries and $c=\frac{n}{2}$ for even number of queries present on the timeline.
 
 			Based on the conclusion that we obtained from examining case 1, case 2 and case 3 earlier, for each nested interval, the cost of queries inside them is minimized if snapshot $s^*$ is placed in a middle of the interval. Therefore if the snapshot is placed in a position which $s^*\in \{ [q_1,q_n] \wedge [q_2,q_{n-1}] \wedge ... \wedge [q_i,q_{n+1-i}] \}$ the overall cost for all queries is minimized. In other words, if the snapshot is placed in a position that is in the middle of all nested intervals, then the total sum of absolute deviation of the snapshot from all queries is minimized. The placement of snapshot $s^*$ in the median position of $T_q$ guarantees that the snapshot is placed in the middle of all nested query intervals, where the cost of queries is calculated as follows:
 			$$cost(T_q|s^*)=\sum_{i=1}^n |q_i-s^*| = $$
@@ -299,7 +299,7 @@
 		In the presence of thousands of queries on a temporal database with millions of records, having a single snapshot reduces the cost of query answering but it is still not enough. Therefore, to reduce the overall cost of query answring, optimal timestamps should be computed on the timeline of the temporal database to place snapshots for materialization. In the following section, different approaches to compute the optimal positions on the timeline are discussed.
 
 		\begin{prop}[Segmentation of queries] 
-			Given an ordered set of snapshot timestamps $S=\{s_1,s_2,...,s_m:s_i \in \mathcal{T}\}$, such that $s_i \leq s_{i+1}$, and $n$ number of queries $Q = \{q_1,q_2,...,q_n: q_i \in \mathcal{T}\}$, snapshots create $m$ number of non-overlapping segments on the queries $Q[1,i_1],Q[i_1+1,i_2],...,Q[i_{m-1},i_m]$ such that queries in the segment $Q[i_j,i_{j+1}]$ use $s_j$ to answer the queries in the optimal query answering strategy.
+			Given an ordered set of snapshot timestamps $S=\{s_1,s_2,...,s_m\}$, such that $s_i \leq s_{i+1}$, and $n$ number of queries $Q = \{q_1,q_2,...,q_n\}$, snapshots create $m$ number of non-overlapping segments on the queries $Q[1,i_1],Q[i_1+1,i_2],...,Q[i_{m-1},i_m]$ such that queries in the segment $Q[i_j,i_{j+1}]$ use $s_j$ to answer the queries in the optimal query answering strategy.
 		\label{prop:segmentation_of_queries}
 		\end{prop}
 		The notion of creating segmentations is depicted in Figure \ref{fig:segmentation}.
@@ -435,7 +435,7 @@
 		In this section we extensively talk about the implementation of a Blockchain based mechanism to verify the trustworthiness of the records. In the first step we talk about temporal tables with security information and then we discuss about the procedure of creating a chain of the records in these tables. In the next steps we talk about steps and rules that needs to be applied in order to verify the trustworthiness of the records in a table, as well as utilizing this mechanism in the case of snapshot materialization.
 
 		\subsection{Temporal table with security information} \label{sec:temporal_with_security}
-			Let $r_i^T$ be the temporal relational table with attributes $attr(r_i^T)$=$\{attr(r_i), updated,deleted\}$, denote $\alpha_u$ as the security information of the user $u$, including the user's cryptographic keys $<K_{priv}^u, K_{pub}^u>$.
+			Let $r_i^T$ be the temporal relational table with attributes $attr(r_i^T)$=$\{attr(r_i), timestamp,deleted\}$, denote $\alpha_u$ as the security information of the user $u$, including the user's cryptographic keys $<K_{priv}^u, K_{pub}^u>$.
 
 
 			\begin{defn}[digital signature of the transactions] 
@@ -475,12 +475,12 @@
 				\label{temporal_blockchain_table}
 				\begin{tabular}{p{0.5cm}p{0.5cm}p{1cm}p{0.5cm}p{1.7cm}p{1.7cm}p{1.5cm}p{1.5cm}p{1.5cm}}
 					\hline
-					r\_id & id & item      & value  & updated  & deleted & username & curSgn & prevSgn \\ \hline
-					151& 21 & Ruler    & 3.25  & 2018-02-10  &  - & Bob &r3T49TR & 0\\  
-					152& 21 & Ruler    & 3.25  & -  &  2018-02-20 & Alice & yu0PmER & r3T49TR\\
-					153& 22 & Pencil    & 8.0  & 2018-03-21  &  - & Alice & gI90vjN & yu0PmER\\
-					154& 23 & Pen    & 12.0  & 2018-03-30  &  - & Bob & 89Ec578 & gI90vjN\\
-					155& 22 & Pencil & 7.50  & 2018-04-01 & - & Eve & Ipu32h6 & 89Ec578\\ \hline
+					r\_id & id & item      & value  & timestamp  & deleted & username & curSgn & prevSgn \\ \hline
+					151& 21 & Ruler    & 3.25  & 2018-02-10  &  False & Bob &r3T49TR & 0\\  
+					152& 21 & Ruler    & 3.25  & 2018-02-20  & True  & Alice & yu0PmER & r3T49TR\\
+					153& 22 & Pencil    & 8.0  & 2018-03-21  &  False & Alice & gI90vjN & yu0PmER\\
+					154& 23 & Pen    & 12.0  & 2018-03-30  &  False & Bob & 89Ec578 & gI90vjN\\
+					155& 22 & Pencil & 7.50  & 2018-04-01 & False & Eve & Ipu32h6 & 89Ec578\\ \hline
 				\end{tabular}
 			\end{table} 
 			\end{center}
@@ -533,14 +533,14 @@
 			\end{figure}
 
 	\section{Discussion} \label{sec:algorithm_discussion}
-		In this section,the problem of linear time for query answering in append-only databases discussed. Creating snapshots and looking for the form of a table in an specific time on append-ony databases are inefficient therefore we proposed to place $m$ number of snapshots for materialization of subsequent queries in optimal timestamps. These snapshots indicate the latest version of a database until that specific timestamp. Although it seems to be inefficient to store these information in a system, but with current bigdata technologies available such as cloud storages, it doesnot seem to be an overly burden task anymore. Note that $m$ which is the number of snapshots to be generated and materialized is determined by checking the available resources of the host system.
+		In this section,the problem of linear time for query answering in append-only databases discussed. Creating snapshots and looking for the form of a table in an specific time on append-ony databases are inefficient therefore we proposed to place $m$ number of snapshots for materialization. These snapshots indicate the latest version of a database until that specific timestamp. Although it seems to be inefficient to store these information in a system, but with current bigdata technologies available such as cloud storages, it doesnot seem to be an overly burden task anymore. Note that $m$ which is the number of snapshots to be generated and materialized is determined by checking the available resources of the host system.
 
-		In the first step, we proposed to store the timestamp of the previous queries on the database to have the patterns of the queries on the timeline. Pattern of the queries ables us to identify the hotspots on the timeline and helps us in identifying the optimal timestamps for snapshot materialization. We argue that it is highly likeley that the the subsequent queries to be performed in these hotspots, therefore we proposed to group the queries on the hotspots and allocate one snapshot for each group for materialization. In this case, the problem which needs to be addressed is to create optimal segmentations of those hotspots on the timeline and cluster the queries which fall into these hotspots together.
+		In the first step, we proposed to store the timestamp of the previous queries on the database to have the patterns of the queries on the timeline. Pattern of the queries gives us the ability to identify the hotspots on the timeline and helps us in identifying the optimal timestamps for snapshot materialization. We argue that it is highly likeley that the the subsequent queries to be performed in these hotspots, therefore we proposed to create segmentations of the queries on the hotspots and allocate one snapshot for each segmentation for materialization. In this case, the problem which needs to be addressed is to create optimal segmentations of those hotspots on the timeline and cluster the queries which fall into these hotspots together.
 		To find $m$ number of optimal segmentation, we first solved the problem of finding an optimal position to place a single snapshot. We mathematically proved that the optimal place for a single snapshot is the median of the queries, hence if $m$ number of segmentations were created, the optimal position to place snapshot within each segmentation is the median of the segmentation queries. To find the optimal segmentations, we utilized three different methods : recursive algorithm, dynamic programming and heuristic method. In theory, the recursive algorithm consumes the highest computational time among the other two methods. Also, while the heuristic method has the lowest computational time complexity in comparison to recursive algorithm and dynamic programming, but when using this method, finding the optimal solution to the problem is not always guaranteed. In the next chapter we design multiple experiments to evaluate the performance of each method in different scenarios.
 
 		Next, we discussed the importance of transaction transparency in identifying maliciousely or mistakenly altered data in the database. We first proposed the idea of temporal table with security information that is achieved by adding the information of the transaction submitter along with the digital signature of the transaction using submitter's cryptogrphic keys to the record stored in the temporal database. By having the information of the transaction submitter, their cryptographic key could be fetched from the users table and the authenticity of the digital signature could be verified.
 
-		The tables with the security information are still susceptible to malicious modification. For example, when a super user of the database turns off the auditing mechanism that keeps track of the transactions on the table or when the super user alter the records of the temporal table and regenerate the digital signature, tables with malisiousely altered data are resulted that it is hard to investigate their illigitamacy. Therefore, we argued that a table is needed that any changes on it result in an inconsistant form of data that later on helps us in figuring out the trustworthiness of the data that are stored in that table. For this purpose, we proposed chaining the submitted records together using their digital signature. This could be done by using the Blockchain ideology in which the data are represented in the form of blocks and each block contains the digital signature of their previously submitted block. Any changes on the blocks result in a completely different signature that brings inconsistancy in the chain of digital signatures. To utilize this idea, we proposed to add the $previousSignature$ attribute to the records in the temporal table that contains the digital signature of their previous record.
+		The tables with the security information are still vulnerable to malicious modification. For example, when a super user of the database turns off the auditing mechanism that keeps track of the transactions on the table or when the super user alter the records of the temporal table and regenerate the digital signature, tables with malisiousely altered data are resulted that it is hard to investigate their illigitamacy. Therefore, we argued that a table is needed that any changes on it result in an inconsistant form of data that later on helps us in figuring out the trustworthiness of the data that are stored in that table. For this purpose, we proposed chaining the submitted records together using their digital signature. This could be done by using the Blockchain ideology in which the data are represented in the form of blocks and each block contains the digital signature of their previously submitted block. Any changes on the blocks result in a completely different signature that brings inconsistancy in the chain of digital signatures. To utilize this idea, we proposed to add the $previousSignature$ attribute to the records in the temporal table that contains the digital signature of their previous record.
 
 		To verify a chain of digital signatures, each record needs to be visited and the correctness of their digital signature as well as the correctness of their previous record's digital signature needs to be investigated. We call this the manual blockchain verification method and it contradicts the idea of snapshot materialization which was meant to be way to not to visit each record on the table. To solve this problem, we proposed to digitally sign the snapshots that are going to be materialized. In our solution, when a query is performed, first the digital signature of the materialized snapshot is investigated and then the other records which fall in between the timestamps of the query and the timestamp of the snapshots are investigated using manual blockchain verification. We call this materialized blockchain verification.
 		

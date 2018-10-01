@@ -1,11 +1,11 @@
 \chapter{Background and Related Work} \label{ch:background}
 	In this chapter, the concepts and definitions which are needed to implement the proposed system are identified. In the first section, the tools and concepts borrowed from the relational database management system and in the second section, the concepts in Blockchain technology are introduced. The third section is also dedicated to discuss about the related work and the researches which have been done in this field and compare it with our proposed system.
 
-	\section{Temporal Databases} \label{sec:temporal database}
-		In this project, we store our historical records in a specific relational database known as the temporal database. A temporal database is any type of database that requires some aspect of time \cite {elmasri2010fundamentalsofdatabase}. Since historical records have a timestamp which indicates the time of a transaction occurrence, in the proposed system, the temporal database is a way to store and manage historical records of the transactions.
+	\section{Temporal Relational Databases} \label{sec:temporal database}
+		 A temporal database is any type of database that requires some aspect of time \cite {elmasri2010fundamentalsofdatabase} and provides a systematic way to deal with the historical data. In this research, we are interested to utilize relational temporal databases to store the historical records resulted from auditing the transactions on the relational database because, it gives us the flexibility to attach proof of work to the historical data. Also, temporal databases could be created by inherent to relational database management system's tools and they support query languages such as SQL and PL/pgsql. This enables us to develope a trusted database environment with the tools that are supported by all relational database systems. 
 	%----------------------------------definition Temporal Database-----------------------------------------
 		\begin{defn}[Temporal database]
-			Let $ r_i = \{r_1, r_2, ... , r_n \}$, be $n$ number of tables in the relational database $D$. Denote the attributes of each table as $attr(r_i)$. A temporal table denoted $r_i^T$ is a table with attributes $atr(r_i^T) = \{ (updated, deleted) \in \mathcal{T} \}\cup attr(r_i)$ where $\mathcal{T} = \{t_0,t_1,...,t_n\}$ is the time domain in which transactions on $r_i$ happened. A temporal database denoted $D^T$ is the result of augmenting $D$ by $r_i^T$:
+			Let $r_1, r_2, ... , r_n$, be $n$ number of tables in the relational database $D$. Denote the attributes of each table as $attr(r_i)$. A temporal table denoted $r_i^T$ is a table with attributes $atr(r_i^T) = \{timestamp, deleted\}\cup attr(r_i)$ where $timestamp$ is the time in which transactions on $r_i$ happened and $deleted$ is a flag showing whether or not that transaction performed was to delete the record. A temporal database denoted $D^T$ is the result of augmenting $D$ by $r_i^T$:
 
 			\begin{center}
 				{$D^T = D \cup \{{r_i^T}: r_i \in D \}$}
@@ -16,7 +16,15 @@
 		The temporal database $D^T$ contains the entire history of the records ever existed in $D$.
 
 		\begin{example}
-			Given a normal relational table $r_1$ (Table \ref{table:normal_relational_table}) and a temporal table $r_1^T$ (Table \ref{table:temporal_table}), the $attr(r_1) = (id, item, value)$ and $attr(r_1^T)= (id, item, value, updated, deleted)$. The result of query $q_1 = \sigma_{id = 22}(r_1)$ is $\{(22,Pencil,7.50\$)\}$ and the result of same query on the temporal table $q_2 = \sigma_{id = 22}(r_1^T)$ is $\{(22,pencil,8.0\$,2018-03-21,NULL),(22,pencil,7.50\$,2018-03-30,NULL)\}$. Also the query $q_3 = \sigma_{id = 21}(r_1)$ results in $NULL$ however, the same query on the temporal table $q_4 = \sigma_{id = 21}(r_1^T)$ has the history of record with id = 21: $\{(21,ruler,3.25,2018-02-10,NULL),(21,ruler,3.25,NULL,2018-02-20)\}$.
+			Given a normal relational table $r_1$ (Table \ref{table:normal_relational_table}) and a temporal table $r_1^T$ (Table \ref{table:temporal_table}), the $attr(r_1) = \{id, item, value\}$ and $attr(r_1^T)= \{id, item, value, updated, deleted\}$. The result of a few example queries are:
+
+			\begin{itemize}
+				\item \textbf{$q_1 \to \sigma_{id = 22}(r_1)$} = $[(22,Pencil,7.50)]$
+				\item \textbf{$q_2 \to \sigma_{id = 22}(r_1^T)$} = $[(22,pencil,8.0,2018-03-21,False),$ \\ $(22,pencil,7.50,2018-03-30,False)]$
+				\item \textbf{$q_3 \to \sigma_{id = 21}(r_1)$} = []
+				\item \textbf {$q_4 \to \sigma_{id = 21}(r_1^T)$} = $\{(21,ruler,3.25,2018-02-10,False),$ \\ $(21,ruler,3.25,2018-02-20), True\}$.
+			\end{itemize}
+			This example shows that by having the temporal table ``$r_1^T$`` it could be seen that the record with ``$id = 22$`` used to have the value of ``$8.0$`` but then changed to ``$7.50$`` at ``$2018-03-30$``. Also, once there was a record with ``$id = 21$`` but deleted at ``$2018-02-20$`` and that is why the query for this record on the table $r_1$ doesn't have any results.
 		\label{example:temporal_table}
 		\end{example}
 
@@ -28,8 +36,8 @@
 			\begin{tabular}{p{4cm}p{4cm}p{4cm}}
 				\hline
 				id & item      & value  \\ \hline
-				22 & Pencil    & 7.50\$ \\
-				23 & Notebook & 12.0\$   \\ \hline
+				22 & Pencil    & 7.50 \\
+				23 & Notebook & 12.0   \\ \hline
 			\end{tabular}
 		\end{table}
 
@@ -39,12 +47,12 @@
 			\label{table:temporal_table}
 			\begin{tabular}{p{1cm}p{2cm}p{3cm}p{3cm}p{2cm}}
 				\hline
-				id & item      & value  & updated  & deleted\\ \hline
-				21 & Ruler    & 3.25\$  & 2018-02-10  &  - \\  
-				21 & Ruler    & 3.25\$  & -  &  2018-02-20 \\
-				22 & Pencil    & 8.0\$  & 2018-03-21  &  - \\
-				22 & Pencil    & 7.50\$  & 2018-03-30  &  -\\
-				23 & Notebook & 12.0\$  & 2018-04-01 & - \\ \hline
+				id & item      & value  & timestamp  & deleted\\ \hline
+				21 & Ruler    & 3.25\$  & 2018-02-10  &  False \\  
+				21 & Ruler    & 3.25\$  & 2018-02-20  &  True \\
+				22 & Pencil    & 8.0\$  & 2018-03-21  &  False \\
+				22 & Pencil    & 7.50\$  & 2018-03-30  &  False\\
+				23 & Notebook & 12.0\$  & 2018-04-01 & False \\ \hline
 			\end{tabular}
 		\end{table} 
 		\end{center}
@@ -52,27 +60,25 @@
 	%---------------------------------- End of Definition Temporal Database -----------------
 	%---------------------------------- Defintion Time Domain -------------------------------
 		\begin{defn}[Time domain]
-			The time domain $\mathcal{T}$ consists of discrete timestamps $t_0,t_1,...,t_n$ in which transactions on tables $r_i \in D$ happened. the range of time domain is: $\mathcal{T} = [t_0, \infty)$ where $t_0$ is the timestamp in which the first record added to the table $r_i$.
+			The time domain $\mathcal{T}$ consists of discrete timestamps $t_0,t_1,...,t_n$ in which transactions on tables $r_i \in D$ happened. the range of time domain is: $\mathcal{T} = [t_0,t_n]$ where the lower bound $t_0$ is the timestamp in which the first record added and the upper bound $t_n$ is the timestamp of the most recent transaction to the table $r_i$.
 		\label{dfn:time_domain}
 		\end{defn}
 
-		The time domain of a temporal table $r_i^T \in D^T $ is calculated by:
-
-		\begin{center}
-			$\mathcal{T} = r_i^T[updated] \cup r_i^T[deleted]$
-		\end{center}
-		For example in the temporal table $r_1^T$ (Table 2.2), the time domain is:
-		$\mathcal{T} = [2018-02-10,2018-04-01]$.
+		\begin{example}
+			The time domain of a temporal table $r_1^T$ (Table \ref{table:temporal_table}) is given by:
+			$$\mathcal{T} = range(r_1^T(timestamp)) = [2018-02-10, 2018-04-01]$$
+		\label{example:time_domain}
+		\end{example}
 	%---------------------------------- End of Definition Time Domain -----------------------
 	%---------------------------------- Defintion Timestamps --------------------------------
 		\begin{defn}[Timestamps]
-			A timestamp $t_i \in \mathcal{T}$ is a particular position in the time domain, in which particular transaction(s) happened. For example in the temporal table $r_1^T$ (Table 2.2), ``2018-03-30'' is a timestamp in which the record with ``id = 22'' updated.
+			A timestamp $t_i \in \mathcal{T}$ is a particular position in the time domain, in which (a) particular transaction(s) happened. For example in the temporal table $r_1^T$ \ref{table:temporal_table}, ``2018-03-30'' is a timestamp in which the record with ``id = 22'' updated.
 		\label{dfn:timestamp}
 		\end{defn}
 	%---------------------------------- End of Definition Timestamps ------------------------
 	%---------------------------------- Defintion Timeline ----------------------------------
 		\begin{defn}[Timeline]
-			Let $u_i(t_j)$ be the total transactions on the tables $r_i \in D$ at timestamps $t_j \in \mathcal{T}$, where $i,j=\{0,1,...,n\}$. The $u_i(t_j)$ could be represented as an ordered set points on a vector. This vector is called a timeline for the transactions happened on $r_i \in D$.
+			Let $u_1,u_2,...,u_n$ be the total number of transactions on the tables $r_i \in D$ at timestamps $t_j \in \mathcal{T}$, where $j=\{0,1,...,n\}$. These transactions could be represented as an ordered set points on a vector. This vector is called the {\textit timeline of transactions} for $r_i \in D$.
 		\label{dfn:timeline}
 		\end{defn}
 		Figure \ref{fig:timeline} illustrates the concept of timeline.
@@ -87,21 +93,20 @@
 	%---------------------------------- End of Definition Timeline --------------------------
 	%---------------------------------- Defintion snapshot ----------------------------------
 		\begin{defn}[Snapshot and snapshot-queries] 
-			Given a temporal table $r^T \in D^T$ and a timestamp $t \in \mathcal{T}$, we denote $s(t)$ to be the table instance that obtained by calculating the $\{max(r^T[m])|t : m\in r)\}-r^T[deleted]$ for $\mathcal{T}\leq t$. Note that $s(t) \in D^T$ but not necessarily $s(t) \in D$. A snapshot is a materialized version of $D(t) = \{s_1(t),s_2(t),...,s_n(t)\}$. A snapshot-query is an arbitrary relational query on $D(t)$.
+			Given a temporal table $r^T \in D^T$ and a timestamp $t \in \mathcal{T}$, we denote $s(t)$ to be the table instance that obtained by calculating the $\{max(r^T[m])|t : m\in r)\}-r^T[deleted]$ for $\mathcal{T}\leq t$. A snapshot is a materialized version of $D(t) = \{s_1(t),s_2(t),...,s_n(t)\}$. A snapshot-query is an arbitrary relational query on $D(t)$.
 		\label{dfn:snapshot}
 		\end{defn}
 	%---------------------------------- End of Definition snapshot --------------------------
 
 
 	\section{Blockchain} \label{sec:blockchain}
-		In a big picture, Blockchain technology is a distributed trusted public ledger that the stored data in it is immutable and it is open to anyone to inspect \cite{OECD2016Science}. Although today there are a numerous number of applications that are using Blockchain \cite{dhillon2017blockchain},  ‌Blockchain is mostly known for its application in cryptocurrencies such as Bitcoin \cite{nakamoto2008bitcoin}. As a matter of fact, Blockchain is the secret why cryptocurrencies are secure, work in a decentralized network, do not need any central verification system and although all transactions are transparent, the users in the system are anonymous \cite{halaburda2016beyond}.
-		While there are many functionalities within a Blockchain system, such as user anonymity, being public and no need for a central verification system, in this project, for the sake of confidentiality and transparency, not all functionalities within the Blockchain is employed. To understand how Blockchain has been utilized in the proposed system, there are some definitions that need to be discussed beforehand.
+		In a big picture, Blockchain technology is a distributed trusted public ledger that the stored data in it are linked using cryptography. The stored data in Blockchain are immutable and open to anyone to inspect \cite{OECD2016Science}. Today there are a numerous number of applications that are using Blockchain \cite{dhillon2017blockchain}, however, ‌it got its reputation because of its application as the backbone of cryptocurrencies such as Bitcoin \cite{nakamoto2008bitcoin}. As a matter of fact, Blockchain is the secret why cryptocurrencies are secure, work in a decentralized network, do not need any central verification system and the legitimacy of the transactions could be investigated by anyone \cite{halaburda2016beyond}.
+		The reason why we are interested to utilize Blockchain technology is to be able to provide a trusted temporal relational database that its data are immutable, doing forgeries are extremely expensive and trustworthy of the records are investigatable by evaluating the verifiable evidences that are on the blockchain. In this section, the tools and techniques that are utilized to implement a Blockchain based temporal relational database are defined.
 
-	%---------------------------------- Begin of Definition cryptography --------------------------
-		\begin{defn}[Cryptography]
-			Cryptography is a way of secure communication between parties in a network while adversaries might also be present. Using Cryptography, messages sent or received are encrypted so that the adversaries cannot read the normal form of the message. This communication is established through various steps such as cryptographic key assignment, encryption, and decryption of messages or digitally signing a message and verifying the digital signatures \cite{stallings2017cryptography}.
-		\label{dfn:cryptography}
-		\end{defn}
+	%---------------------------------- Begin of Cryptography --------------------------
+		\subsection{Cryptography} \label{sec:cryptography}
+			Cryptography is a tool that protects data in a computer system from being accessed or maliciousely manipulated from adversaries, by utilizing mathematical algorithms. Using Cryptography, messages sent or received between two parties in a network are encrypted in a way that the adversaries cannot read the normal form of the message. Cryptography also guarantees that the sent,received or stored data in a computer system has never been altered by using the digital signatures. Cryptography in a computer system is established through various steps such as cryptographic key assignment, encryption, and decryption of messages or digitally signing a message and verifying the digital signatures \cite{stallings2017cryptography}.
+
 	%---------------------------------- End of Definition cryptography ----------------------------
 	%----------------------------- Begin of Definition cryptographic keys -------------------------
 		\begin{defn}[Cryptographic Keys]
@@ -119,14 +124,6 @@
 			\begin{center}
 				$c = E(K_{priv},m)$ and  $m = D(K_{pub},c)$
 			\end{center}
-			Therefore:
-			\begin{center}
-				$D(E(m,K_{pub}),K_{priv}) = m$ 
-			\end{center}
-			and
-			\begin{center}
-				$D(E(m,K_{priv}),K_{pub}) = m$
-			\end{center}
 		\label{dfn:assymetric_encryption}
 		\end{defn}
 
@@ -142,13 +139,13 @@
 	%----------------------------- End of Definition Assymetric Encryption --------------------
 	%----------------------------- Begin of Definition Hash function --------------------------
 		\begin{defn}[Hash function]
-			Assume $m \in \mathcal{A}$ to be the message with an arbitrary size chosen from domain $\mathcal{A}$. $hash(m)\rightarrow sketch$ is a function that maps the $m$ of any size from domain $\mathcal{A}$ to a fixed size string (normally 256 bits) in a smaller domain $\mathcal{B}$ \cite{aumasson2014thehash}.
+			Assume $m$ to be the message with an arbitrary size chosen from domain $\mathcal{A}$. $hash(m)\rightarrow sketch$ is a function that maps the $m$ of any size from domain $\mathcal{A}$ to a fixed size string (normally 256 bits) in a smaller domain $\mathcal{B}$ \cite{aumasson2014thehash}.
 		\label{dfn:hash_function}
 		\end{defn}
 	%----------------------------- End of Definition Hash function ----------------------------
 	%----------------------------- Begin of Definition Digital Signature ----------------------
 		\begin{defn} [Digital signature]
-			Let $m$ be the document which needs to be digitally signed and transferred. Denote $h$ as the hash function, $E$ as the encryption algorithm and $D$ as decryption algorithm. In order to digitally sign a document and verify a signature, the following steps are taken:
+			Let $m$ be the document which needs to be digitally signed. Denote $h$ as the hash function, $E$ as encryption algorithm and $D$ as decryption algorithm. In order to digitally sign a document and verify a signature, the following steps are taken:
 			\begin{itemize}
 				\item \textbf{Step 1.} $H_r = h(m)$
 				\item \textbf{Step 2.} $S = E(H_r,K_{priv})$
@@ -180,7 +177,7 @@
 		%----------------------------- End of Definition Digital Signature ----------------------------
 		%------------------------------------- Defintion Blockchain -----------------------------------
 		\begin{defn}[Blockchain] 
-			Let $rec_i$ be the records stored in $r_i^T$. We denote $Sign$ as $S_r(attr(r_i^T$ for $rec_i))$ which is digital signature of attributes of $rec_i$. We can create a blockchain of historical records by storing the signature of the previous record as an attribute of the current record.
+			Let $rec_i$ be the records stored in $r_i^T$. We denote $sign$ as the digital signature of attributes of $rec_i$. We can create a blockchain of historical records by storing the signature of the previous record as an attribute of the current record.
 		\end{defn}
 		The idea of the Blockchain has been depicted in figure \ref{fig:Blockchain}.
 		\begin{figure}

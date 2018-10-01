@@ -66,7 +66,7 @@
 
 		\subsection{Evaluating materialization of multiple snapshot} \label{evaluating_multiple_snapshots}
 			To evaluate the performance of our optimal snapshot computation, we evaluated the recursive formulation given
-			by Section \ref{}, the dynamic programming formulation given by Section \ref{} and heuristic method given by Section \ref{}. 
+			by Section \ref{sec:recursive_algorithm}, the dynamic programming formulation given by Section \ref{sec:dynamic_programming_optimal_segment} and heuristic method given by Section \ref{sec:heuristic_optimal}. 
 
 			To illustrate that the optimal snapshot placement indeed produces the best query answering performance, we compared the query answering cost of three approaches:
 			\begin{itemize}
@@ -255,9 +255,9 @@
 				\begin{tabular}{p{2cm}p{3cm}p{3cm}p{3cm}}
 					\hline
 					Queries & Recursive      & Dynamic  & Clustering \\ \hline
-					13 & 0.05    & 0.01  & 0.02  \\  
-					43 & 1.23    & 0.13  & 0.03  \\
-					73 & 6.15    & 0.39  & 0.03  \\
+					13 & 0.05   & 0.01  & 0.02  \\  
+					43 & 1.23   & 0.13  & 0.03  \\
+					73 & 6.15   & 0.39  & 0.03  \\
 					103 & 34.98 & 1.60  & 0.03  \\
 					133 & 77.31 & 0.69  & 0.04 \\
 					163 & 147.57 & 4.35  & 0.04  \\
@@ -266,7 +266,7 @@
 			\end{table}
 			\end{center}
 
-			Figure \ref{fig:variable_queries_2} and Table \ref{table:variable_queries_2} shows that similar to the previous experiment, recursive algorithm has proven to be expensive in computing the optimal timestamps for the snapshots. To see the difference between the dynamic programming and the clustering method, we compared the performance of both in Figure \ref{} and Table \ref{}. These results also show that utilizing the clustering method is computationally more optimal than the other two method.
+			Figure \ref{fig:variable_queries_2} and Table \ref{table:variable_queries_2} shows that similar to the previous experiment, recursive algorithm has proven to be expensive in computing the optimal timestamps for the snapshots. To see the difference between the dynamic programming and the clustering method, we compared the performance of both in Figure \ref{fig:variable_queries_2} and Table \ref{table:variable_queries_2}. These results also show that utilizing the clustering method is computationally more optimal than the other two method.
 
 			\begin{figure}
 				\centering
