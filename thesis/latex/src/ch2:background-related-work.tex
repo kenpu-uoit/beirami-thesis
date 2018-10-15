@@ -1,8 +1,9 @@
 \chapter{Background and Related Work} \label{ch:background}
-	In this chapter, the concepts and definitions which are needed to implement the proposed system are identified. In the first section, the tools and concepts borrowed from the relational database management system and in the second section, the concepts in Blockchain technology are introduced. The third section is also dedicated to discuss about the related work and the researches which have been done in this field and compare it with our proposed system.
+	In this chapter, the concepts and definitions which are needed to implement the proposed system are identified. In the first section, the tools and concepts borrowed from the relational database management system and in the second section, the concepts in Blockchain technology are introduced. The third section is also dedicated to discuss about the related work and the researches which have been done in this field and compare them with our proposed system.
 
 	\section{Temporal Relational Databases} \label{sec:temporal database}
-		 A temporal database is any type of database that requires some aspect of time \cite {elmasri2010fundamentalsofdatabase} and provides a systematic way to deal with the historical data. In this research, we are interested to utilize relational temporal databases to store the historical records resulted from auditing the transactions on the relational database because, it gives us the flexibility to attach proof of work to the historical data. Also, temporal databases could be created by inherent to relational database management system's tools and they support query languages such as SQL and PL/pgsql. This enables us to develope a trusted database environment with the tools that are supported by all relational database systems. 
+		 A temporal database is any type of database that requires some aspect of time \cite {elmasri2010fundamentalsofdatabase} and provides a systematic way to deal with the historical data. In this research, we are interested to utilize relational temporal databases to store the historical records resulted from auditing the transactions on the relational database because, it gives us the flexibility of utilizing query languages such as SQL and PL/pgsql on them. This enables us to attach proof of work to the historical data in a virtually immutable manner.
+
 	%----------------------------------definition Temporal Database-----------------------------------------
 		\begin{defn}[Temporal database]
 			Let $r_1, r_2, ... , r_n$, be $n$ number of tables in the relational database $D$. Denote the attributes of each table as $attr(r_i)$. A temporal table denoted $r_i^T$ is a table with attributes $atr(r_i^T) = \{timestamp, deleted\}\cup attr(r_i)$ where $timestamp$ is the time in which transactions on $r_i$ happened and $deleted$ is a flag showing whether or not that transaction performed was to delete the record. A temporal database denoted $D^T$ is the result of augmenting $D$ by $r_i^T$:
@@ -24,7 +25,7 @@
 				\item \textbf{$q_3 \to \sigma_{id = 21}(r_1)$} = []
 				\item \textbf {$q_4 \to \sigma_{id = 21}(r_1^T)$} = $\{(21,ruler,3.25,2018-02-10,False),$ \\ $(21,ruler,3.25,2018-02-20), True\}$.
 			\end{itemize}
-			This example shows that by having the temporal table ``$r_1^T$`` it could be seen that the record with ``$id = 22$`` used to have the value of ``$8.0$`` but then changed to ``$7.50$`` at ``$2018-03-30$``. Also, once there was a record with ``$id = 21$`` but deleted at ``$2018-02-20$`` and that is why the query for this record on the table $r_1$ doesn't have any results.
+			This example clearly shows that the temporal tables can provide data provenance for the records ever existed in the normal relations. For exmaple by having the temporal table ``$r_1^T$`` it could be seen that the record with ``$id = 22$`` used to have the value of ``$8.0$`` but then changed to ``$7.50$`` at ``$2018-03-30$``. Also, once there was a record with ``$id = 21$`` but deleted at ``$2018-02-20$`` and that is why the query for this record on the table $r_1$ doesn't have any results.
 		\label{example:temporal_table}
 		\end{example}
 
@@ -96,16 +97,73 @@
 			Given a temporal table $r^T \in D^T$ and a timestamp $t \in \mathcal{T}$, we denote $s(t)$ to be the table instance that obtained by calculating the $\{max(r^T[m])|t : m\in r)\}-r^T[deleted]$ for $\mathcal{T}\leq t$. A snapshot is a materialized version of $D(t) = \{s_1(t),s_2(t),...,s_n(t)\}$. A snapshot-query is an arbitrary relational query on $D(t)$.
 		\label{dfn:snapshot}
 		\end{defn}
+
+		\begin{example}
+			Given a normal relational table $r_1$ (Table \ref{table:normal_table_2}), the temporal relational table $r_1^T$ (Table \ref{table:temporal_table_2}) contains the historical data of $r_1$. The snapshot of the $r_1$ at $t=2018-04-01$ could be generated as Table $\ref{table:normal_table_2_t}$.
+		\label{example:snapshot_table}
+		\end{example}
+
+		\begin{center}
+		\begin{table}
+			\centering
+			\small
+			\caption{Normal Relational Table $r_1$}
+			\label{table:normal_table_2}
+			\begin{tabular}{p{4cm}p{4cm}p{4cm}}
+				\hline
+				id & item      & value  \\ \hline
+				22 & Pencil    & 7.50 \\
+				23 & Notebook & 12.0   \\ 
+				24 & Console & 230.0 \\ \hline
+			\end{tabular}
+		\end{table}
+
+		\begin{table}
+			\centering
+			\small
+			\caption{Temporal Table $r_1^T$}
+			\label {table:temporal_table_2}
+			\begin{tabular}{p{1cm}p{2cm}p{3cm}p{3cm}p{2cm}}
+				\hline
+				id & item      & value  & timestamp  & deleted\\ \hline
+				21 & Ruler    & 3.25  & 2018-02-10  &  False \\  
+				22 & Pencil    & 8.0  & 2018-03-21  &  False \\
+				22 & Pencil    & 9.0  & 2018-03-30  &  False\\
+				23 & Notebook & 11.0  & 2018-04-01 & False \\
+				22 & Pencil & 6.0  & 2018-04-01 & False \\
+				21 & Ruler    & 3.25  & 2018-04-02  &  True \\
+				23 & Notebook & 12.0  & 2018-04-02 & False \\ 
+				22 & Pencil & 7.50  & 2018-04-05 & False \\ 
+				24 & Console & 230.0  & 2018-04-05 & False \\ \hline
+			\end{tabular}
+		\end{table}
+		\end{center}
+		\begin{center}
+		\begin{table}
+			\centering
+			\small
+			\caption{Normal Relational Table $r_1$ at t = 2018-04-01}
+			\label{table:normal_table_2_t}
+			\begin{tabular}{p{4cm}p{4cm}p{4cm}}
+				\hline
+				id & item  & value  \\ \hline
+				21 & Ruler & 3.25 \\
+				22 & Pencil & 6.0   \\ 
+				23 & Notebook & 11.0 \\ \hline
+			\end{tabular}
+		\end{table}
+		\end{center}
 	%---------------------------------- End of Definition snapshot --------------------------
+	%---------------------------------- Begin of Blockchain  --------------------------------
 
 
 	\section{Blockchain} \label{sec:blockchain}
 		In a big picture, Blockchain technology is a distributed trusted public ledger that the stored data in it are linked using cryptography. The stored data in Blockchain are immutable and open to anyone to inspect \cite{OECD2016Science}. Today there are a numerous number of applications that are using Blockchain \cite{dhillon2017blockchain}, however, ‌it got its reputation because of its application as the backbone of cryptocurrencies such as Bitcoin \cite{nakamoto2008bitcoin}. As a matter of fact, Blockchain is the secret why cryptocurrencies are secure, work in a decentralized network, do not need any central verification system and the legitimacy of the transactions could be investigated by anyone \cite{halaburda2016beyond}.
-		The reason why we are interested to utilize Blockchain technology is to be able to provide a trusted temporal relational database that its data are immutable, doing forgeries are extremely expensive and trustworthy of the records are investigatable by evaluating the verifiable evidences that are on the blockchain. In this section, the tools and techniques that are utilized to implement a Blockchain based temporal relational database are defined.
+		The reason why we are interested to utilize Blockchain technology is to be able to provide virtual immutability to the stored records in a temporal table. The immutability that the Bockchain provides makes forgeries on the records extremely expensive. Also it enables us to investigate about the trustworthiness of the records by evaluating the verifiable evidences. In this section, the tools and techniques that are utilized to implement a Blockchain based temporal relational database are defined.
 
 	%---------------------------------- Begin of Cryptography --------------------------
 		\subsection{Cryptography} \label{sec:cryptography}
-			Cryptography is a tool that protects data in a computer system from being accessed or maliciousely manipulated from adversaries, by utilizing mathematical algorithms. Using Cryptography, messages sent or received between two parties in a network are encrypted in a way that the adversaries cannot read the normal form of the message. Cryptography also guarantees that the sent,received or stored data in a computer system has never been altered by using the digital signatures. Cryptography in a computer system is established through various steps such as cryptographic key assignment, encryption, and decryption of messages or digitally signing a message and verifying the digital signatures \cite{stallings2017cryptography}.
+			Cryptography is a tool that protects data in a computer system from being accessed or maliciousely manipulated from adversaries, by converting data from their ordinary form to unintellegible information that are unreadable by eavesdroppers \cite{kapoor2011cryptography}. Also by utilizing digital signatures which is partially generated by using cryptography, malicious modification of sent,received or stored data in a computer system can be investigated \cite{katz2010digital}. Data security using cryptographic techniques in a computer system is established through various steps such as cryptographic key assignment, encryption, and decryption of messages or digitally signing a message and verifying the digital signatures \cite{stallings2017cryptography}.
 
 	%---------------------------------- End of Definition cryptography ----------------------------
 	%----------------------------- Begin of Definition cryptographic keys -------------------------
@@ -200,4 +258,4 @@
 
 		For the sake of gathering verifiable pieces of evidence, in our proposed system, any changes to the database regardless of the users' access privileges need to be tracked. This action could be done by utilizing inherent to DBMS tools. Fabbri {\it et al.} \cite{fabbri2013select} extensively talked about SELECT triggers which are inherent RDBMS functions, required database specifications and efficient implementation techniques for data auditing. Hauger {\it et al.}\cite{hauger2014information} also discussed the use of triggers in the database for forensic purposes. Triggers are supported by RDBMS which makes them a good candidate to be used in our proposed system however, it is naive to assume that a simple trigger solely is secure enough to be used for forensic purposes. Therefore we propose to use the Blockchain technology to make immutable chains of transactions that are captured by database triggers.
 
-		The first attempt to use chained hashes for securing data from tampering is known to be done by Haber {\it et al.} \cite{haber1991how} where the authors proposed a methodology to securely timestamp the digital files and create digital signatures and hash chains. This work was then improved by Schneier {\it et al.} \cite{schneier1998cryptoraphic} \cite{schneier1999minimizing} \cite{schneier1999secure} by offering to exchange secret codes with a trusted third party who is able to verify the authenticity of the chain. They offered a method to change the shared secret as the new transaction occurs, therefore since the attackers do not have the previous secret codes, it is impossible for them to alter any records which were previously added. Our proposed method is similar to the mentioned works in this aspect that our historical records are chained together using the digital signatures, however, we use asymmetric encryption without the need of a third-party to attest the authenticity of the transactions.
+		The first attempt to use chained hashes for securing data from tampering is known to be done by Haber {\it et al.} \cite{haber1991how} where the authors proposed a methodology to securely timestamp the digital files and create digital signatures and hash chains. This work was then improved by Schneier {\it et al.} \cite{schneier1998cryptoraphic} \cite{schneier1999minimizing} \cite{schneier1999secure} by offering to exchange secret codes with a trusted third party who is able to verify the authenticity of the chain. They offered a method to change the shared secret as the new transaction occurs, therefore since the attackers do not have the previous secret codes, it is impossible for them to alter any records which were previously added. Our proposed method is similar to the mentioned works in this aspect that our historical records are chained together using the digital signatures, however, we use asymmetric encryption to generate digital signatures that removes the need of the third-parties to attest the authenticity of the transactions. The asymmetric encryption method also enables anybody to verify signatures without revealing the users' secrets.

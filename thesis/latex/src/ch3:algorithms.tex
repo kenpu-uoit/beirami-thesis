@@ -1,13 +1,16 @@
 \chapter{Problem Definition and Algorithms} \label{ch:algorithms}
-	In this chapter, we fomally define the problem of large query workload inefficiency in the context of temporal relational databases and then we propose a solution to lower the cost of such queries. In the next stage, we offer a practical procedure to implement the Blockchain methodology as well as the principles to add and verify trustworthiness of the records using Blockchain in a temporal relational database.
+	In this chapter, we fomally define the problem of large query workload inefficiency in the context of temporal relational databases and then we propose a solution to lower the cost of such queries. In the next stage, we offer a practical procedure to implement the Blockchain methodology as well as the principles to add and verify trustworthiness of the records using Blockchain in a temporal relational database. Majority of the definitions, figures, examples and discussions used for the topic of snapshot materialization of this chapter were borrowed from our paper in \cite{beirami2018snapshot}
 
 	\section{Problem definition} \label{sec:problem_def}
 		Keeping the historical records of transactions on a relational database system is useful because it stores the entire updates of a database. This  provides data provenance for the records that are stored in a relational database. Historical records of a table in a relational database could be used to regenerate the form of that table (snapshot) in a specific timestamp. Append-only temporal relational tables, if chosen for keeping the historical records, are beneficial because not only they are simple to implement and gives us the ability to attach the proof of work for each record, but also there is the luxary of having RDBMS to manage and perform queries on such tables.
 
-		\begin{example}
-			Definition of a timeline was introduced in Definition \ref{dfn:timeline}. The historical records obtained from auditing the database transaction could be seen as a timeline. A request to regenerate the form of a table (snapshot) or a record can be depicted in \ref{fig:snapshot_notion}
-		\label{example:timeline}
-		\end{example}
+
+		\begin{prop}[Linear time in creating snapshots]
+			The notion of creating a snapshot that shows the instance of the table $r$ in a certain timestamp $t$, using historical records stored in an append-only temporal relational table $r^T$ defined in \textbf{Definition 5}. Assume that the tables were updated at a constant rate over time, then the complexity of $\mathrm{snapshot}(r, t)$ is $$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \leq t\}|)\simeq \mathcal{O}(t)$$ 
+		\label{prop:linear_time}
+		\end{prop}
+			As discussed in Definition \ref{dfn:timeline}, the historical records stored in $r^T$ could be seen as nodes on a timeline. Creating snapshots from timeline perspective could be depicted in Figure \ref{fig:snapshot_notion}.
+			Also the records that need to evaluated to create a snapshot can be shown in Figure \ref{fig:checked_records}. This clearly indicates that a linear time is required to compute a snapshot at a timestamp of interest and as the size of $r^T$ grows in size, creating snapshot become computationally more expensive.
 
 		\begin{figure}
 			\centering
@@ -16,77 +19,19 @@
 			\label{fig:snapshot_notion}
 		\end{figure}
 
-
-		\begin{prop}[Linear time in creating snapshots]
-			The notion of creating a snapshot that shows the instance of the table $r$ in a certain timestamp $t$, using historical records stored in an append-only temporal relational table $r^T$ defined in \textbf{Definition 5}. Assume that the tables were updated at a constant rate over time, then the complexity of $\mathrm{snapshot}(r, t)$ is $$\mathcal{O}(|\{x: x\in r^T\mathrm{\ and\ } x.\mathrm{updates} \leq t\}|)\simeq \mathcal{O}(t)$$ 
-			Since $r^T$ could be seen as a timeline, the records which need to be checked can be depicted in \ref{fig:checked_records}. This clearly indicates that a linear time is required to compute a snapshot at a timestamp of interest and as the size of $r^T$ grows in size, creating snapshot become computationally more expensive.
-		\label{prop:linear_time}
-		\end{prop}
-
-		\begin{figure}[b]
+		\begin{figure}
 			\centering
 			\includegraphics[width=\textwidth]{figs/tobechecked_records.pdf}
 			\caption{The records which needs to be checked when creating a snapshot.}
 			\label{fig:checked_records}
 		\end{figure}
 
-		\begin{example}
-			Given a normal relational table $r_1$ (Table \ref{table:normal_table_2}) and a temporal relational table $r_1^T$ (Table \ref{table:temporal_table_2}) which contains the historical data of $r_1$, the $r_1$ at $t=2018-04-01$ looked like Table $\ref{table:normal_table_2_t}$
-		\label{example:snapshot_table}
-		\end{example}
-
-		\begin{center}
-		\begin{table}[t]
-			\centering
-			\caption{Normal Relational Table $r_1$}
-			\label{table:normal_table_2}
-			\begin{tabular}{p{4cm}p{4cm}p{4cm}}
-				\hline
-				id & item      & value  \\ \hline
-				22 & Pencil    & 7.50 \\
-				23 & Notebook & 12.0   \\ 
-				24 & Console & 230.0 \\ \hline
-			\end{tabular}
-		\end{table}
-
-		\begin{table}[t]
-			\centering
-			\caption{Temporal Table $r_1^T$}
-			\label {table:temporal_table_2}
-			\begin{tabular}{p{1cm}p{2cm}p{3cm}p{3cm}p{2cm}}
-				\hline
-				id & item      & value  & timestamp  & deleted\\ \hline
-				21 & Ruler    & 3.25  & 2018-02-10  &  False \\  
-				22 & Pencil    & 8.0  & 2018-03-21  &  False \\
-				22 & Pencil    & 9.0  & 2018-03-30  &  False\\
-				23 & Notebook & 11.0  & 2018-04-01 & False \\
-				22 & Pencil & 6.0  & 2018-04-01 & False \\
-				21 & Ruler    & 3.25  & 2018-04-02  &  True \\
-				23 & Notebook & 12.0  & 2018-04-02 & False \\ 
-				22 & Pencil & 7.50  & 2018-04-05 & False \\ 
-				24 & Console & 230.0  & 2018-04-05 & False \\ \hline
-			\end{tabular}
-		\end{table}
-		\end{center}
-		\begin{center}
-		\begin{table}
-			\centering
-			\caption{Normal Relational Table $r_1$ at t = 2018-04-01}
-			\label{table:normal_table_2_t}
-			\begin{tabular}{p{4cm}p{4cm}p{4cm}}
-				\hline
-				id & item  & value  \\ \hline
-				21 & Ruler & 3.25 \\
-				22 & Pencil & 6.0   \\ 
-				23 & Notebook & 11.0 \\ \hline
-			\end{tabular}
-		\end{table}
-		\end{center}
+		
 
 		\subsection{Query answering using snapshots} \label{sec:query_using_snapshots}
 			Using pre-computed materialized view has been proven to be effective in reducing the computational time of query answering \cite{sohrabi2016materialized} \cite{du2017deepsea}. Since running queries $Q(t)$ on temporal table $r^T$ to build snapshots or generate latest version of a record at a timestamp of interest requires linear time with time complexity of approximately $\mathcal{O}(t)$, consequently in the presence of multiple and concurrent queries, such transactions are computationally expensive and inefficient. We argue that, if a snapshot is computed at the timestamp $t$ and placed on the timeline, the computational time of answering to the subsequent queries on $r^T$ is reduced. The notion of having precomputed snapshots for materialization can be depicted as Figure \ref{fig:snapshot_materialization}. Note that the snapshot could exist before or after a query and in both cases, the query can use the snapshot for materialization.
 
-			\begin{figure}[t]
+			\begin{figure}
 				\centering
 				\includegraphics[width=\textwidth]{figs/snapshot_materialization.pdf}
 				\caption{The records which needs to be checked when creating a snapshot with having a precomputed snapshot for materialization.}
@@ -345,7 +290,7 @@
 			\label{example:recursive_segmantation}
 			\end{example}
 
-			\begin{figure}[b]
+			\begin{figure}
 				\centering
 				\includegraphics[width=\textwidth]{figs/example_recursive_q.pdf}
 				\caption{The quer on the timeline in Example.}
@@ -363,7 +308,7 @@
 			\begin{figure}
 				\centering
 				\includegraphics[width=\textwidth]{figs/example_recursive_s.pdf}
-				\caption{Segmentation of queries on the timeline for Example \ref{}}
+				\caption{Segmentation of queries on the timeline for Example \ref{example:recursive_segmantation}}
 				\label{fig:example_recursive_segmentation}
 			\end{figure}
 
@@ -424,7 +369,7 @@
 
 
 		\subsection{Heuristic method to find optimal timeline segmentation} \label{sec:heuristic_optimal}
-			In the heuristic technique, the optimal solution to a problem is not guaranteed however because of the low computational cost and satisfactory results, this approach is used when non-heuristic techniques are inefficient to implement. For the purpose of finding the optimal segmentation of queries for optimal query answering, we utilized K-means clustering technique. We chose K-means clustering over other clustering methods because our dataset is a one dimensional dataset and our objective is to find the optimal timestamps to place a snapshots for materialization. Therefore, the centroids resulted from computation of finding optimal segmentations using K-means clustering method is a good candidate to place the snapshots for materialization.
+			In the heuristic technique, the optimal solution to a problem is not guaranteed however because of the low computational cost and satisfactory results, this approach is used when non-heuristic techniques are inefficient to implement. For the purpose of finding the optimal segmentation of queries for optimal query answering, we utilized K-means clustering technique. We chose K-means clustering over other clustering methods because since our dataset is a one dimensional dataset and our objective is to find the optimal timestamps to place snapshots for materialization, the centroids resulted from computation of finding optimal segmentations using K-means clustering method is the  is a good candidate to place the snapshots for materialization.
 
 			\begin{prop} 
 				Given $T_q^* = \{q_0,q_1,...,q_n\}$ as $n$ number of queries performed on the temporal relation $r^T$, we would like to group the $q_i \in T_q^*$ into $m$ number of \textit{"clusters"}. 
@@ -437,7 +382,7 @@
 			Minimizing objective function is achieved by the relocation of $\mu_j$ until no changes occur in the objective function.
 
 	\section{Blockchain} \label{sec:blockchain}
-		In this section we extensively talk about the implementation of a Blockchain based mechanism to verify the trustworthiness of the records. In the first step we talk about temporal tables with security information and then we discuss about the procedure of creating a chain of the records in these tables. In the next steps we talk about steps and rules that needs to be applied in order to verify the trustworthiness of the records in a table, as well as utilizing this mechanism in the case of snapshot materialization.
+		In this section we extensively talk about the implementation of a Blockchain based mechanism to verify the trustworthiness of the records. In the first step we talk about temporal tables with security information and then we discuss about the procedure of creating a chain of the records in these tables. Next, we talk about steps and rules that needs to be applied in order to verify the trustworthiness of the records in a table. At the end we discuss about the ways that we could utilize this mechanism in the case of snapshot materialization.
 
 		\subsection{Temporal table with security information} \label{sec:temporal_with_security}
 			Let $r_i^T$ be the temporal relational table with attributes $attr(r_i^T)$=$\{attr(r_i), timestamp,deleted\}$, denote $\alpha_u$ as the security information of the user $u$, including the user's cryptographic keys $<K_{priv}^u, K_{pub}^u>$.
@@ -451,7 +396,7 @@
 			Digital signatures provide a strong mean to identify whether or not a record has been submitted by a ligitimate user. They are also used to certify if the record has not been altered as any minor change in the record results in a completely different digital signature. Also faking a digital signature is computationally infeasable, therefore digital signatures provide a strong security guarantees \cite{katz2010digital}.
 
 			\begin{defn}[Temporal table with chained security information]
-				The temporal relational table with chained security information $r_i^{T*}$ is a table with the attributes $$attr(r_i^{T*}) = attr(r_i^T) \cup \{username,currentSignature, previousSignature)\}$$ where $username$ is the username of the user $u$ who submitted the transaction, $currentSignature = signature(rec_j)$ is the digital signature of the submitted transaction $rec_j$ by $u$ and $previousSignature = rec_{j-1}[currentSignature]$ is the signature of the previous record stored in $r_i^T$. 
+				The temporal relational table with chained security information $r_i^{T*}$ is a table with the attributes $$attr(r_i^{T*}) = attr(r_i^T) \cup \{username,currentSignature, previousSignature)\}$$ where $username$ is the unique identity of the user $u$ who submitted the transaction, $currentSignature = signature(rec_j)$ is the digital signature of the submitted transaction $rec_j$ by $u$ and $previousSignature = rec_{j-1}[currentSignature]$ is the signature of the previous record stored in $r_i^T$. 
 			\label{defn:temporal_blockchain}
 			\end{defn}
 
@@ -525,7 +470,7 @@
 
 			\begin{itemize}
 				\item The first snapshot's records trustworthiness is checked using blockchain verification.
-				\item The subsequent snapshots materialize their previous snapshot, hence we take the same steps that was proposed in Proposition \ref{}
+				\item The subsequent snapshots materialize their previous snapshot, hence we take the same steps that was proposed in Definition \ref{defn:trusted_snapshot}.
 			\end{itemize}
 
 			Figure \ref{fig:signing_snapshots} depicts the rules that needs to be followed when signing a precomputed snapshot.
@@ -537,16 +482,38 @@
 				\label{fig:signing_snapshots}
 			\end{figure}
 
+		\subsection{Append of transactions}
+		We previousely talked about the steps that are needed to be taken in order to provide security information for the transaction in a database. In order to append a transaction along with its security information to a temporal relational database, the following steps should be taken:
+		\begin {itemize}
+			\item First the triggers of the database detect transactions on the records of the database.
+			\item The transaction submitter's information is retrived from the users table.
+			\item The position of the updated record on the temporal table is determined and the digital signature of its previous record is retrieved.
+			\item A digital signature of the updated record concatinated with its previous record's digital signature is computed by utilizing the transaction submitter's cryptographic keys.
+			\item The updated record is appended at the end of the table and chained to the end of blockchain by pointing to its previous record's digital signature.
+		\end{itemize}
+
+		By assuming that the transactions occur in a constant time, the temporal table resulted from the afformentioned steps holds all the updates of the database system sorted based on timestamp of occurrence. This is not always the case and concurrent transactions submitted to the database system are inevitable and common in computer systems.
+		When concurrent transactions are performed, a database system without concurrency control, has no preference to decide which transaction to be submitted first, therefore it may result in an inconsistent database and consequently an inconsistent blockchain. 
+
+		To solve the issue of concurrent transactions on the database, the transactions on the database need to be {\it serializable}. Serializability grants some order to the execution of concurrent transactions on the database system. This could be achieved by utilizing either the inherent to relational database engine concurrency control tools or software-based alternatives such as software transactional memory. In this project we utilized {\it serializable} isolation level that is defined by SQL standards and supported by Postgresql database to provide serializability for the concurrent transactions on the database system.
+
+		\begin{prop}[incremental manitenance of blockchain cost] By assuming that the updates $\delta D$ on the temporal database occur in constant time and are serializable, appending these updates to the end of blockchain is done in a constant time $\mathcal{O}(\delta D)$.
+		\end{prop}
+
 	\section{Discussion} \label{sec:algorithm_discussion}
-		In this section,the problem of linear time for query answering in append-only databases discussed. Creating snapshots and looking for the form of a table in an specific time on append-ony databases are inefficient therefore we proposed to place $m$ number of snapshots for materialization. These snapshots indicate the latest version of a database until that specific timestamp. Although it seems to be inefficient to store these information in a system, but with current bigdata technologies available such as cloud storages, it doesnot seem to be an overly burden task anymore. Note that $m$ which is the number of snapshots to be generated and materialized is determined by checking the available resources of the host system.
+		In this section,the problem of linear time for query answering in relational temporal databases discussed. We reasoned that Querying on a temporal database to generate snapshots of a relation in specific timestamps are inefficient, therefore we proposed to place $m$ number of snapshots for materialization. These snapshots indicate the latest version of a database until that specific timestamp. Note that $m$ which is the number of snapshots to be generated and placed for materialization is determined by checking the available resources of the host system.
 
-		In the first step, we proposed to store the timestamp of the previous queries on the database to have the patterns of the queries on the timeline. Pattern of the queries gives us the ability to identify the hotspots on the timeline and helps us in identifying the optimal timestamps for snapshot materialization. We argue that it is highly likeley that the the subsequent queries to be performed in these hotspots, therefore we proposed to create segmentations of the queries on the hotspots and allocate one snapshot for each segmentation for materialization. In this case, the problem which needs to be addressed is to create optimal segmentations of those hotspots on the timeline and cluster the queries which fall into these hotspots together.
-		To find $m$ number of optimal segmentation, we first solved the problem of finding an optimal position to place a single snapshot. We mathematically proved that the optimal place for a single snapshot is the median of the queries, hence if $m$ number of segmentations were created, the optimal position to place snapshot within each segmentation is the median of the segmentation queries. To find the optimal segmentations, we utilized three different methods : recursive algorithm, dynamic programming and heuristic method. In theory, the recursive algorithm consumes the highest computational time among the other two methods. Also, while the heuristic method has the lowest computational time complexity in comparison to recursive algorithm and dynamic programming, but when using this method, finding the optimal solution to the problem is not always guaranteed. In the next chapter we design multiple experiments to evaluate the performance of each method in different scenarios.
+		In the first step, we proposed to store the timestamp of the previous queries on the database to have the patterns of the queries on the timeline. Pattern of the queries gives us the ability to identify the hotspots on the timeline and helps us in identifying the optimal timestamps for snapshot materialization. We argue that it is highly likeley that the the subsequent queries to be performed in these hotspots, therefore we proposed to create segmentations of the queries on the hotspots and allocate an exclusive snapshot for each segmentation for materialization. In this case, when a query falls in the boundaries of a segmentation, it materializes the snapshot of that segmentation.
 
-		Next, we discussed the importance of transaction transparency in identifying maliciousely or mistakenly altered data in the database. We first proposed the idea of temporal table with security information that is achieved by adding the information of the transaction submitter along with the digital signature of the transaction using submitter's cryptogrphic keys to the record stored in the temporal database. By having the information of the transaction submitter, their cryptographic key could be fetched from the users table and the authenticity of the digital signature could be verified.
+		To find $m$ number of optimal segmentation, we first solved the problem of finding an optimal position to place a single snapshot. We mathematically proved that the optimal place for a single snapshot is the median of the queries, hence if $m$ number of segmentations were created, the optimal position to place snapshot within each segmentation is the median of that segmentation queries. In the next step, we utilized three different methods to find multiple optimal segmentation of queries: recursive algorithm, dynamic programming and heuristic method. In theory, the recursive algorithm consumes the highest computational time among the other two methods. Also, computationally, heuristic method has the lowest computational time complexity over recursive algorithm and dynamic programming, but the optimal solution to the problem is not always guaranteed. In the next chapter we design multiple experiments to evaluate the performance of each method in different scenarios.
 
-		The tables with the security information are still vulnerable to malicious modification. For example, when a super user of the database turns off the auditing mechanism that keeps track of the transactions on the table or when the super user alter the records of the temporal table and regenerate the digital signature, tables with malisiousely altered data are resulted that it is hard to investigate their illigitamacy. Therefore, we argued that a table is needed that any changes on it result in an inconsistant form of data that later on helps us in figuring out the trustworthiness of the data that are stored in that table. For this purpose, we proposed chaining the submitted records together using their digital signature. This could be done by using the Blockchain ideology in which the data are represented in the form of blocks and each block contains the digital signature of their previously submitted block. Any changes on the blocks result in a completely different signature that brings inconsistancy in the chain of digital signatures. To utilize this idea, we proposed to add the $previousSignature$ attribute to the records in the temporal table that contains the digital signature of their previous record.
+		Utilizing Blockchain technology to provide immutability and proof of work for the records that are stored in a temporal relation was the next topic that was discussed in this chapter. We presented a way to store proof of work for the transactions, also known as the security information of the transaction in the temporal relation. this is basically achieved by adding the information of the transaction submitter along with the digital signature of the transaction using submitter's cryptogrphic keys. Digital signature of the transactions enables us to verify whether or not the submitted records are authenticate or not.
 
-		To verify a chain of digital signatures, each record needs to be visited and the correctness of their digital signature as well as the correctness of their previous record's digital signature needs to be investigated. We call this the manual blockchain verification method and it contradicts the idea of snapshot materialization which was meant to be way to not to visit each record on the table. To solve this problem, we proposed to digitally sign the snapshots that are going to be materialized. In our solution, when a query is performed, first the digital signature of the materialized snapshot is investigated and then the other records which fall in between the timestamps of the query and the timestamp of the snapshots are investigated using manual blockchain verification. We call this materialized blockchain verification.
+		Although digital signatures grant immutability of the records but the tables with the security information are still vulnerable to malicious activities. For example, a super user of the database may be able to turns off the auditing mechanism of the database system. In this case, non of malicious activities are recorded in the temporal relation. Also, the previleged users may generate a malicious record, digitally sign it and place it in between the records in the temporal database. This results in a maliciousely added data to the temporal relation which is extremely hard to be identified. 
+
+		The malicious activity examples that were outlined, proves that it is naive to assume that using merely the digital signatures can guarantee the trustworthiness of the records. Therefore, we argued that the temporal relation should be designed in a way that any changes on the already stored records result in the inconsistency of data. For this purpose, we proposed chaining the submitted records together using their digital signature. This could be done by using the Blockchain ideology in which the data are represented in the form of blocks and each block contains the digital signature of their previously submitted block. Any changes on the blocks result in a completely different signature that brings inconsistancy in the chain of digital signatures. To utilize this idea, we proposed to add the $previousSignature$ attribute to the records in the temporal table that contains the digital signature of their previous record.
+
+		To verify a chain of digital signatures, each record needs to be visited and the correctness of their digital signature as well as the correctness of their previous record's digital signature needs to be investigated. We call this the manual blockchain verification method and it contradicts the idea of snapshot materialization which was meant to cut the cost by visiting some certain records and not all the records in the temporal relation. To solve this problem, we proposed to digitally sign the snapshots that are going to be materialized. In our solution, when a query is performed, first the digital signature of the materialized snapshot is investigated and then the other records which fall in between the timestamps of the query and the timestamp of the snapshots are checked using manual blockchain verification. We call this materialized blockchain verification.
 		
-		Digitally signing the precomputed snapshots requires to investigate the trustworthiness of their records before signing them. This process requires manual blockchain verification which is costly and infeasable especially for the snapshots that fall at the end of the timeline. In order to save the computational time, we propose that only first snapshot use the manual Blockchain verification and the subsequent snapshots use the materialized Blockchain verification using their previous precomputed snapshot. Incremental maintenance of blockchain can be done in constant time. This makes the trust update scalable for very large transaction databases.
+		Digitally signing the precomputed snapshots requires to investigate the authenticity of their records before signing them. This process requires manual blockchain verification which is costly, especially for the snapshots that fall at the end of the timeline. In order to save the computational time, we propose that only the first snapshot use the manual Blockchain verification and the subsequent snapshots use the materialized Blockchain verification using their previous precomputed snapshot. 
+
