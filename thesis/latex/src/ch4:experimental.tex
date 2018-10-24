@@ -151,7 +151,9 @@
 				\DontPrintSemicolon
 				 \SetKwFunction{FMain}{K-Means}
 				 \SetKwProg{Fn}{Function}{:}{}
-				 \Fn{\FMain{$T_q^*\{q_1,...,q_n\}$, $m$}}{
+				 \Fn{\FMain{$T_q^*\{q_1,...,q_n\}$, $m$, maxIteration}}{
+				 $iteration \gets 0$ \;
+				 \Repeat{$convergence$ and $iteration \leq maxIteration$}{
 				    $\{\mu_1,...,\mu_m\} \gets SelectRandomSeeds(\{q_i\in T_q^*\},m)$ \;
 					\For{$i \gets 1$ \KwTo $n$}{
 						$J \gets argmin_{J^*}||\mu_{J^*}-q_i||^2$ \;
@@ -160,6 +162,8 @@
 					\For{$j \gets 1$ \KwTo $m$}{
 						$\mu_j \gets \frac{1}{\mathcal{L}_j} \sum_{q \in \mathcal{L}_j} q $
 					}
+					$iteration ++$
+				}
 					\Return\{$\mu_1,...,\mu_m$\}
 				}
 			\end{algorithm}
