@@ -1,22 +1,22 @@
 \section{Introduction}
 
-In this paper, we study the problem of trusted relational database systems which
-supports immutable and auditable transactions and efficient processing of large
+In this paper, we study the problem of trusted relational database systems to
+support immutable and auditable transactions and efficient processing of large
 number of analytical queries.
 
 \subsection{Motivation}
 
 Consider a relational database
-used to store purchase orders of various customers for various suppliers.  Over the time,
-different customers and suppliers may update the database: inserting new orders, 
+used to store purchase orders of various customers and suppliers.  Over the time,
+customers and suppliers may update the database: inserting new orders, 
 make modifications to previous orders, or deleting existing orders.  Trust is an
 exceedingly important aspect of electronic data management. The system must
-maintain the provenance of all database transactions in scenarios with disputes.
+maintain the provenance of all database transactions in scenarios of disputes.
 For example, a customer $C_1$ may claim that an order has been cancelled {\em
 before} an agreed deadline, but the
 supplier $S_2$ may disagree with {\em when} the order has been cancelled.  One
 customer may claim that an order was properly inserted into the database, but
-somehow that order has gone missing.  When such disagreement over the history
+somehow the disputed order is missing.  When such disagreement over the history
 of the database arises, we would like to have an audit process for which the
 finding is {\em indisputable} and hence {\em trusted} by all parties.
 
