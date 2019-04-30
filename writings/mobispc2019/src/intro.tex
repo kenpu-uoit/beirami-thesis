@@ -1,7 +1,87 @@
 \section{Introduction}
 
+In this paper, we study the problem of trusted relational database systems which
+supports immutable and auditable transactions and efficient processing of large
+number of analytical queries.
+
+\subsection{Motivation}
+
+Consider a relational database
+used to store purchase orders of various customers for various suppliers.  Over the time,
+different customers and suppliers may update the database: inserting new orders, 
+make modifications to previous orders, or deleting existing orders.  Trust is an
+exceedingly important aspect of electronic data management. The system must
+maintain the provenance of all database transactions in scenarios with disputes.
+For example, a customer $C_1$ may claim that an order has been cancelled {\em
+before} an agreed deadline, but the
+supplier $S_2$ may disagree with {\em when} the order has been cancelled.  One
+customer may claim that an order was properly inserted into the database, but
+somehow that order has gone missing.  When such disagreement over the history
+of the database arises, we would like to have an audit process for which the
+finding is {\em indisputable} and hence {\em trusted} by all parties.
+
+We would like to design a trusted relational database system built on existing
+and mature technology (such as modern standard RDBMS\footnote{We use Postgresql
+for our implementation.}) to store the transactions such that the entire history
+of the database is tamper proof.  Namely, while we may not be able to prevent
+unwanted modifications to the database (e.g. unwanted root level access to the
+database, or hardware failure), if any modification to the data history will be
+revealed by an audit process.  In other words, we can verify {\em trust} the
+state of the database if the database is intact and free of tamper.
+
+Equally important to trust, the database must also support efficient evaluation
+of analytical queries.  We envision that many users may submit a large number of
+queries, which we will refer to as the query workload, to the database.  Each
+query may wish to examine the state of the database at a query specific timestamp
+in history.  The queries may be simple select queries,
+or may have complex data transformations and aggregations.  So another
+functional requirement of the trusted database is means of supporting large
+query workloads.
+
+\subsection{Problem Definition}
+\label{sec:problem-def}
+
+\newcommand{\D}{D}
+\newcommand{\U}{U}
+
+Let $\D$ be a relational database.  We are interested at the evolution
+of the database, hence the database is parameterized by {\em version} $\D(t)$
+where $t$ is a timestamp.  For simplicity, we will assume $t\in\mathbb{N}^+$.
+Let $\U$ be the users.  A transaction is a change to the database
+(addition, deletion and modification of tuples in $\D$), loosely denoted by
+$\Delta\D$.  We also denote the updated database after the $t$-th transaction
+submitted by user $u\in\U$ as:
+$\D(t+1) = \D(t)+(\Delta\D_t, u)$.
+
+Assuming that the database starts with an empty initial state of $\emptyset$ at
+$t=0$, we define the timeline of the database up to some time $t$ as the series
+$$ \mathrm{TL}(t) = 
+    \left[\begin{array}{c} \emptyset \\ \mathrm{null} \\ 0 \end{array}\right],
+    \left[\begin{array}{c} \D_1 \\ u_1 \\ 1 \end{array}\right],
+    \left[\begin{array}{c} \D_2 \\ u_2 \\ 2 \end{array}\right]
+    \,\dots\,
+    \left[\begin{array}{c} \D_{t-1} \\ u_{t-1} \\ t-1 \end{array}\right].
+    $$
+Namely, $\D_i$ is the $i$-th transaction submitted by user $u_i$ at time $t=i$.
+
+We wish to design a system $\mathbf{DB}$ to manage the timeline $\mathrm{TL}$ with
+the following properties:
+
 \begin{itemize}
-    \item Introduction
-    \item Motivation
-    \item Problem Definition
+    \item {\bf Evolving timeline}: for any time $t > 0$, the timeline
+        $\mathrm{TL}(t)$ can be completely retrieved from $\mathbf{DB}$.
+    \item {\bf Snapshot retrieval}: for any time $t > 0$, the state of the
+        database $D$ can be reconstructed from $\mathbf{DB}$.
+    \item {\bf Verification}: There exists a function
+        $\mathrm{verify}:\mathbf{DB}\mapsto\{\mathrm{true},\mathrm{false}\}$
+        any {\em tampered} version of the system $\mathbf{DB}'\not=\mathbf{DB}$
+        will be fail the verification.  We make no assumption of access control,
+        so the source of tampering may include root level access to
+        $\mathbf{DB}$.  Note, we limit our problem to {\em detection}, not
+        prevention of tampering.
+    \item {\bf Query Workload}: let $q$ be some query defined on a snapshot
+        $D(t_q)$.  We call $q_t$ the query timestamp.  The system $\mathbf{DB}$
+        can efficiently evaluate a large number of such queries at different
+        query timestamps.  The collection of queries is called the {\em query
+        workload}, written $Q = \{q_1, q_2, \dots, q_N\}$.
 \end{itemize}
