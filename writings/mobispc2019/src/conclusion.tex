@@ -1,24 +1,23 @@
 \section{Conclusion}
 
-We have presented the problem and solutions to build a data management system
-that supports:
+We have presented the problems and solutions in building a trusted data
+management system with the following properties:
 
 \begin{itemize}
-\item Transaction data processing by large number of user and devices.
-\item The trust is maintained using embedded blockchains associated with
-relational tables.
-\item The blockchain provides verifiability of trust in the data.
+\item The system supports transactional data processing with a large number of user and devices.
+\item Data authentication can be verified by the embedded blockchains that store
+    trust related information associated with all transactions.
 \end{itemize}
 
-We are further motivated to support query workloads consisting of analytical
+The database supports analytical
 queries at different query timestamps.  To achieve high efficiency, we propose
-to select optimal snapshots at various timestamps in such a way that the overall
-query evaluation cost is minimized.  We have formulated the problem as a well
-defined optimization problem, and presented its exact solution using dynamic
+to optimally materialize snapshots at various timestamps in order to
+minimize the time cost in query evaluation.  The problem is formulated as
+an optimization problem which can be solved exactly using dynamic
 programming.  To reduce the optimization overhead, we constructed a clustering
 based heuristic algorithm.  The experimental evaluation shows that materialize
-snapshots greatly improves query throughput (by a factor of 50 times), and the
-heuristic approximation of snapshot placement is very close (within 2%) to the
+snapshots greatly improve query throughput (by a factor of 50 times), and the
+heuristic approximation of snapshot placement is very close (within 2\%) to the
 exact optimal placements.
 
 \medskip
@@ -28,13 +27,11 @@ research program.
 
 \begin{itemize}
 \item Our approach is currently limited to the relational model.  We plan to
-generalize it to other data models including semi-structured and graph data
-models.
-\item We are able to obtain the (near) optimal snapshot placements for static
+generalize it to other data models including semi-structured and graph data.
+\item We focused on computing (near) optimal snapshot placements for static
 query workload.  We plan to explore adaptive snapshots placements to handle
 dynamic query workload in an online fashion.
-\item Blockchain is inherently distributed.  We envision that the blockchain's
-distributed consensus protocol can be adopted to manage trust in a distributed
-fashion, and possibly make it possible to perform database repair on tampered
-database instances.
+\item We envision that the
+distributed blockchain consensus protocol can be adopted to manage trust for distributed
+databases to support automatic repair on tampered database instances.
 \end{itemize}

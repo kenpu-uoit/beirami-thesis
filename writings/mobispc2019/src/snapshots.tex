@@ -1,17 +1,20 @@
 \section{Query answering with optimal snapshots}
 
-In this section we will present how to evaluate query workloads with the
+In this section we will discuss the evaluation of query workloads with the
 database given in Section~\ref{sec:trusted-db}.  Each table $\Hat T$ is a timeline of
-transactions, each digitally signed and verifiable.  Recall as described in
-Section~\ref{sec:problem-def}, a query is an arbitrary query on a snapshot
-$D(t_q)$ at the query timestamp $t_q$.
+transactions, digitally signed and verifiable.  Recall in
+Section~\ref{sec:problem-def}, we need to process a large number of queries at
+different query timestamps.
 
 To support arbitrary query $q$, we need to compute the snapshots of all the tables
 $\Hat{T}$ that are needed by $q$ at $t_q$. This means we need to perform
-a group-by the row ids (from the original table $T$), aggregate by keeping the
-row with the latest transaction timestamp, and finally remove all deleted rows.
-This can be succinctly expressed in SQL using windowing functions as shown in
+a group-by operation using the row id (from the original table $T$), with each
+group aggregated to the
+row with the latest transaction timestamp.  Then we remove all the rows with
+their deletion boolean flags set to true.
+This can be expressed in SQL using windowing functions as shown in
 Figure~\ref{fig:sql}.
+
 Finally, the query $q$ is evaluated as:
 $q(\mathrm{snapshot}(\Hat T_1, t_q), \mathrm{snapshot}(\Hat T_2, t_q), \dots)$.
 
@@ -38,8 +41,6 @@ For the remainder of this section, we present a family of optimization
 techniques to efficiently process query workload $Q = \{q_1, q_2, \dots, q_N\}$
 by optimally materialize a fixed number of snapshots.
 
-
-
 \subsection{Materialized single snapshot}
 
 \newcommand{\snapshot}{\mathrm{snapshot}}
@@ -47,7 +48,7 @@ by optimally materialize a fixed number of snapshots.
 \newcommand{\opt}{\mathrm{opt}}
 
 If we have a snapshot $S = \mathrm{snapshot}(T, t_s)$, and a query $q$ with
-query timestamp $t_q\not t_s$.  We can choose to evaluate $q$ by
+query timestamp $t_q\not t_s$, we can evaluate $q$ by
 constructing $\snapshot(T, t_q)$ based on $S$.  This involves applying all the
 transactions in the interval of $[t_s, t_q]$ (commit transactions) or $[t_q,
 t_s]$ (rollback transactions). Since each transaction has its unique timestamp,
@@ -63,8 +64,8 @@ This leads to the first optimization problem.
 \newcommand{\argmin}[1]{\underset{#1}{\mathrm{argmin}\ }}
 
 \begin{definition}[Optimal single snapshot placement problem]
-    Given a query workload, $s^*$ is an optimal snapshot placement
-    if $s^* = \argmin{s}\cost(Q|s)$.
+    Given a query workload, What is is an optimal snapshot placement $s^*$ where
+    $s^* = \argmin{s}\cost(Q|s)$?
 \end{definition}
 
 One can show that the single snapshot placement can be solved by placing the
@@ -79,7 +80,7 @@ snapshot at the median of the query timestamps.
 
 Naturally, we expect to improve the performance with multiple snapshots.  This
 takes us to the multiple snapshot problem. Let $S = \{s_1, s_2, \dots, s_m\}$,
-and $Q$ the query workload.  Each query will evaluated using the {\em nearest} snapshot.
+and $Q$ the query workload.  Each query will be evaluated using the {\em nearest} snapshot.
 So, the cost becomes:
 
 $$ \cost(Q|S) = \sum_{q\in Q} \min\{|t_q - t_s| : s\in S\} $$
@@ -90,8 +91,8 @@ $$ \cost(Q|S) = \sum_{q\in Q} \min\{|t_q - t_s| : s\in S\} $$
     We will denote $S^*$ as $\mathrm{opt}(Q, m)$.
 \end{definition}
 
-We first observe that the m-snapshot problem enjoys the property that optimality
-of subproblems.
+We first observe that the m-snapshot problem enjoys a property that we call the
+{\em optimality of subproblems}.
 
 \begin{theorem}[Optimality of subproblems]
     Let $S^* = \mathrm{opt}(Q, m)$.  Then $S^*$ partitions $Q$ by the nearest
@@ -100,7 +101,7 @@ of subproblems.
     \label{thm:subproblem}
 \end{theorem}
 
-This leads to a recursive formulation of the solution to the $m$-snapshot
+This leads to a recursive solution to the $m$-snapshot
 placement problem shown in Figure~\ref{fig:recursion}.
 
 \begin{figure}[htbp]
@@ -118,21 +119,19 @@ placement problem shown in Figure~\ref{fig:recursion}.
     \label{fig:recursion}
 \end{figure}
 
-One can observe that the recursion shown in Figure~\ref{fig:recursion} can be
-implemented with dynamic programming with complexity $\mathcal{O}(mn^2)$
+It can be shown that the recursion in Figure~\ref{fig:recursion} can be
+implemented as dynamic programming with complexity $\mathcal{O}(mn^2)$
 where $m$ is the number of snapshots, and $n$ the number of queries.
-
 
 \subsection{Approximate snapshot placement using clustering}
 
-While algorithm in Figure~\ref{fig:recursion} computes the optimal snapshot
-placement in polynomial time, its complexity is too high if the query load is
-large (thousands) with many materialized snapshots.
+While the algorithm in Figure~\ref{fig:recursion} computes the optimal snapshot
+placement in polynomial time, its complexity is still too high if the query load is
+large (thousands) with many materialized snapshots (hundreds).
 
-We make the observation that the solution of $m$-snapshot placement makes
-extension computation of medians of subsets of queries.  This is especially true
+We make the observation that the optimal $m$-snapshot placement is based on
+the medians of subsets of queries.  This is also true
 for the case of $m=1$ as given in Theorem~\ref{thm:single}.
-
 This leads us to believe that the cluster structure in the timestamps of the
 query workload is a strong determining factor in snapshot placement.  Thus, we
 propose to {\em approximate} the optimal snapshot locations by the {\em mean}
@@ -143,7 +142,7 @@ Figure~\ref{fig:approx}.
     \centering
     \begin{tabular}{l}\hline\hline
         $\mathrm{approx}(Q, m)$: \\ \hline
-        \verb|  | $\mathbf{C} = \mathrm{k-mean-clustering}(\{t_q: q\in Q\}, m)$ \\
+        \verb|  | $\mathbf{C} = \textrm{k-mean-clustering}(\{t_q: q\in Q\}, m)$ \\
         \verb|  | return $\{\mathrm{mean}(C) : C\in\mathbf{C}\}$ \\ \hline\hline
     \end{tabular}
     \caption{Approximate snapshot placements using clustering}
