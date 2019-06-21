@@ -1,0 +1,93 @@
+\begin{thebibliography}{10}
+
+\bibitem{aouiche2006clustering}
+Kamel Aouiche, Pierre-Emmanuel Jouve, and J{\'e}r{\^o}me Darmont.
+\newblock Clustering-based materialized view selection in data warehouses.
+\newblock In {\em East European Conference on Advances in Databases and
+  Information Systems}, pages 81--95. Springer, 2006.
+
+\bibitem{cormen2009introduction}
+Thomas~H Cormen, Charles~E Leiserson, Ronald~L Rivest, and Clifford Stein.
+\newblock {\em Introduction to algorithms}.
+\newblock MIT press, 2009.
+
+\bibitem{crosby2009tamper-evident}
+Scott~A. Crosby and Dan~S. Wallach.
+\newblock Efficient data structures for tamper-evident logging.
+\newblock In {\em 2009 the 18th conference on USENIX security symposium}, pages
+  317--334. USENIX Association, 2009.
+
+\bibitem{dhillon2017blockchain}
+Vikram Dhillon, David Metcalf, and Max Hooper.
+\newblock {\em Blockchain Enabled Applications}.
+\newblock Apress, Berkeley, CA, 2017.
+
+\bibitem{du2017deepsea}
+Jiang Du, Ren{\'e}e~J Miller, Boris Glavic, and Wei Tan.
+\newblock Deepsea: Progressive workload-aware partitioning of materialized
+  views in scalable data analytics.
+\newblock In {\em EDBT}, pages 198--209, 2017.
+
+\bibitem{dutta2013privacy}
+Rahul Dutta and Annappa B.
+\newblock Privacy and trust in cloud database using threshold-based secret
+  sharing.
+\newblock In {\em 2013 International Conference on Advances in Computing,
+  Communications and Informatics (ICACCI)}, pages 800--805, 2013.
+
+\bibitem{fabbri2013select}
+Daniel Fabbri, Ravi Ramamurthy, and Raghav Kaushik.
+\newblock Select triggers for data auditing.
+\newblock In {\em 2013 IEEE 29th International Conference on Data Engineering
+  (ICDE)}, pages 1141--1152, 2013.
+
+\bibitem{hauger2014information}
+Werner~K. Hauger and Martin~S. Olivier.
+\newblock The role of triggers in database forensics.
+\newblock In {\em 2014 Information Security for South Africa}, pages 1--7,
+  2014.
+
+\bibitem{khayat2017trust}
+Grace Khayat and Hoda Maalouf.
+\newblock Trust in real-time distributed database systems.
+\newblock In {\em 2017 8th International Conference on Information Technology
+  (ICIT)}, pages 572--579, 2017.
+
+\bibitem{shukla1998materialized}
+Amit Shukla, Prasad Deshpande, Jeffrey~F Naughton, et~al.
+\newblock Materialized view selection for multidimensional datasets.
+\newblock In {\em VLDB}, volume~98, pages 488--499, 1998.
+
+\bibitem{sinha2014continuous}
+Arunesh Sinha, Limin Jia, Paul England, and Jacob~R. Lorch.
+\newblock Continuous tamper-proof logging using tpm 2.0.
+\newblock In {\em International Conference on Trust and Trustworthy Computing},
+  pages 19--36. Springer, 2014.
+
+\bibitem{sohrabi2016materialized}
+Mohammad~Karim Sohrabi and Vahid Ghods.
+\newblock Materialized view selection for a data warehouse using frequent
+  itemset mining.
+\newblock {\em Jcp}, 11(2):140--148, 2016.
+
+\bibitem{wanger2017carving}
+James Wagner, Alexander Rasin, Boris Glavic, Karen Heart, Jacob Furst, Lucas
+  Bressan, and Jonathan Grier.
+\newblock Carving database storage to detect and trace security breaches.
+\newblock In {\em Proceedings of the Seventeenth Annual DFRWS USA}, pages
+  s127--s136. Elsevier, 2017.
+
+\bibitem{wagner2018detect}
+James Wagner, Alexander Rasin, Tanu Malik, Karen Heart, Jacob~D. Furst, and
+  Jonathan Grier.
+\newblock Detecting database file tampering through page carving.
+\newblock In {\em 2018 21st International Conference on Extending Database
+  Technology}, pages 121--132, 2018.
+
+\bibitem{wang2018ablockchain}
+Shangping Wang, Yinglong Zhang, and Yaling Zhang.
+\newblock A blockchain-based framework for data sharing with fine-grained
+  access control in decentralized storage systems.
+\newblock {\em IEEE Access}, 6:38437--38450, 2018.
+
+\end{thebibliography}
