@@ -1,0 +1,34 @@
+\title{Trusted relational databases with blockchain: design and optimization}
+
+%% use optional labels to link authors explicitly to addresses:
+%% \author[label1,label2]{<author name>}
+%% \address[label1]{<address>}
+%% \address[label2]{<address>}
+
+\author[a]{Amin Beirami}
+\author[b]{Ying Zhu}
+\author[a]{Ken Pu}
+
+\address[a]{Faculty of Science, UOIT, Oshawa, ON, Canada}
+\address[b]{Faculty of Business and IT, UOIT, Oshawa, ON, Canada}
+
+\begin{abstract}
+    With the emergence of large scale data collection from Internet of Things
+    and mobile devices, the notion of trust is now an increasingly
+    important aspect of the next generation of data processing
+    systems. We propose a blockchain enabled relational storage system that
+    supports immutable transactions and temporal snapshots.  By embedding
+    blockchains in relational tables, the database stores trust related
+    information in a tamper proof fashion, making the data provenance provably
+    verifiable.
+    To support large query workloads, we further propose an optimization
+    algorithm that determines the best temporal snapshots to materialize in
+    order to minimize the total
+    time cost of answering a given query workload. Experimental evaluation
+    shows that our materialized snapshot approach improves the performance of
+    large analytical query workloads by as much as 50 times.
+\end{abstract}
+
+\begin{keyword}
+    trusted database; blockchain; query answering; optimization
+\end{keyword}

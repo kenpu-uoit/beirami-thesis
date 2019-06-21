@@ -1,0 +1,109 @@
+\section{Design of trusted relational tables}
+\label{sec:trusted-db}
+
+Based on the problem definition given in 
+Section~\ref{sec:problem-def}, we describe the design of the trusted database
+management system.  In our design, we embed blockchains in the relational
+tables to support immutable transactions and verification.
+
+\subsection{Users, keys and digital signatures}
+
+\newcommand{\public}{\operatorname{public}}
+\newcommand{\private}{\operatorname{private}}
+\newcommand{\enc}{\operatorname{enc}}
+
+Let $U$ be a collection of {\em users}.  Each instance in $U$ can be a user in
+the conventional sense, a mobile device or an Internet of Things (IoT).
+Without loss of generality, we call all such instances {\em users}.  A
+user $u\in U$ is uniquely characterized by a pair of public and private keys:
+$\public(u)$, $\private(u)$.  The key pairs are typically generated
+using the RSA scheme \cite{cormen2009introduction} using large number
+of bits (e.g. 4096) to avoid key collisions
+even when there are billions of instances in $U$.
+
+Given arbitrary data $x$, the encoding function is given as
+$\enc: (x,\private(u))\mapsto \Hat{x}$ where $\Hat{x}$ is a lossless encoding
+of $x$, commonly known as the ciphertext.  The ciphertext can be decoded using
+the encoding function again, but with the public key:
+$$ \enc(\Hat{x}, \public(u)) = x $$
+
+To prove authorship of some data $x$ by user $u$, the following digital signing
+scheme is used:
+
+\begin{enumerate}
+    \item Compute the hash of $x$ by a fixed hash function: $h(x)$.
+    \item Compute the ciphertext of $h(x)$: $\mathrm{sig}(x) = \enc(h(x),
+        \private(u))$.
+    \item Publish the data, the signature and the public key:
+        $\left<x, \mathrm{sig}(x), \public(u)\right>$.
+        The published data does not leak the private key of the user.
+\end{enumerate}
+
+To verify the authenticity of the authorship from the published data:
+
+\begin{enumerate}
+    \item Decode the signature:
+        $y = \enc(\mathrm{sig}(x), \public(u))$.
+    \item Verify that the decoded signature is the hash value of $x$ using the
+        fixed hash function $h$:
+        $ h(x) \overset{?}{=} y $
+\end{enumerate}
+
+\subsection{Blockchain in relational tables}
+
+We propose a scheme to augment each relational table in a database $D$ with
+additional attributes to store the transaction timestamp, a new table signature,
+a previous table signature,
+and the user public key.  We also need an extra bit flag to indicate if the
+transaction is a deletion.  In practice, the deletion bit flag can be padded
+to the end of the transaction signature, but for readability, we assume
+yet another boolean attribute added to the table.
+
+\newcommand{\attr}{\mathrm{attr}}
+For each table $T$ in the database $D$ with attributes $\attr(T)$, we assume
+that at least one attribute, $id$, is the row id\footnote{Popular RDBMS such as MySQL
+and Postgresql have built {\tt row\_id} to generate row ids.}.
+The table $T$ is then augmented with the additional attributes: $(\mathrm{t}, \mathrm{sig},
+\mathrm{sig}', \mathrm{pubkey}, \mathrm{del?})$, each is as described above.
+The new table with the augmented attributes is written as $\Hat T$.
+Note, we keep track of two signatures: $\mathrm{sig}$ and $\mathrm{sig}'$
+corresponding to the signatures of the table {\em after} $T(t)$ and {\em before}
+$T(t-1)$
+the transaction respectively.  This is necessary to ensure the blockchain
+integrity \cite{dhillon2017blockchain,wang2018ablockchain}.
+
+\medskip
+
+{\bf Transaction updates}:  \quad Suppose a user $u\in U$ wants to commit a
+transaction $\Delta D$.  For each table $T$ involved in the transaction,
+let $\Delta T$ be the rows affected (added, modified, or removed).  For each
+tuple $x\in\Delta T$, we insert into $\Hat T$ the augmented tuple
+$\left<x, i, s, s', \public(u), \mathrm{del?}(x)\right>$ where
+$i$ is the current transaction timestamp, $s, s'$ the signatures as
+described below, $\public(u)$ the public key of the transaction author, and
+finally $\mathrm{del?}(x)$ is the boolean flag indicating if $x$ is removed by
+in the transaction.
+
+The signatures are given as:
+
+\begin{itemize}
+    \item $s' = x[\mathrm{sig'}]: x[t] = i-1$. This is uniquely determined as the
+        signature of the previous transaction at timestamp $i-1$.
+    \item $s = \enc(\mathrm{hash}(\Delta T + s'), \private(u))$. This is the
+        digital signature of the transaction data {\em and} the previous
+        signature.
+\end{itemize}
+
+\medskip
+
+{\bf Verification}: \quad Each table-level transaction $\Delta T$ is uniquely
+identified by its timestamp $t$.  It is also uniquely identified by its
+signature $\mathrm{sig}_t$.  The verification of the transaction is given as:
+
+$$\mathrm{verify}(\Delta T) = \enc(\mathrm{sig}_t, \public(u)) 
+    \overset{?}= \mathrm{hash}(\Delta T + \mathrm{sig}_{t-1}) $$
+
+This allows us to verify all the tables $\Hat T$ in the temporal database.  Any
+tampering will be detected by the verification function.
+
+
