@@ -14,7 +14,7 @@ tables to support immutable transactions and verification.
 
 Let $U$ be a collection of {\em users}.  Each instance in $U$ can be a user in
 the conventional sense, a mobile device or an Internet of Things (IoT).
-Without the loss of generality, we call all such instances {\em users}.  A
+Without loss of generality, we call all such instances {\em users}.  A
 user $u\in U$ is uniquely characterized by a pair of public and private keys:
 $\public(u)$, $\private(u)$.  The key pairs are typically generated
 using the RSA scheme \cite{cormen2009introduction} using large number
@@ -87,7 +87,7 @@ in the transaction.
 The signatures are given as:
 
 \begin{itemize}
-    \item $s' = x[\mathrm{sig'}]: x[t] = i-1$. This is unique determined as the
+    \item $s' = x[\mathrm{sig'}]: x[t] = i-1$. This is uniquely determined as the
         signature of the previous transaction at timestamp $i-1$.
     \item $s = \enc(\mathrm{hash}(\Delta T + s'), \private(u))$. This is the
         digital signature of the transaction data {\em and} the previous

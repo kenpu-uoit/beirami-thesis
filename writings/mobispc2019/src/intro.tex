@@ -1,31 +1,31 @@
 \section{Introduction}
 
 In this paper, we study the problem of implementing a trusted relational
-database systems to support immutable and auditable transactions and efficient
-processing of large number of analytical queries.
+database system to support immutable and auditable transactions, and efficient
+processing of large numbers of analytical queries.
 
 \subsection{Motivation}
 
 Consider a relational database
 used to store purchase orders of various customers and suppliers.  Over time,
-customers and suppliers may update the database: inserting new orders, 
-make modifications to previous ones, or deleting existing ones.  Trust is an
+customers and suppliers may update the database: insert new orders, 
+make modifications to previous ones, or delete existing ones.  Trust is an
 exceedingly important aspect of electronic data management. The system must
 maintain the provenance of all database transactions in scenarios of dispute.
 For example, a customer $C_1$ may claim that an order has been cancelled {\em
 before} an agreed deadline, but the
 supplier $S_2$ may dispute the time of cancellation.  There are many such
 scenarios in practice.
-When such disagreement over the history
-of the database arises, we would like to have an audit process for which the
+When such disagreements over the history
+of the database arise, we would like to have an audit process for which the
 finding is {\em indisputable} and hence {\em trusted} by all parties.
 
 We would like to design a trusted relational database system built on existing
 and mature technology (such as modern standard RDBMS\footnote{We use Postgresql
 for our implementation.}) to store the transactions in such a way that the entire history
 of the database is tamper proof.  Namely, while we may not be able to prevent
-unwanted modifications to the database (e.g. malicious root users 
-or accidental hardware failures), if any modification to the data and its history will be
+unwanted modifications to the database (e.g., malicious root users 
+or accidental hardware failures), {\em any} modification to the data and its history will be
 revealed by an audit process.  In other words, we can {\em trust} the
 state of the database by verifying that the database is intact and free of tamper.
 
@@ -36,7 +36,7 @@ query examines the state of the database at a query specific timestamp.
 Each query may be a simple select query, or one that contains complex data
 transformations and aggregations.  So another
 functional requirement of the trusted database is to support 
-query workloads at scale.
+query workloads on a large scale.
 
 \subsection{Problem Definition}
 \label{sec:problem-def}
